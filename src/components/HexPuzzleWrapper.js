@@ -246,6 +246,7 @@ export default function HexPuzzleWrapper({
             alignItems: "center",
             fontSize: 20,
             flexShrink: 0, // Prevent shrinking
+            userSelect: "none", // Prevent text selection
           }}
         >
           {/* Regions Made */}
@@ -293,6 +294,7 @@ export default function HexPuzzleWrapper({
             textAlign: "center",
             fontSize: 18,
             padding: 20,
+            userSelect: "none", // Prevent text selection
           }}
         >
           <p style={{ marginTop: 0 }}>
