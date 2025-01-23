@@ -16,6 +16,41 @@ function hexKey(q, r, s) {
   return `${q},${r},${s}`;
 }
 
+function blendColors(baseColor, outlineColor, alpha = 0.3) {
+  // Remove "#" if present
+  let b = baseColor.replace("#", "");
+  let o = outlineColor.replace("#", "");
+
+  // Expand shorthand (#abc → #aabbcc)
+  if (b.length === 3) {
+    b = b[0] + b[0] + b[1] + b[1] + b[2] + b[2];
+  }
+  if (o.length === 3) {
+    o = o[0] + o[0] + o[1] + o[1] + o[2] + o[2];
+  }
+
+  // Convert to numeric RGB
+  const baseR = parseInt(b.slice(0, 2), 16),
+        baseG = parseInt(b.slice(2, 4), 16),
+        baseB = parseInt(b.slice(4, 6), 16);
+  const outR = parseInt(o.slice(0, 2), 16),
+        outG = parseInt(o.slice(2, 4), 16),
+        outB = parseInt(o.slice(4, 6), 16);
+
+  // Blended RGB = (1-alpha)*base + alpha*outline
+  const r = Math.round(baseR * (1 - alpha) + outR * alpha);
+  const g = Math.round(baseG * (1 - alpha) + outG * alpha);
+  const bVal = Math.round(baseB * (1 - alpha) + outB * alpha);
+
+  // Convert back to hex
+  return (
+    "#" +
+    r.toString(16).padStart(2, "0") +
+    g.toString(16).padStart(2, "0") +
+    bVal.toString(16).padStart(2, "0")
+  );
+}
+
 /** 4) Check if active selection overlaps existing selections. */
 function checkOverlap(newSet, selections) {
   for (const sel of selections) {
@@ -262,6 +297,16 @@ function getConnectedComponents(cellKeys) {
 
   return components;
 }
+function shallowEqualSelections(a, b) {
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) {
+    // Quick approach: compare JSON. For larger apps, you'd do a more efficient compare.
+    if (JSON.stringify(a[i]) !== JSON.stringify(b[i])) {
+      return false;
+    }
+  }
+  return true;
+}
 
 /**
  * Helper function to remove a hex from a region and split if necessary.
@@ -342,10 +387,10 @@ export default function HexGridPuzzle({
   const [selections, setSelections] = useState([]);
   // Active selection (Set of cell keys)
   const [activeSelection, setActiveSelection] = useState(new Set());
+
+  const [pickedRegion, setPickedRegion] = useState(null);  // <-- ADDED
   // Are we dragging?
   const [isDragging, setIsDragging] = useState(false);
-  // Source region index if dragging from an existing region
-  const [sourceRegionIndex, setSourceRegionIndex] = useState(-1);
 
   /* ADDED: History state to keep track of all previous selections for undo */
   const [history, setHistory] = useState([]);
@@ -381,27 +426,36 @@ export default function HexGridPuzzle({
   };
 
   /** Prevent infinite loop by tracking previous state */
-  const prevStateRef = useRef({ selections: [], hexStates: {} });
+  const prevPuzzleRef = useRef({ virtualSelections: [], hexStates: {} });
 
   // After any change to selections or hexStates, notify parent if onPuzzleStateChange is provided
   useEffect(() => {
-    if (onPuzzleStateChange) {
-      // Simple reference comparison; assumes selections and hexStates are updated immutably
-      const prevSelections = prevStateRef.current.selections;
-      const prevHexStates = prevStateRef.current.hexStates;
+    if (!onPuzzleStateChange) return;
 
-      const selectionsChanged = prevSelections !== selections;
-      const hexStatesChanged = prevHexStates !== hexStates;
+    // Combine pickedRegion with selections so it “acts” as if it’s still in selections
+    const virtualSelections = pickedRegion
+      ? [...selections, pickedRegion]
+      : selections;
+    const prevVirtual = prevPuzzleRef.current.virtualSelections;
+    const prevHexStates = prevPuzzleRef.current.hexStates;
 
-      if (selectionsChanged || hexStatesChanged) {
-        onPuzzleStateChange({
-          selections,
-          hexStates,
-        });
-        prevStateRef.current = { selections, hexStates };
-      }
+    // Compare new vs old
+    const selectionsChanged = !shallowEqualSelections(virtualSelections, prevVirtual);
+    const hexStatesChanged = prevHexStates !== hexStates;
+
+    // Only call onPuzzleStateChange if there's a real change
+    if (selectionsChanged || hexStatesChanged) {
+      onPuzzleStateChange({
+        selections: virtualSelections,
+        hexStates,
+      });
+      // Update the ref
+      prevPuzzleRef.current = {
+        virtualSelections,
+        hexStates
+      };
     }
-  }, [selections, hexStates, onPuzzleStateChange]);
+  }, [selections, pickedRegion, hexStates, onPuzzleStateChange]);
 
   useEffect(() => {
     if (hasSolvedRef.current || !mapData || mapData.length === 0) return;
@@ -440,150 +494,169 @@ export default function HexGridPuzzle({
   /** Updated onHexMouseDown to handle starting selection from existing region */
   function onHexMouseDown(q, r, s, e) {
     e.stopPropagation();
-    // Optionally prevent default if desired:
-    // e.preventDefault();
-
     const k = hexKey(q, r, s);
     initialHexRef.current = k;
     dragOccurredRef.current = false;
-
+  
+    // **Save the current state to history at the start of the action**
+    setHistory((prevHistory) => [...prevHistory, selections]);
+  
     const regionIndex = findRegionContaining(k, selections);
-
+  
     if (regionIndex !== -1) {
-      // Start dragging from an existing region
-      setIsDragging(true);
-      setSourceRegionIndex(regionIndex);
-      setActiveSelection(new Set(selections[regionIndex].cells));
+      // Record the region being picked up
+      const oldRegion = selections[regionIndex];
+      setPickedRegion(oldRegion);
+  
+      // Remove the picked region from selections
+      setSelections((prev) => [
+        ...prev.slice(0, regionIndex),
+        ...prev.slice(regionIndex + 1),
+      ]);
+  
+      // Initialize active selection with the picked region's cells
+      setActiveSelection(new Set(oldRegion.cells));
     } else {
-      // Start a new selection
-      setIsDragging(true);
-      setSourceRegionIndex(-1);
+      // No existing region => start a fresh 1‑hex selection
+      setPickedRegion(null);
       setActiveSelection(new Set([k]));
     }
-  }
+  
+    // Begin dragging
+    setIsDragging(true);
+  }  
 
   /** Updated onHexEnter to add hexes based on adjacency and region constraints */
   function onHexEnter(q, r, s) {
     if (!isDragging) return;
     const k = hexKey(q, r, s);
-
-    // If the cursor enters a different hex than the initial one, mark as drag
+  
+    // If the cursor enters a different hex than the initial one, it's a real drag
     if (initialHexRef.current && k !== initialHexRef.current) {
       dragOccurredRef.current = true;
     }
-
-    // If already in active selection, do nothing
+  
+    // If we already have it, do nothing
     if (activeSelection.has(k)) return;
-
-    // Check if the hex is part of any existing selection
-    if (findRegionContaining(k, selections) !== -1) return;
-
-    // Check adjacency
+  
+    // **Enforce adjacency so the region stays contiguous:**
     if (!isAdjacentToSelection(k, activeSelection)) return;
-
-    // Add to active selection
-    setActiveSelection((prev) => new Set(prev).add(k));
-  }
+  
+    // **Remove this hex from whatever other region it might have been in:**
+    const oldRegionIndex = findRegionContaining(k, selections);
+    if (oldRegionIndex !== -1) {
+      setSelections((prev) =>
+        removeHexAndSplit(prev, oldRegionIndex, k, hexStates)
+      );
+    }
+  
+    // **Also remove it from pickedRegion itself, if that's where it was:**
+    if (pickedRegion && pickedRegion.cells.includes(k)) {
+      const newCells = pickedRegion.cells.filter((cellKey) => cellKey !== k);
+      if (newCells.length > 0) {
+        setPickedRegion(buildRegionObject(newCells, hexStates));
+      } else {
+        // If we removed its last hex, that region disappears
+        setPickedRegion(null);
+      }
+    }
+  
+    // Finally, add the new hex to the active selection
+    setActiveSelection((prev) => {
+      const next = new Set(prev);
+      next.add(k);
+      return next;
+    });
+  }  
 
   /** Updated onMouseUp to finalize the selection */
   function onMouseUp() {
     if (!isDragging) return;
     setIsDragging(false);
-
-    if (activeSelection.size === 0) {
-      // Reset refs
-      initialHexRef.current = null;
-      dragOccurredRef.current = false;
-      return;
-    }
-
+  
+    const clickedKey = initialHexRef.current;
+  
     if (!dragOccurredRef.current) {
-      // It was a click
-      const [q, r, s] = initialHexRef.current.split(",").map(Number);
-      const k = hexKey(q, r, s);
-
-      // Find the region containing the clicked hex
-      const regionIndex = findRegionContaining(k, selections);
-      if (regionIndex !== -1) {
-        // Push current selections to history before making changes
-        setHistory((prevHistory) => [...prevHistory, selections]);
-
-        // Remove the hex and handle splitting
-        setSelections((prev) => removeHexAndSplit(prev, regionIndex, k, hexStates));
-      }
-    }
-    if (sourceRegionIndex !== -1) {
-      // Check for overlap with other regions
-      const overlap = Array.from(activeSelection).some((ck) => {
-        const regionIdx = findRegionContaining(ck, selections);
-        return regionIdx !== -1 && regionIdx !== sourceRegionIndex;
-      });
-
-      if (overlap) {
-        console.log("Selection overlaps an existing region!");
-        setActiveSelection(new Set());
-        setSourceRegionIndex(-1);
-        // Reset refs
-        initialHexRef.current = null;
-        dragOccurredRef.current = false;
-        return;
-      }
-
-      // Compare the new selection with the existing region
-      const existingRegion = selections[sourceRegionIndex];
-      const existingCellsSet = new Set(existingRegion.cells);
-      const isSame = areSetsEqual(existingCellsSet, activeSelection);
-
-      if (!isSame) {
-        // Push current selections to history before making changes
-        setHistory((prevHistory) => [...prevHistory, selections]);
-
-        // Update the source region with the new selection
-        const updatedRegion = buildRegionObject(Array.from(activeSelection), hexStates);
-        setSelections((prev) => {
-          const newSelections = prev.slice();
-          newSelections[sourceRegionIndex] = updatedRegion;
-          return newSelections;
-        });
+      // ============= Single Click =============
+      
+      if (pickedRegion) {
+        // Single-click on a hex that was inside the region we "picked up"
+        // => remove that 1 hex from the old region, then put the remainder back
+        const leftoverCells = pickedRegion.cells.filter((ck) => ck !== clickedKey);
+        
+        if (leftoverCells.length > 0) {
+          // Could be 1 or multiple connected components:
+          const comps = getConnectedComponents(leftoverCells);
+          setSelections((prev) => [
+            ...prev,
+            ...comps.map((c) => buildRegionObject(c, hexStates)),
+          ]);
+        }
+        // If leftoverCells.length === 0, the region is entirely removed; no action needed
+      } else {
+        // Single-click on a hex with no picked region
+        const regionIndex = findRegionContaining(clickedKey, selections);
+        if (regionIndex !== -1) {
+          // Single-click on a hex in some existing region
+          setSelections((prev) =>
+            removeHexAndSplit(prev, regionIndex, clickedKey, hexStates)
+          );
+        } else {
+          // Single-click on a hex with no region => create new 1‑hex region
+          setSelections((prev) => [
+            ...prev,
+            buildRegionObject([clickedKey], hexStates),
+          ]);
+        }
       }
     } else {
-      // Starting a new selection, ensure no overlap
-      if (checkOverlap(activeSelection, selections)) {
-        console.log("Selection overlaps an existing region!");
-        setActiveSelection(new Set());
-        // Reset refs
-        initialHexRef.current = null;
-        dragOccurredRef.current = false;
-        return;
+      // ============= Actual Drag =============
+  
+      // **No history saving here since it's already handled in onHexMouseDown**
+  
+      // Everything we dragged is now in activeSelection
+      const finalCells = Array.from(activeSelection);
+      if (finalCells.length > 0) {
+        // Create a new or updated region from that set
+        const newRegion = buildRegionObject(finalCells, hexStates);
+        setSelections((prev) => [...prev, newRegion]);
       }
-
-      // Push current selections to history before making changes
-      setHistory((prevHistory) => [...prevHistory, selections]);
-
-      // Create a new region
-      const arr = Array.from(activeSelection);
-      const region = buildRegionObject(arr, hexStates);
-      setSelections((prev) => [...prev, region]);
+  
+      // Handle leftover cells from the originally picked region, if any
+      if (pickedRegion) {
+        // leftover = pickedRegion.cells - finalCells
+        const leftoverCells = pickedRegion.cells.filter(
+          (ck) => !activeSelection.has(ck)
+        );
+        
+        if (leftoverCells.length) {
+          // Possibly it splits, so run getConnectedComponents:
+          const comps = getConnectedComponents(leftoverCells);
+          setSelections((prev) => [
+            ...prev,
+            ...comps.map((c) => buildRegionObject(c, hexStates)),
+          ]);
+        }
+      }
     }
-
-    // Reset active selection and source region
+  
+    // Reset everything
+    setPickedRegion(null);
     setActiveSelection(new Set());
-    setSourceRegionIndex(-1);
-
-    // Reset refs
     initialHexRef.current = null;
     dragOccurredRef.current = false;
-  }
+  }  
 
   // Define stroke widths
   const hexStrokeWidth = 2.4 * sizeMultiplier;
   const selectionStrokeWidth = 3.6 * sizeMultiplier;
+  const activeSelectionStrokeWidth = 4.2 * sizeMultiplier;
 
   // Define the scaling factor
   const SCALE = 1000;
 
   // Calculate dynamic inset based on stroke widths
-  const activeInset = -hexStrokeWidth * SCALE; // e.g., -1.2 * 1000 = -1200
+  const activeInset = -((hexStrokeWidth + activeSelectionStrokeWidth) / 2) * SCALE; // e.g., -1.2 * 1000 = -1200
   const selectionInset = -((hexStrokeWidth + selectionStrokeWidth) / 2) * SCALE; // e.g., -1.8 * 1000 = -1800
 
   /* ADDED: Compute active selection paths */
@@ -593,12 +666,38 @@ export default function HexGridPuzzle({
     activeInset
   );
 
+  const activeRegionObj = buildRegionObject(Array.from(activeSelection), hexStates);
+  const activeOutlineColor = getSelectionOutlineColor(
+    activeRegionObj,
+    regionSize,
+    colorToWin
+  );
+
   /* Compute selection data with paths and their respective outline colors */
   const selectionData = selections.map((sel) => {
     const paths = computeInsetOutline(sel.cells, layoutParamsBase, selectionInset);
     const color = getSelectionOutlineColor(sel, regionSize, colorToWin);
     return { paths, color };
   });
+  const hexToFinalColor = {};
+  // selections.forEach((sel) => {
+  //   // Build the region object so we get the correct outline color
+  //   const regionObj = buildRegionObject(sel.cells, hexStates);
+  //   const outlineColor = getSelectionOutlineColor(
+  //     regionObj,
+  //     regionSize,
+  //     colorToWin
+  //   );
+
+  //   // For each hex in this region, blend the base color with the outline color
+  //   if(outlineColor != "#FF1493"){
+  //     sel.cells.forEach((cellKey) => {
+  //       const baseColor = colorToHex(hexStates[cellKey]);
+  //       const blendedColor = blendColors(baseColor, outlineColor, 0.1);
+  //       hexToFinalColor[cellKey] = blendedColor;
+  //     });
+  //   }
+  // });
   
   const clusterOutlinePaths = computeInsetOutline(
     mapData.map(hex => hexKey(hex.q, hex.r, hex.s)),
@@ -662,7 +761,7 @@ export default function HexGridPuzzle({
     return () => {
       window.removeEventListener("mouseup", handleGlobalMouseUp);
     };
-  }, [isDragging, activeSelection, sourceRegionIndex, selections, hexStates]);
+  }, [isDragging, activeSelection, selections, hexStates, pickedRegion]);
 
   return (
     <div style={{ display: "inline-block" }}>
@@ -670,7 +769,8 @@ export default function HexGridPuzzle({
         <Layout {...layoutParams}>
           {mapData.map((hex) => {
             const k = hexKey(hex.q, hex.r, hex.s);
-            const fillColor = colorToHex(hexStates[k]);
+            const baseColor = colorToHex(hexStates[k]);
+            const fillColor = hexToFinalColor[k] || baseColor
             return (
               <Hexagon
                 key={k}
@@ -711,8 +811,8 @@ export default function HexGridPuzzle({
             key={`active-${idx}`}
             d={d}
             fill="none"
-            stroke="#00008B" // Default color for active selection
-            strokeWidth={hexStrokeWidth}
+            stroke={activeOutlineColor}  // ← Use the computed color
+            strokeWidth={activeSelectionStrokeWidth}
           />
         ))}
 
@@ -722,8 +822,8 @@ export default function HexGridPuzzle({
             <path
               key={`sel-${selIdx}-${i}`}
               d={d}
-              fill="none"
-              stroke={selData.color} // Dynamic color based on region validity and majority
+              fill="none"                // ← Remove the fill here
+              stroke={selData.color}
               strokeWidth={selectionStrokeWidth}
             />
           ))

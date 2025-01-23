@@ -185,6 +185,7 @@ export default function HexPuzzleWrapper({
             alignItems: "center",
             fontSize: 20,
             flexShrink: 0, // Prevent shrinking
+            userSelect: "none", // Prevent text selection
           }}
         >
           {/* Color to Win */}
