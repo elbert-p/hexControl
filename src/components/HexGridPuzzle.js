@@ -8,7 +8,7 @@ import solvePuzzle from "/src/app/solvePuzzle.js";
 
 /** 2) Convert color (0 or 1) → hex code. */
 function colorToHex(color) {
-  return color === 0 ? "#ff8888" : "#88f";//d8ee99 //ffff88 //ff8888
+  return color === 0 ? "#ff8888" : "#88f"; //d8ee99 //ffff88 //ff8888
 }
 
 /** 3) (q,r,s) -> "q,r,s". */
@@ -137,9 +137,9 @@ function computeInsetOutline(cellKeys, layout, offsetDelta = -600) { // Default 
 }
 
 /** Helper function to calculate the bounding box of the cluster */
-function calculateBounds(puzzleData) {
-  const qs = puzzleData.map((h) => h.q);
-  const rs = puzzleData.map((h) => h.r);
+function calculateBounds(mapData) {
+  const qs = mapData.map((h) => h.q);
+  const rs = mapData.map((h) => h.r);
   const minQ = Math.min(...qs);
   const maxQ = Math.max(...qs);
   const minR = Math.min(...rs);
@@ -151,10 +151,10 @@ function calculateBounds(puzzleData) {
  * Helper function to calculate the center of the cluster in pixel coordinates 
  * Updated to compute the centroid instead of the midpoint of bounds
  */
-function calculateCenter(puzzleData, layout) {
-  const total = puzzleData.length;
-  const sumQ = puzzleData.reduce((acc, h) => acc + h.q, 0);
-  const sumR = puzzleData.reduce((acc, h) => acc + h.r, 0);
+function calculateCenter(mapData, layout) {
+  const total = mapData.length;
+  const sumQ = mapData.reduce((acc, h) => acc + h.q, 0);
+  const sumR = mapData.reduce((acc, h) => acc + h.r, 0);
   const centerQ = sumQ / total;
   const centerR = sumR / total;
   return hexToPixel(centerQ, centerR, layout);
@@ -200,13 +200,13 @@ function isAdjacentToSelection(hexKey, selection) {
 /** 
  * Helper function to compute pixel bounds for dynamic sizing.
  */
-function computePixelBounds(puzzleData, layoutParamsBase) {
+function computePixelBounds(mapData, layoutParamsBase) {
   let minX = Infinity,
     maxX = -Infinity,
     minY = Infinity,
     maxY = -Infinity;
 
-  puzzleData.forEach((hex) => {
+  mapData.forEach((hex) => {
     const corners = getHexCorners(hex.q, hex.r, layoutParamsBase);
     corners.forEach((corner) => {
       if (corner.x < minX) minX = corner.x;
@@ -302,13 +302,37 @@ function removeHexAndSplit(selections, regionIndex, hexKey, hexStates) {
   }
 }
 
+/* ADDED: Helper function to determine outline color based on region's validity and majority color */
+function getSelectionOutlineColor(selection, groupSize, wantedColor) {
+  const cellCount = selection.cells.length;
+  if (cellCount !== groupSize) {
+    return "#FF1493"; // Pink for invalid group size
+  }
+
+  const wantedCount = selection[`count${wantedColor}`];
+  const otherColor = wantedColor === 0 ? 1 : 0;
+  const otherCount = selection[`count${otherColor}`];
+
+  if (wantedCount > otherCount) {
+    // Majority for wantedColor
+    return wantedColor === 1 ? "#00008B" : "#700000"; // Blue or Dark Red
+  } else {
+    // Majority for other color
+    return wantedColor === 1 ? "#700000" : "#00008B"; // Dark Red or Blue
+  }
+}
+
+/* CHANGED: Modified component to include undo functionality and dynamic outline coloring */
 export default function HexGridPuzzle({
-  puzzleData = [{ q: 0, r: 0, s: 0, color: 0 }],
+  mapData: mapData = [{ q: 0, r: 0, s: 0, color: 0 }],
+  colorToWin = 1,
+  regionSize = 3,
+  sizeMultiplier = 1.5,
   onPuzzleStateChange,
 }) {
   const [hexStates, setHexStates] = useState(() => {
     const st = {};
-    puzzleData.forEach((hx) => {
+    mapData.forEach((hx) => {
       st[hexKey(hx.q, hx.r, hx.s)] = hx.color;
     });
     return st;
@@ -323,28 +347,32 @@ export default function HexGridPuzzle({
   // Source region index if dragging from an existing region
   const [sourceRegionIndex, setSourceRegionIndex] = useState(-1);
 
+  /* ADDED: History state to keep track of all previous selections for undo */
+  const [history, setHistory] = useState([]);
+
+  // const sizeMultiplier = 1.5;
   // Base layout parameters
   const layoutParamsBase = {
-    size: { x: 24, y: 24 },
+    size: { x: 24 * sizeMultiplier, y: 24 * sizeMultiplier },
     flat: false,
     spacing: 1,
     origin: { x: 0, y: 0 }, // Fixed origin
   };
 
-  // 1) Immediately compute the initial bounds from puzzleData
-  const initialBounds = computePixelBounds(puzzleData, layoutParamsBase);
+  // 1) Immediately compute the initial bounds from mapData
+  const initialBounds = computePixelBounds(mapData, layoutParamsBase);
 
   // 2) Store them in state
   const [bounds, setBounds] = useState(initialBounds);
 
-  // 3) If puzzleData might change, keep the useEffect to recalc bounds
+  // 3) If mapData might change, keep the useEffect to recalc bounds
   useEffect(() => {
-    const computedBounds = computePixelBounds(puzzleData, layoutParamsBase);
+    const computedBounds = computePixelBounds(mapData, layoutParamsBase);
     setBounds(computedBounds);
-  }, [puzzleData]);
+  }, [mapData]);
 
   // Calculate the center of the cluster (not used to shift origin, but you could if desired)
-  const clusterCenter = calculateCenter(puzzleData, layoutParamsBase);
+  const clusterCenter = calculateCenter(mapData, layoutParamsBase);
 
   // Final layout parameters with fixed origin
   const layoutParams = {
@@ -376,31 +404,49 @@ export default function HexGridPuzzle({
   }, [selections, hexStates, onPuzzleStateChange]);
 
   useEffect(() => {
+    if (hasSolvedRef.current || !mapData || mapData.length === 0) return;
+    hasSolvedRef.current = true;
     // Define a function to solve the puzzle
     const solve = () => {
-      // Define groupSize and wantedColor as needed
-      const groupSize = 3; // or any other desired group size
-      const wantedColor = 1; // the color you want to have majority
-      const firstSol = false;
       console.log("🧩 Solving the puzzle...");
-      const solutions = solvePuzzle(puzzleData, groupSize, wantedColor, firstSol);
+      const solutions = solvePuzzle(mapData, colorToWin, regionSize, 6);
       console.log(`💡 Number of solutions found: ${solutions.length}`);
       if (solutions.length > 0) {
         console.log("✅ Applying the first solution:", solutions[0]);
-        setSelections(solutions[0]);
+        const firstSolution = solutions[0];
+        const regionObjects = firstSolution.map(region => buildRegionObject(region, hexStates));
+        setSelections(regionObjects);
       } else {
-        console.warn("⚠️ No valid solutions found.");
+        console.log("⚠️ No valid solutions found.");
       }
     };
-
-    // Call the solve function
     // solve();// Comment this line to disable auto-solving
-  }, [puzzleData]);
+  }, [mapData]);
+
+  /** Helper function to compare two sets for equality */
+  const areSetsEqual = (setA, setB) => {
+    if (setA.size !== setB.size) return false;
+    for (let item of setA) {
+      if (!setB.has(item)) return false;
+    }
+    return true;
+  };
+
+  /** ADDED: Refs to track initial hex and drag occurrence */
+  const initialHexRef = useRef(null);
+  const dragOccurredRef = useRef(false);
+  const hasSolvedRef = useRef(false);
 
   /** Updated onHexMouseDown to handle starting selection from existing region */
   function onHexMouseDown(q, r, s, e) {
     e.stopPropagation();
+    // Optionally prevent default if desired:
+    // e.preventDefault();
+
     const k = hexKey(q, r, s);
+    initialHexRef.current = k;
+    dragOccurredRef.current = false;
+
     const regionIndex = findRegionContaining(k, selections);
 
     if (regionIndex !== -1) {
@@ -421,6 +467,11 @@ export default function HexGridPuzzle({
     if (!isDragging) return;
     const k = hexKey(q, r, s);
 
+    // If the cursor enters a different hex than the initial one, mark as drag
+    if (initialHexRef.current && k !== initialHexRef.current) {
+      dragOccurredRef.current = true;
+    }
+
     // If already in active selection, do nothing
     if (activeSelection.has(k)) return;
 
@@ -439,9 +490,28 @@ export default function HexGridPuzzle({
     if (!isDragging) return;
     setIsDragging(false);
 
-    if (activeSelection.size === 0) return;
+    if (activeSelection.size === 0) {
+      // Reset refs
+      initialHexRef.current = null;
+      dragOccurredRef.current = false;
+      return;
+    }
 
-    // If dragging from an existing region, update that region
+    if (!dragOccurredRef.current) {
+      // It was a click
+      const [q, r, s] = initialHexRef.current.split(",").map(Number);
+      const k = hexKey(q, r, s);
+
+      // Find the region containing the clicked hex
+      const regionIndex = findRegionContaining(k, selections);
+      if (regionIndex !== -1) {
+        // Push current selections to history before making changes
+        setHistory((prevHistory) => [...prevHistory, selections]);
+
+        // Remove the hex and handle splitting
+        setSelections((prev) => removeHexAndSplit(prev, regionIndex, k, hexStates));
+      }
+    }
     if (sourceRegionIndex !== -1) {
       // Check for overlap with other regions
       const overlap = Array.from(activeSelection).some((ck) => {
@@ -453,23 +523,42 @@ export default function HexGridPuzzle({
         console.log("Selection overlaps an existing region!");
         setActiveSelection(new Set());
         setSourceRegionIndex(-1);
+        // Reset refs
+        initialHexRef.current = null;
+        dragOccurredRef.current = false;
         return;
       }
 
-      // Update the source region with the new selection
-      const updatedRegion = buildRegionObject(Array.from(activeSelection), hexStates);
-      setSelections((prev) => {
-        const newSelections = prev.slice();
-        newSelections[sourceRegionIndex] = updatedRegion;
-        return newSelections;
-      });
+      // Compare the new selection with the existing region
+      const existingRegion = selections[sourceRegionIndex];
+      const existingCellsSet = new Set(existingRegion.cells);
+      const isSame = areSetsEqual(existingCellsSet, activeSelection);
+
+      if (!isSame) {
+        // Push current selections to history before making changes
+        setHistory((prevHistory) => [...prevHistory, selections]);
+
+        // Update the source region with the new selection
+        const updatedRegion = buildRegionObject(Array.from(activeSelection), hexStates);
+        setSelections((prev) => {
+          const newSelections = prev.slice();
+          newSelections[sourceRegionIndex] = updatedRegion;
+          return newSelections;
+        });
+      }
     } else {
       // Starting a new selection, ensure no overlap
       if (checkOverlap(activeSelection, selections)) {
         console.log("Selection overlaps an existing region!");
         setActiveSelection(new Set());
+        // Reset refs
+        initialHexRef.current = null;
+        dragOccurredRef.current = false;
         return;
       }
+
+      // Push current selections to history before making changes
+      setHistory((prevHistory) => [...prevHistory, selections]);
 
       // Create a new region
       const arr = Array.from(activeSelection);
@@ -480,32 +569,15 @@ export default function HexGridPuzzle({
     // Reset active selection and source region
     setActiveSelection(new Set());
     setSourceRegionIndex(-1);
-  }
 
-  /** Updated onHexClick to remove hex from its region and handle splitting if necessary. */
-  function onHexClick(q, r, s, e) {
-    if (isDragging) return;
-    e.stopPropagation();
-    const k = hexKey(q, r, s);
-
-    // Find the region containing the clicked hex
-    const regionIndex = findRegionContaining(k, selections);
-    if (regionIndex !== -1) {
-      // Remove the hex and handle splitting
-      setSelections((prev) => removeHexAndSplit(prev, regionIndex, k, hexStates));
-      return;
-    }
-
-    // If not part of any region, toggle color
-    setHexStates((prev) => ({
-      ...prev,
-      [k]: prev[k] === 1 ? 0 : 1,
-    }));
+    // Reset refs
+    initialHexRef.current = null;
+    dragOccurredRef.current = false;
   }
 
   // Define stroke widths
-  const hexStrokeWidth = 2.4;
-  const selectionStrokeWidth = 3.6;
+  const hexStrokeWidth = 2.4 * sizeMultiplier;
+  const selectionStrokeWidth = 3.6 * sizeMultiplier;
 
   // Define the scaling factor
   const SCALE = 1000;
@@ -514,16 +586,23 @@ export default function HexGridPuzzle({
   const activeInset = -hexStrokeWidth * SCALE; // e.g., -1.2 * 1000 = -1200
   const selectionInset = -((hexStrokeWidth + selectionStrokeWidth) / 2) * SCALE; // e.g., -1.8 * 1000 = -1800
 
-  // Compute outlines using clipper-based union + inset
+  /* ADDED: Compute active selection paths */
   const activePaths = computeInsetOutline(
     Array.from(activeSelection),
     layoutParamsBase,
     activeInset
   );
 
-  // For each finalized selection, also compute the union + inset
-  const selectionPaths = selections.map((sel) =>
-    computeInsetOutline(sel.cells, layoutParamsBase, selectionInset)
+  /* Compute selection data with paths and their respective outline colors */
+  const selectionData = selections.map((sel) => {
+    const paths = computeInsetOutline(sel.cells, layoutParamsBase, selectionInset);
+    const color = getSelectionOutlineColor(sel, regionSize, colorToWin);
+    return { paths, color };
+  });
+  
+  const clusterOutlinePaths = computeInsetOutline(
+    mapData.map(hex => hexKey(hex.q, hex.r, hex.s)),
+    layoutParamsBase, -selectionInset
   );
 
   // Handler for keydown events
@@ -541,12 +620,16 @@ export default function HexGridPuzzle({
 
       if (event.key === "z" || event.key === "Z") {
         event.preventDefault();
-        setSelections((prevSelections) => {
-          if (prevSelections.length === 0) return prevSelections;
-          return prevSelections.slice(0, -1);
+        setHistory((prevHistory) => {
+          if (prevHistory.length === 0) return prevHistory;
+          const lastState = prevHistory[prevHistory.length - 1];
+          setSelections(lastState);
+          return prevHistory.slice(0, -1);
         });
       } else if (event.key === "r" || event.key === "R") {
         event.preventDefault();
+        // Push current selections to history before resetting
+        setHistory((prevHistory) => [...prevHistory, selections]);
         setSelections([]);
       }
     }
@@ -556,7 +639,7 @@ export default function HexGridPuzzle({
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [selections]);
 
   // Calculate dynamic width and height based on bounds
   const { minX, maxX, minY, maxY } = bounds;
@@ -585,7 +668,7 @@ export default function HexGridPuzzle({
     <div style={{ display: "inline-block" }}>
       <HexGrid width={widthPx} height={heightPx} viewBox={viewBox}>
         <Layout {...layoutParams}>
-          {puzzleData.map((hex) => {
+          {mapData.map((hex) => {
             const k = hexKey(hex.q, hex.r, hex.s);
             const fillColor = colorToHex(hexStates[k]);
             return (
@@ -596,17 +679,31 @@ export default function HexGridPuzzle({
                 s={hex.s}
                 onMouseDown={(e) => onHexMouseDown(hex.q, hex.r, hex.s, e)}
                 onMouseEnter={() => onHexEnter(hex.q, hex.r, hex.s)}
-                onClick={(e) => onHexClick(hex.q, hex.r, hex.s, e)}
                 style={{
                   fill: fillColor,
                   stroke: "#fff",
                   strokeWidth: hexStrokeWidth,
                   cursor: "pointer",
-                }}
-              />
+                }} >
+                {/* <text
+                  textAnchor="middle"
+                  dominantBaseline="central"
+                  fontSize="15"
+                  fontFamily="'Press Start 2P', sans-serif" // Blocky font
+                  stroke="none"
+                  fill="#fff"
+                  fontWeight="900"
+                  style={{
+                    pointerEvents: "none",
+                    userSelect: "none",
+                  }} >
+                  {hex.q + ',' + hex.r + ',' + hex.s}
+                </text> */}
+              </Hexagon>
             );
           })}
         </Layout>
+        
 
         {/* In-progress (active) selection outline */}
         {activePaths.map((d, idx) => (
@@ -614,23 +711,34 @@ export default function HexGridPuzzle({
             key={`active-${idx}`}
             d={d}
             fill="none"
-            stroke="#00008B"//#8B0000 //#7e191b 
+            stroke="#00008B" // Default color for active selection
             strokeWidth={hexStrokeWidth}
           />
         ))}
 
         {/* Final selection outlines */}
-        {selectionPaths.map((paths, selIdx) =>
-          paths.map((d, i) => (
+        {selectionData.map((selData, selIdx) =>
+          selData.paths.map((d, i) => (
             <path
               key={`sel-${selIdx}-${i}`}
               d={d}
               fill="none"
-              stroke="#00008B" //00008B //#FF1493 //#700000
+              stroke={selData.color} // Dynamic color based on region validity and majority
               strokeWidth={selectionStrokeWidth}
             />
           ))
         )}
+
+        {/* Cluster outline around all hexes */}
+        {clusterOutlinePaths.map((d, idx) => (
+          <path
+            key={`cluster-outline-${idx}`}
+            d={d}
+            fill="none"
+            stroke="#ffdf88"
+            strokeWidth={selectionStrokeWidth}
+          />
+        ))}
       </HexGrid>
     </div>
   );

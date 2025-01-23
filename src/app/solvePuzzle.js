@@ -1,329 +1,505 @@
 // solvePuzzle.js
-
 /**
- * Solve a "gerrymandering hex puzzle" by partitioning all cells into
- * connected groups of size `groupSize`. A group is considered a "win"
- * for the wanted color only if wantedColorCount > otherColorCount.
- * The final partition must have strictly more "win" groups for wantedColor
- * than "win" groups for the other color.
- *
- * @param {Array} puzzleData - array of { q, r, s, color }
- * @param {number} groupSize - number of cells per group (e.g., 7)
- * @param {number} wantedColor - the color to have majority in groups (0 or 1)
- * @param {boolean} returnAfterFirst - if true, return after finding the first valid solution
- * @returns {Array<Array<Group>>} Array of solutions; each solution is an array of group objects:
+ * Gerrymandering Puzzle Solver in JavaScript.
+ * 
+ * @param {Array} mapData - array of { q, r, s, color }
+ * @param {number} regionSize - number of hexes per region (e.g., 7)
+ * @param {number} colorToWin - the color to have majority in groups (0 or 1)
+ * @param {number} max_solutions - number of solutions before returning
+ * @returns {Array<Array<Array<string>>>} Array of solutions;
+ *    each solution is an array of regions, and each region is an array of hexKeys (e.g. "q,r,s").
+ * 
+ * Example return structure:
+ * [
  *   [
- *     { cells: [key, key, ...], countWanted: X, countOther: Y },
- *     { ... },
+ *     ["0,0,0", "1,0,-1", "0,1,-1"],  // Region #1
+ *     ["-1,0,1", "0,-1,1", "1,-1,0"], // Region #2
  *     ...
- *   ]
+ *   ],
+ *   [
+ *     ...
+ *   ],
+ *   ...
+ * ]
  */
-export default function solvePuzzle(puzzleData, groupSize = 7, wantedColor = 1, returnAfterFirst = false) {
-  // console.log("=== Starting Puzzle Solver ===");
-  // console.log(`Total cells: ${puzzleData.length}`);
-  // console.log(`Group size: ${groupSize}`);
-  // console.log(`Wanted color: ${wantedColor}`);
-  // console.log(`Return after first solution: ${returnAfterFirst}`);
-  
-  // Quick check: if total cells is not a multiple of groupSize, no solution possible.
-  if (puzzleData.length % groupSize !== 0) {
-    // console.warn(
-    //   `❌ Total cells (${puzzleData.length}) is not divisible by group size (${groupSize}). No solutions possible.`
-    // );
-    return [];
+export default function solvePuzzle(mapData, colorToWin = 1, regionSize = 7, max_solutions = 5) {
+  // Build a dict of hexKey -> color
+  // hexKey is a string "q,r,s"
+  // console.log(mapData, colorToWin, regionSize, max_solutions)
+  const hexes = {};
+  for (const cell of mapData) {
+    const { q, r, s, color } = cell;
+    const key = `${q},${r},${s}`;
+    hexes[key] = color;
   }
 
-  // 1) Build adjacency map and store color
-  const hexMap = buildHexMap(puzzleData);
-  // console.log("✅ Built hex map with adjacency information.");
+  // The six neighbors in cubic coords around (q, r, s)
+  const neighborDirs = [
+    [1, -1, 0],
+    [1, 0, -1],
+    [0, 1, -1],
+    [-1, 1, 0],
+    [-1, 0, 1],
+    [0, -1, 1],
+  ];
 
-  // 2) All cell keys start as unused
-  const allCellKeys = Object.keys(hexMap).sort(); // Sort for consistent ordering
-  const unusedCells = new Set(allCellKeys);
-  // console.log(`🔓 Initialized unused cells: ${unusedCells.size} cells.`);
+  // Precompute adjacency
+  const adjacency = {};
+  const allKeys = Object.keys(hexes);
 
-  // 3) We'll collect all valid partitions here
-  const validSolutions = [];
-  const seenSolutions = new Set(); // To track unique solutions
-
-  // 4) Context object to manage early exit
-  const context = {
-    found: false,      // Indicates if a desired solution has been found
-    solution: null,    // Stores the first found solution if returnAfterFirst is true
-  };
-
-  // 5) Use backtracking to cover all cells
-  const currentPartition = []; // an array of group objects
-  backtrackPartition(
-    hexMap,
-    unusedCells,
-    groupSize,
-    currentPartition,
-    validSolutions,
-    seenSolutions,
-    wantedColor,
-    context,
-    returnAfterFirst
-  );
-
-  // console.log(`🔍 Backtracking complete. Found ${validSolutions.length} valid solutions.`);
-
-  // console.log("=== Puzzle Solver Finished ===");
-  return validSolutions;
-}
-
-/**
- * Build adjacency: cellKey -> { color, neighbors: Set<cellKey> }.
- * Each puzzleData entry has .q, .r, .s, .color.
- * Hex adjacency (pointy-top) for (q,r,s) includes:
- *   (q+1, r-1, s), (q+1, r, s-1), (q, r+1, s-1)
- *   (q-1, r+1, s), (q-1, r, s+1), (q, r-1, s+1)
- */
-function buildHexMap(puzzleData) {
-  const hexMap = {};
-  // Insert all cells into a map
-  puzzleData.forEach((h) => {
-    const k = keyOf(h.q, h.r, h.s);
-    hexMap[k] = {
-      color: h.color,
-      neighbors: new Set(),
-    };
-  });
-
-  // For each cell, find neighbors
-  puzzleData.forEach((h) => {
-    const k = keyOf(h.q, h.r, h.s);
-    const potentialNeighbors = [
-      [h.q + 1, h.r - 1, h.s],
-      [h.q + 1, h.r, h.s - 1],
-      [h.q, h.r + 1, h.s - 1],
-      [h.q - 1, h.r + 1, h.s],
-      [h.q - 1, h.r, h.s + 1],
-      [h.q, h.r - 1, h.s + 1],
-    ];
-    potentialNeighbors.forEach(([qq, rr, ss]) => {
-      const nk = keyOf(qq, rr, ss);
-      if (nk in hexMap) {
-        hexMap[k].neighbors.add(nk);
+  function getNeighbors(key) {
+    const [q, r, s] = key.split(',').map(Number);
+    const results = [];
+    for (const [dq, dr, ds] of neighborDirs) {
+      const nq = q + dq;
+      const nr = r + dr;
+      const ns = s + ds;
+      const neighborKey = `${nq},${nr},${ns}`;
+      if (hexes.hasOwnProperty(neighborKey)) {
+        results.push(neighborKey);
       }
-    });
-  });
-
-  return hexMap;
-}
-
-function keyOf(q, r, s) {
-  return `${q},${r},${s}`;
-}
-
-/**
- * Recursive backtracking to partition cells into connected groups.
- *
- * @param {Object} hexMap - cellKey -> { color, neighbors: Set<cellKey> }
- * @param {Set<string>} unusedCells - set of cellKeys not yet assigned to any group
- * @param {number} groupSize - desired size of each group
- * @param {Array} currentPartition - current list of groups
- * @param {Array} validSolutions - collector for all valid partitions
- * @param {Set<string>} seenSolutions - Set to track unique solutions
- * @param {number} wantedColor - the color we want to have majority in groups
- * @param {Object} context - object to manage early exit
- * @param {boolean} returnAfterFirst - flag to indicate if the solver should stop after finding the first solution
- */
-function backtrackPartition(
-  hexMap,
-  unusedCells,
-  groupSize,
-  currentPartition,
-  validSolutions,
-  seenSolutions,
-  wantedColor,
-  context,
-  returnAfterFirst
-) {
-  // Early exit if a desired solution has been found
-  if (context.found) {
-    return;
+    }
+    return results;
   }
 
-  // Base case: if no unused cells remain, we have a complete partition
-  if (unusedCells.size === 0) {
-    // Evaluate if the current partition meets the winning condition
-    let wantedMajorityCount = 0;
-    let otherMajorityCount = 0;
-    currentPartition.forEach((grp) => {
-      if (grp.countWanted > grp.countOther) wantedMajorityCount++;
-      else if (grp.countOther > grp.countWanted) otherMajorityCount++;
-      // ties are ignored
-    });
+  for (const k of allKeys) {
+    adjacency[k] = getNeighbors(k);
+  }
 
-    if (wantedMajorityCount > otherMajorityCount) {
-      // Create a canonical string representation of the solution
-      // 1. Sort the cells within each group
-      const sortedGroups = currentPartition.map(grp => ({
-        cells: [...grp.cells].sort(),
-        countWanted: grp.countWanted,
-        countOther: grp.countOther,
-      }));
+  // Basic puzzle parameters
+  const totalHexCount = allKeys.length;
+  const totalRegions = Math.floor(totalHexCount / regionSize); // should be an integer if puzzle is valid
+  const neededToWinMajority = Math.floor(totalRegions / 2) + 1; // #winning regions needed for majority
 
-      // 2. Sort the groups based on the first cell key
-      sortedGroups.sort((a, b) => {
-        const aFirst = a.cells[0];
-        const bFirst = b.cells[0];
-        return aFirst.localeCompare(bFirst);
-      });
+  // Keep track of solutions found
+  // We'll store each solution in a canonical form (string) in solutionsSet for uniqueness
+  const solutionsFound = [];
+  const solutionsSet = new Set(); 
 
-      // 3. Convert the sorted groups to a string
-      const solutionString = JSON.stringify(sortedGroups.map(grp => grp.cells));
+  // Keep track of tested region combos to prune duplicates
+  const testedRegionCombos = new Set();
 
-      // 4. Check if this solution has already been seen
-      if (!seenSolutions.has(solutionString)) {
-        seenSolutions.add(solutionString);
-        validSolutions.push(sortedGroups);
-        // console.log(`🎉 Valid solution #${validSolutions.length} found.`);
+  // -----------
+  // HELPER FUNCS
+  // -----------
 
-        // If only the first solution is needed, set the found flag and store the solution
-        if (returnAfterFirst) {
-          context.found = true;
-          context.solution = sortedGroups;
+  // Returns true if regionSet is contiguous (connected)
+  // (In this puzzle code, we typically rely on contiguous sets,
+  //  but we also do direct BFS expansions, so an explicit check
+  //  is sometimes omitted. Provided here for reference.)
+  function checkContiguousRegion(regionSet) {
+    if (!regionSet.size) return false;
+
+    const regionArr = [...regionSet];
+    const start = regionArr[0];
+    const visited = new Set([start]);
+    const queue = [start];
+
+    while (queue.length > 0) {
+      const curr = queue.shift();
+      for (const nbr of adjacency[curr]) {
+        if (regionSet.has(nbr) && !visited.has(nbr)) {
+          visited.add(nbr);
+          queue.push(nbr);
         }
       }
     }
-    return;
+
+    return visited.size === regionSet.size;
   }
 
-  // Pick the first unused cell as the starting point (sorted order)
-  const startCell = Array.from(unusedCells).sort()[0];
-  // console.log(`🔍 Attempting to create a group starting with cell: ${startCell}`);
-
-  // Find all connected subsets of size groupSize that include startCell
-  const possibleGroups = findConnectedSubsetsOfSize(
-    startCell,
-    groupSize,
-    hexMap,
-    unusedCells
-  );
-
-  // console.log(`📚 Found ${possibleGroups.length} possible groups starting with ${startCell}.`);
-
-  if (possibleGroups.length === 0) {
-    // console.warn(`⚠️ No possible groups found starting with ${startCell}. Backtracking.`);
-    return; // Dead end, backtrack
+  // Returns true if 'colorVal' has a strict majority in regionSet
+  function majorityCountInRegion(regionSet, colorVal) {
+    let colorCount = 0;
+    for (const h of regionSet) {
+      if (hexes[h] === colorVal) {
+        colorCount += 1;
+      }
+    }
+    return colorCount > (regionSet.size - colorCount);
   }
 
-  // Iterate over each possible group
-  for (let groupSet of possibleGroups) {
-    // console.log(`➡️ Trying group with cells: ${Array.from(groupSet).join(", ")}`);
+  // Check if remainingHexes can be partitioned into connected blocks each of size `regionSize`.
+  // This is a quick BFS check for each connected component: its size must be a multiple of regionSize.
+  function canSplitIntoRegionsOfSize(remainingHexes, size) {
+    const visited = new Set();
+    for (const cell of remainingHexes) {
+      if (!visited.has(cell)) {
+        // BFS to get the connected component
+        const queue = [cell];
+        const comp = new Set([cell]);
+        visited.add(cell);
 
-    // Count colors in the group
-    let countWanted = 0;
-    let countOther = 0;
-    groupSet.forEach((ck) => {
-      if (hexMap[ck].color === wantedColor) countWanted++;
-      else countOther++;
+        while (queue.length > 0) {
+          const cur = queue.shift();
+          for (const nbr of adjacency[cur]) {
+            if (remainingHexes.has(nbr) && !visited.has(nbr)) {
+              visited.add(nbr);
+              comp.add(nbr);
+              queue.push(nbr);
+            }
+          }
+        }
+
+        if (comp.size % size !== 0) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  // How many more winning regions do we need?
+  function neededWinsSoFar(regionsWon, totalNeeded) {
+    return totalNeeded - regionsWon;
+  }
+
+  // The maximum number of winning regions colorVal can still form,
+  // based on how many colorVal cells remain.
+  function maxPossibleWins(remainingHexes, colorVal, size) {
+    let colorCountLeft = 0;
+    for (const h of remainingHexes) {
+      if (hexes[h] === colorVal) {
+        colorCountLeft += 1;
+      }
+    }
+    // For region_size N, we need more than N/2 of colorVal => at least floor(N/2) + 1
+    const neededPerRegion = Math.floor(size / 2) + 1;
+    return Math.floor(colorCountLeft / neededPerRegion);
+  }
+
+  // Create a stable "canonical" representation of a list of region sets
+  // so we can store it in a Set for uniqueness.
+  function canonicalSolution(regions) {
+    // Each region is a Set of keys
+    // Convert each region to a sorted array, then sort those arrays, then JSON.stringify.
+    const regionArrays = regions.map((regionSet) => {
+      const arr = Array.from(regionSet).sort();
+      return arr;
+    });
+    // Sort the region arrays themselves in a stable manner
+    regionArrays.sort((a, b) => {
+      // compare by string or length first
+      const aStr = a.join('|');
+      const bStr = b.join('|');
+      if (aStr < bStr) return -1;
+      if (aStr > bStr) return 1;
+      return 0;
     });
 
-    // console.log(`🎨 Group color counts - Wanted (${wantedColor}): ${countWanted}, Other: ${countOther}`);
+    return JSON.stringify(regionArrays);
+  }
 
-    // Create group object
-    const groupObj = {
-      cells: Array.from(groupSet),
-      countWanted,
-      countOther,
-    };
+  // -----------
+  // RECURSION
+  // -----------
 
-    // Assign group: remove cells from unused and add to current partition
-    groupSet.forEach((ck) => unusedCells.delete(ck));
-    currentPartition.push(groupObj);
-    // console.log(`📦 Assigned group. Remaining unused cells: ${unusedCells.size}`);
-
-    // Recurse
-    backtrackPartition(
-      hexMap,
-      unusedCells,
-      groupSize,
-      currentPartition,
-      validSolutions,
-      seenSolutions,
-      wantedColor,
-      context,
-      returnAfterFirst
-    );
-
-    // If a solution has been found and we are returning after first, exit early
-    if (context.found) {
+  // Main backtracking function
+  function backtrack(currentRegions, remainingHexes, winsSoFar) {
+    // If no remaining hexes, we've formed a complete partition
+    if (remainingHexes.size === 0) {
+      // Check if colorToWin has majority
+      if (winsSoFar > (totalRegions - winsSoFar)) {
+        // Construct a canonical solution
+        const solKey = canonicalSolution(currentRegions);
+        if (!solutionsSet.has(solKey)) {
+          solutionsSet.add(solKey);
+          // Make a copy of currentRegions to store in solutionsFound
+          solutionsFound.push([...currentRegions]);
+        }
+      }
       return;
     }
 
-    // Backtrack: remove group and re-add cells to unused
-    currentPartition.pop();
-    groupSet.forEach((ck) => unusedCells.add(ck));
-    // console.log(`↩️ Backtracked from group. Restored unused cells: ${unusedCells.size}`);
-  }
-}
-
-/**
- * Find all connected subsets of size `groupSize` that include `startKey`,
- * restricted to cells in `unusedCells`.
- *
- * @param {string} startKey - the starting cell key
- * @param {number} groupSize - desired size of the group
- * @param {Object} hexMap - cellKey -> { color, neighbors: Set<cellKey> }
- * @param {Set<string>} unusedCells - set of cellKeys not yet assigned to any group
- * @returns {Array<Set<string>>} Array of sets, each representing a possible group
- */
-function findConnectedSubsetsOfSize(startKey, groupSize, hexMap, unusedCells) {
-  const results = [];
-  const stack = [
-    {
-      set: new Set([startKey]),
-      frontier: Array.from(hexMap[startKey].neighbors).filter((n) =>
-        unusedCells.has(n)
-      ),
-    },
-  ];
-
-  while (stack.length > 0) {
-    const { set: currentSet, frontier } = stack.pop();
-
-    // If we've reached the desired group size, add to results
-    if (currentSet.size === groupSize) {
-      results.push(currentSet);
-      continue;
+    // If we've already found enough solutions, stop.
+    if (solutionsFound.length >= max_solutions) {
+      return;
     }
 
-    // Iterate over the frontier to expand the current set
-    for (let i = 0; i < frontier.length; i++) {
-      const nbr = frontier[i];
-      if (currentSet.has(nbr)) continue;
+    const regionsFormed = currentRegions.length;
+    const regionsLeftToForm = totalRegions - regionsFormed;
+    const neededWins = neededWinsSoFar(winsSoFar, neededToWinMajority);
 
-      // Create a new set including the neighbor
-      const newSet = new Set(currentSet);
-      newSet.add(nbr);
+    // Prune if not enough color cells left to form the needed winning regions
+    if (maxPossibleWins(remainingHexes, colorToWin, regionSize) < neededWins) {
+      // console.log("Pruning: Not enough color left to form needed winning regions.");
+      return;
+    }
 
-      // Create a new frontier: remaining cells after the current neighbor to avoid duplicates
-      const newFrontier = frontier.slice(i + 1).filter(
-        (f) => unusedCells.has(f) && !newSet.has(f)
+    // Prune if leftover can't be split into regionSize blocks
+    if (!canSplitIntoRegionsOfSize(remainingHexes, regionSize)) {
+      // console.log("Pruning: leftover hexes can't be split into region_size blocks.");
+      return;
+    }
+
+    // If we already have more than half the regions (majority),
+    // just fill out the rest with any valid partition.
+    if (winsSoFar > Math.floor(totalRegions / 2)) {
+      fillAllPossibleRegions(currentRegions, remainingHexes, winsSoFar);
+      return;
+    }
+
+    // Otherwise, we still need more winning regions.
+    // Gather all colorToWin hexes from remaining
+    const colorToWinCells = [];
+    for (const h of remainingHexes) {
+      if (hexes[h] === colorToWin) colorToWinCells.push(h);
+    }
+    if (colorToWinCells.length === 0) {
+      // No more colorToWin cells left => can't form a new winning region
+      return;
+    }
+
+    // Sort so we pick them in a consistent order
+    colorToWinCells.sort();
+
+    // Puzzle logic: try each colorToWin cell as a start cell for a winning region
+    for (const startCell of colorToWinCells) {
+      // All possible winning regions (connected sets of regionSize) that include startCell
+      const possibleWinningRegions = generateWinningRegionsFromCell(
+        startCell,
+        remainingHexes,
+        colorToWin,
+        regionSize
       );
 
-      // Add new neighbors from the added cell
-      hexMap[nbr].neighbors.forEach((nn) => {
-        if (
-          unusedCells.has(nn) &&
-          !newSet.has(nn) &&
-          !newFrontier.includes(nn)
-        ) {
-          newFrontier.push(nn);
-        }
-      });
+      if (possibleWinningRegions.length === 0) {
+        // Exclude this cell from future tries (remove from remainingHexes) and recurse
+        const newRemaining = new Set(remainingHexes);
+        newRemaining.delete(startCell);
+        backtrack(currentRegions, newRemaining, winsSoFar);
+        // After doing that exclusion, return (following the puzzle's logic)
+        return;
+      } else {
+        // If multiple, sort by ascending number of colorToWin cells used
+        possibleWinningRegions.sort((a, b) => {
+          // count colorToWin cells in each
+          let aCount = 0;
+          for (const x of a) if (hexes[x] === colorToWin) aCount++;
+          let bCount = 0;
+          for (const x of b) if (hexes[x] === colorToWin) bCount++;
+          return aCount - bCount;
+        });
 
-      // Push the new state onto the stack
-      stack.push({
-        set: newSet,
-        frontier: newFrontier,
-      });
+        // Try each possible winning region with startCell
+        for (const region of possibleWinningRegions) {
+          // region is a Set of keys
+          const tentativeRegions = [...currentRegions, region];
+          const comboKey = canonicalSolution(tentativeRegions);
+
+          if (testedRegionCombos.has(comboKey)) {
+            continue; // skip repeated combos
+          }
+          testedRegionCombos.add(comboKey);
+
+          // Remove region from leftover
+          const newRemaining = new Set(remainingHexes);
+          for (const c of region) {
+            newRemaining.delete(c);
+          }
+
+          // Double-check leftover can still form valid blocks
+          if (!canSplitIntoRegionsOfSize(newRemaining, regionSize)) {
+            continue;
+          }
+
+          // Recurse
+          currentRegions.push(region);
+          backtrack(currentRegions, newRemaining, winsSoFar + 1);
+          currentRegions.pop();
+
+          if (solutionsFound.length >= max_solutions) {
+            return;
+          }
+        }
+
+        // After trying all winning regions from startCell, return (puzzle logic)
+        return;
+      }
     }
   }
 
-  // console.log(`📈 Connected subsets found: ${results.length}`);
-  return results;
+  // Once colorToWin already secured majority, fill out the rest with any valid partition
+  function fillAllPossibleRegions(currentRegions, remainingHexes, winsSoFar) {
+    if (remainingHexes.size === 0) {
+      // Check final majority
+      if (winsSoFar > (totalRegions - winsSoFar)) {
+        const solKey = canonicalSolution(currentRegions);
+        if (!solutionsSet.has(solKey)) {
+          solutionsSet.add(solKey);
+          solutionsFound.push([...currentRegions]);
+        }
+      }
+      return;
+    }
+
+    if (solutionsFound.length >= max_solutions) {
+      return;
+    }
+
+    if (!canSplitIntoRegionsOfSize(remainingHexes, regionSize)) {
+      return;
+    }
+
+    // Pick one cell to start a region
+    const sortedRemaining = Array.from(remainingHexes).sort();
+    const startCell = sortedRemaining[0];
+
+    // Generate all possible contiguous regions of size regionSize that include startCell
+    const possibleRegions = generateAllRegionsFromCell(startCell, remainingHexes, regionSize);
+
+    for (const region of possibleRegions) {
+      const newRemaining = new Set(remainingHexes);
+      for (const c of region) {
+        newRemaining.delete(c);
+      }
+      if (!canSplitIntoRegionsOfSize(newRemaining, regionSize)) {
+        continue;
+      }
+
+      currentRegions.push(region);
+      fillAllPossibleRegions(currentRegions, newRemaining, winsSoFar);
+      currentRegions.pop();
+
+      if (solutionsFound.length >= max_solutions) {
+        return;
+      }
+    }
+  }
+
+  // Generate all contiguous sets of exactly `size` that include `startHex`,
+  // are within `availableHexes`, and have a strict majority for `colorVal`.
+  function generateWinningRegionsFromCell(startHex, availableHexes, colorVal, size) {
+    const allRegions = new Set();
+    // We'll do a DFS-like approach: expand sets up to size
+    const stack = [[new Set([startHex])]]; // not strictly needing the array wrapper, but we'll be consistent
+
+    // For de-duplicating partial expansions
+    const visitedPaths = new Set();
+    visitedPaths.add(JSON.stringify([startHex]));
+
+    // We'll store expansions in "currentSet"
+    while (stack.length > 0) {
+      const [currentSet] = stack.pop();
+
+      if (currentSet.size === size) {
+        // Check majority
+        if (majorityCountInRegion(currentSet, colorVal)) {
+          // Convert to stable set-of-strings
+          allRegions.add(canonicalRegionSet(currentSet));
+        }
+        continue;
+      }
+
+      // Expand from neighbors of all cells in currentSet
+      const neighbors = new Set();
+      for (const cell of currentSet) {
+        for (const nbr of adjacency[cell]) {
+          if (availableHexes.has(nbr) && !currentSet.has(nbr)) {
+            neighbors.add(nbr);
+          }
+        }
+      }
+
+      for (const nbr of neighbors) {
+        const newSet = new Set(currentSet);
+        newSet.add(nbr);
+        const pathKey = canonicalRegionSet(newSet);
+        if (!visitedPaths.has(pathKey)) {
+          visitedPaths.add(pathKey);
+          stack.push([newSet]);
+        }
+      }
+    }
+
+    // Convert each canonical form back into a real Set
+    const results = [];
+    for (const regionStr of allRegions) {
+      results.push(new Set(JSON.parse(regionStr)));
+    }
+    return results;
+  }
+
+  // Generate all contiguous sets of exactly `size` that include `startHex`
+  // and are within `availableHexes` (no majority requirement).
+  function generateAllRegionsFromCell(startHex, availableHexes, size) {
+    if (size > availableHexes.size) {
+      return [];
+    }
+
+    const allRegions = new Set();
+    const initial = new Set([startHex]);
+    const stack = [initial];
+    const visitedPartial = new Set();
+    visitedPartial.add(canonicalRegionSet(initial));
+
+    while (stack.length > 0) {
+      const currentSet = stack.pop();
+
+      if (currentSet.size === size) {
+        allRegions.add(canonicalRegionSet(currentSet));
+        continue;
+      }
+
+      // Expand from neighbors of all cells in currentSet
+      const neighbors = new Set();
+      for (const cell of currentSet) {
+        for (const nbr of adjacency[cell]) {
+          if (availableHexes.has(nbr) && !currentSet.has(nbr)) {
+            neighbors.add(nbr);
+          }
+        }
+      }
+
+      for (const nbr of neighbors) {
+        const newSet = new Set(currentSet);
+        newSet.add(nbr);
+        const newSetKey = canonicalRegionSet(newSet);
+        if (!visitedPartial.has(newSetKey)) {
+          visitedPartial.add(newSetKey);
+          stack.push(newSet);
+        }
+      }
+    }
+
+    // Convert each canonical form back into real Set
+    const results = [];
+    for (const regionStr of allRegions) {
+      results.push(new Set(JSON.parse(regionStr)));
+    }
+    return results;
+  }
+
+  // Helper to create a canonical string for a Set of hexKeys
+  function canonicalRegionSet(aSet) {
+    // Sort the keys and JSON.stringify
+    const arr = Array.from(aSet).sort();
+    return JSON.stringify(arr);
+  }
+
+  // -----------
+  // RUN SOLVER
+  // -----------
+  backtrack([], new Set(allKeys), 0);
+
+  // Format final solutions in the desired structure:
+  // Each solution is an array of arrays of hexKeys (strings)
+  const finalSolutions = solutionsFound.map((sol) => {
+    // sol is an array of Sets
+    // convert each region to a sorted array
+    const regionArrays = sol.map((regionSet) => {
+      return Array.from(regionSet).sort();
+    });
+    // sort the region arrays themselves to have a stable output
+    regionArrays.sort((a, b) => {
+      const aStr = a.join('|');
+      const bStr = b.join('|');
+      if (aStr < bStr) return -1;
+      if (aStr > bStr) return 1;
+      return 0;
+    });
+    return regionArrays;
+  });
+
+  return finalSolutions;
 }

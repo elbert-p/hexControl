@@ -3,10 +3,11 @@
 import React, { useState, useEffect } from "react";
 import HexPuzzleWrapper from "../components/HexPuzzleWrapper";
 import { GridGenerator } from "react-hexgrid";
+import PuzzleSelectPage from "./puzzle-select/page";
 
 export default function HomePage() {
   // Example puzzle data
-  const puzzleData = [
+  const mapData = [
     { q: 0, r: 0, s: 0, color: 1 },   // 1 => #eee
     { q: 1, r: 0, s: -1, color: 1 },  // 0 => #88f
     { q: 0, r: 1, s: -1, color: 0 },
@@ -19,29 +20,30 @@ export default function HomePage() {
     { q: -2, r: 1, s: 1, color: 1 },
   ];
 
-  const puzzleData2 = GridGenerator.rectangle(7, 5).map((hex, idx) => ({
+  const mapData2 = GridGenerator.rectangle(7, 5).map((hex, idx) => ({
     q: hex.q,
     r: hex.r,
     s: hex.s,
     color: idx % 2, // alternate color 0/1
   }));
   
-  // const puzzleData3 = GridGenerator.rectangle(5, 4).map((hex, idx) => ({
+  // const mapData3 = GridGenerator.rectangle(5, 4).map((hex, idx) => ({
   //   q: hex.q,
   //   r: hex.r,
   //   s: hex.s,
   //   color: Math.random() > 0.6 ? 1 : 0, // random color 0/1
   // }));
-//      puzzleData={puzzleData3}
+//      mapData={mapData3}
 
   return (
-    <main style={{ display: 'flex', justifyContent: 'center', alignItems: "center", height: "100vh", backgroundColor: "#c6e2e9",
-    }}>
-      <HexPuzzleWrapper
-        puzzleData={puzzleData}
-        colorToWin={1}
-        regionSize={3}
-      />
-    </main>
+    // <main style={{ display: 'flex', justifyContent: 'center', alignItems: "center", height: "100vh", backgroundColor: "#c6e2e9",
+    // }}>
+    //   <HexPuzzleWrapper
+    //     mapData={mapData}
+    //     colorToWin={1}
+    //     regionSize={3}
+    //   />
+    // </main>
+    <PuzzleSelectPage />
   );
 }
