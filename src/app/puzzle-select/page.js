@@ -157,7 +157,6 @@ function HexGridSelector({ puzzles, completedPuzzles }) {
   // Refs to track initial hex and drag state
   const initialHexRef = useRef(null);
   const dragOccurredRef = useRef(false);
-  const isCursorOverHexRef = useRef(false);
 
   // 1. Convert completed puzzle IDs to their corresponding hex keys
   const completedHexKeys = completedPuzzles
@@ -180,8 +179,7 @@ function HexGridSelector({ puzzles, completedPuzzles }) {
   });
 
   const [isDragging, setIsDragging] = useState(false);
-  const [activeSelection, setActiveSelection] = useState(new Set());
-    const [isCursorOverHex, setIsCursorOverHex] = useState(false);
+  const [activeSelection, setActiveSelection] = useState(new Set([]));
 
   // Define layout parameters
   const layoutParams = {
@@ -201,8 +199,10 @@ function HexGridSelector({ puzzles, completedPuzzles }) {
   // Define stroke widths and insets to match HexGridPuzzle component
   const hexStrokeWidth = 2.4 * 1.5;
   const selectionStrokeWidth = 3.6 * 1.5;
+  const activeSelectionStrokeWidth = 4.2 * 1.5;
   const SCALE = 1000;
-  const activeInset = -hexStrokeWidth * SCALE;
+  const activeInset = -((hexStrokeWidth + activeSelectionStrokeWidth) / 2) * SCALE;
+  const outline = hexStrokeWidth * SCALE;
   const regionInset = -((hexStrokeWidth + selectionStrokeWidth) / 2) * SCALE;
 
   /** Handle mouse down on a hex */
@@ -214,28 +214,22 @@ function onHexMouseDown(q, r, s, e) {
 
   if (selectedCells.has(k)) {
     setIsDragging(true);
-    setActiveSelection(new Set(selectedCells));
+    setActiveSelection(new Set([k]));
   } else {
     // Check if the clicked cell is a neighbor to any selected cell
     const neighbors = getNeighborKeys(q, r, s);
     const isNeighbor = neighbors.some((neighbor) => selectedCells.has(neighbor));
-
+    
     if (isNeighbor) {
       setIsDragging(true);
-      // Add the clicked cell to the active selection
-      const newSelection = new Set(selectedCells);
-      newSelection.add(k);
-      setActiveSelection(newSelection);
+      setActiveSelection(new Set([k]));
     }
   }
 }
 
   /** Handle mouse enter on a hex */
-  function onHexMouseEnter(q, r, s) {
+  function onHexMouseEnter(q, r, s, e) {
     if (!isDragging) return;
-    setIsCursorOverHex(true); // Update state indicating cursor is over a hex
-    isCursorOverHexRef.current = true;
-    
     const k = hexKey(q, r, s);
 
     // If the cursor enters a different hex, flag that a drag occurred
@@ -244,79 +238,36 @@ function onHexMouseDown(q, r, s, e) {
     }
 
     if (selectedCells.has(k)) {
-      // If the cell is already selected, activeSelection remains as selectedCells
-      setActiveSelection(new Set(selectedCells));
+      setActiveSelection(new Set([k]));
       return;
     }
 
     // Check if the hex is adjacent to any selected cell
-    const isAdjacent = [...selectedCells].some((cellK) =>
-      getNeighborKeys(...cellK.split(",").map(Number)).includes(k)
-    );
+    const neighbors = getNeighborKeys(q, r, s);
+    const isNeighbor = neighbors.some((neighbor) => selectedCells.has(neighbor));
 
-    if (isAdjacent) {
-      // Create a new Set with selectedCells plus the current cell
-      const newActive = new Set(selectedCells);
-      newActive.add(k);
-      setActiveSelection(newActive);
+    if (isNeighbor) {
+      setActiveSelection(new Set([k]));
     } else {
-      // If not adjacent, activeSelection remains as selectedCells
-      setActiveSelection(new Set(selectedCells));
-    }
+      setActiveSelection(new Set([]));    }
   }
 
   /** Handle mouse up to finalize selection and navigate */
   function onMouseUp() {
     if (!isDragging) return;
     setIsDragging(false);
-
-    // Determine which hex is newly added
-    let newHex = null;
-    for (let cell of activeSelection) {
-      if (!selectedCells.has(cell)) {
-        newHex = cell;
-        break;
-      }
+    if(activeSelection.size === 0 ){
+        initialHexRef.current = null;
+        dragOccurredRef.current = false;
+        return;
     }
+    const puzzleObj = puzzles.find((p) => hexKey(p.q, p.r, p.s) === [...activeSelection][0] );
 
-    if (newHex) {
-      // Add the new hex to selectedCells
-      setSelectedCells((prev) => new Set([...prev, newHex]));
-
-      // Find the puzzle associated with the new hex
-      const [q, r, s] = newHex.split(",").map(Number);
-      const puzzleObj = puzzles.find(
-        (p) => p.q === q && p.r === r && p.s === s
-      );
-
-      if (puzzleObj) {
-        // Navigate to the puzzle's page
-        router.push(`/puzzle/${puzzleObj.id}`);
-      }
-    }
-
-    // Reset activeSelection
-    setActiveSelection(new Set());
-  }
-
-  /** Handle hex click */
-  function onHexClick(q, r, s) {
-    const k = hexKey(q, r, s);
-    const puzzleObj = puzzles.find((p) => hexKey(p.q, p.r, p.s) === k);
-    const isCompleted = puzzleObj && completedPuzzles.includes(puzzleObj.id);
-
-    // Only navigate if no drag occurred and the click started and ended on the same hex
-    if (
-      initialHexRef.current === k &&
-      !dragOccurredRef.current &&
-      isCompleted
-    ) {
-      router.push(`/puzzle/${puzzleObj.id}`);
-    }
+    router.push(`/puzzle/${puzzleObj.id}`);
 
     // Reset the refs after click
     initialHexRef.current = null;
-    dragOccurredRef.current = false;
+    // dragOccurredRef.current = false;
   }
 
   // Global mouse up handler
@@ -326,10 +277,6 @@ function onHexMouseDown(q, r, s, e) {
     window.addEventListener("mouseup", handleUp);
     return () => window.removeEventListener("mouseup", handleUp);
   }, [isDragging, activeSelection, selectedCells]);
-
-  useEffect(() => {
-    isCursorOverHexRef.current = isCursorOverHex;
-  }, [isCursorOverHex]);
 
   /** Compute outlines */
   const regionPaths = computeInsetOutline(
@@ -346,27 +293,22 @@ function onHexMouseDown(q, r, s, e) {
 
   const clusterOutlinePaths = computeInsetOutline(
     puzzles.map(hex => hexKey(hex.q, hex.r, hex.s)),
-    layoutParams, -activeInset
+    layoutParams, outline
   );
 
   /** Handle mouse leaving the grid area */
   function onGridMouseLeave() {
     if (isDragging) {
-      setActiveSelection(new Set(selectedCells));
-    }
+      setActiveSelection(new Set([]));    }
   }
 
-  function onHexMouseLeave(q, r, s) {
+  function onHexMouseLeave(q, r, s, e) {
     if (!isDragging) return;
-    setIsCursorOverHex(false); // Update state indicating cursor is not over a hex
-    isCursorOverHexRef.current = false;
-  
-    // Use a timeout to allow onHexMouseEnter to trigger if moving to another hex
-    setTimeout(() => {
-      if (!isCursorOverHexRef.current) {
-        setActiveSelection(new Set(selectedCells));
-      }
-    }, 50); // 50ms delay
+
+    if (e.relatedTarget && e.relatedTarget.getAttribute("data-active-inset") === "true") {
+        return;
+    }
+    setActiveSelection(new Set([]))
   }
   
 
@@ -391,8 +333,7 @@ function onHexMouseDown(q, r, s, e) {
                 s={hex.s}
                 onMouseDown={(e) => onHexMouseDown(hex.q, hex.r, hex.s, e)}
                 onMouseEnter={() => onHexMouseEnter(hex.q, hex.r, hex.s)}
-                onMouseLeave={() => onHexMouseLeave(hex.q, hex.r, hex.s)}
-                onClick={() => onHexClick(hex.q, hex.r, hex.s)}
+                onMouseLeave={(e) => onHexMouseLeave(hex.q, hex.r, hex.s, e)}
                 style={{
                   fill,
                   stroke: "#fff",
@@ -436,10 +377,14 @@ function onHexMouseDown(q, r, s, e) {
         {activePaths.map((d, i) => (
           <path
             key={`active-${i}`}
+            data-active-inset="true"
             d={d}
             fill="none"
             stroke="#228B22" // Consistent color for active selection #006600
-            strokeWidth={hexStrokeWidth}
+            strokeWidth={activeSelectionStrokeWidth}
+            style={{
+                pointerEvents: "auto",
+            }}
           />
         ))}
 
@@ -489,26 +434,9 @@ export default function PuzzleSelectPage() {
     }
   }, [isLoading, completedPuzzles, puzzles, router]);
 
-  // If still loading, show loading screen
-//   if (isLoading) {
-//     return (
-//       <div
-//         style={{
-//           display: "flex",
-//           justifyContent: "center",
-//           alignItems: "center",
-//           height: "100vh",
-//           backgroundColor: "#c6e2e9", // Same background as puzzle page
-//         }}
-//       >
-//         <p>Loading...</p>
-//       </div>
-//     );
-//   }
-
   // If no completed puzzles, do not render HexGridSelector (redirect is in progress)
   if (completedPuzzles.length === 0) {
-    return null; // Or a placeholder if needed
+    return null; 
   }
 
   // Render the HexGridSelector only if there are completed puzzles

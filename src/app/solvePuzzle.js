@@ -83,31 +83,6 @@ export default function solvePuzzle(mapData, colorToWin = 1, regionSize = 7, max
   // HELPER FUNCS
   // -----------
 
-  // Returns true if regionSet is contiguous (connected)
-  // (In this puzzle code, we typically rely on contiguous sets,
-  //  but we also do direct BFS expansions, so an explicit check
-  //  is sometimes omitted. Provided here for reference.)
-  function checkContiguousRegion(regionSet) {
-    if (!regionSet.size) return false;
-
-    const regionArr = [...regionSet];
-    const start = regionArr[0];
-    const visited = new Set([start]);
-    const queue = [start];
-
-    while (queue.length > 0) {
-      const curr = queue.shift();
-      for (const nbr of adjacency[curr]) {
-        if (regionSet.has(nbr) && !visited.has(nbr)) {
-          visited.add(nbr);
-          queue.push(nbr);
-        }
-      }
-    }
-
-    return visited.size === regionSet.size;
-  }
-
   // Returns true if 'colorVal' has a strict majority in regionSet
   function majorityCountInRegion(regionSet, colorVal) {
     let colorCount = 0;
@@ -216,8 +191,6 @@ export default function solvePuzzle(mapData, colorToWin = 1, regionSize = 7, max
       return;
     }
 
-    const regionsFormed = currentRegions.length;
-    const regionsLeftToForm = totalRegions - regionsFormed;
     const neededWins = neededWinsSoFar(winsSoFar, neededToWinMajority);
 
     // Prune if not enough color cells left to form the needed winning regions

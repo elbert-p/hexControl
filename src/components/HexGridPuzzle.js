@@ -573,11 +573,10 @@ export default function HexGridPuzzle({
   function onMouseUp() {
     if (!isDragging) return;
     setIsDragging(false);
-  
-    const clickedKey = initialHexRef.current;
-  
+    
     if (!dragOccurredRef.current) {
       // ============= Single Click =============
+      const clickedKey = initialHexRef.current;
       
       if (pickedRegion) {
         // Single-click on a hex that was inside the region we "picked up"

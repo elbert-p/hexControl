@@ -120,14 +120,9 @@ const puzzles = [
         r: -1,
         s: -2,
         difficulty: "easy",
-        mapData: GridGenerator.rectangle(5, 3).map((hex, idx) => ({
-            q: hex.q,
-            r: hex.r,
-            s: hex.s,
-            color: puzzle3colors[idx]
-          })),
+        mapData: [{q:0,r:0,s:0,color:0},{q:0,r:1,s:-1,color:0},{q:-1,r:0,s:1,color:0},{q:0,r:-1,s:1,color:1},{q:1,r:-1,s:0,color:1},{q:-1,r:-1,s:2,color:0},{q:2,r:-2,s:0,color:1},{q:1,r:-2,s:1,color:1},{q:-1,r:1,s:0,color:1},{q:1,r:0,s:-1,color:0},{q:0,r:2,s:-2,color:1},{q:3,r:-2,s:-1,color:0},{q:3,r:-1,s:-2,color:0},{q:3,r:-3,s:0,color:0},{q:2,r:-1,s:-1,color:1},{q:2,r:0,s:-2,color:1},{q:-2,r:-1,s:3,color:1},{q:0,r:-2,s:2,color:0}],
         colorToWin: 1,
-        regionSize: 5,
+        regionSize: 6,
       },
       {
         id: "3a",
@@ -187,9 +182,9 @@ const puzzles = [
         r: 0,
         s: -2,
         difficulty: "easy",
-        mapData: makeHardPuzzle(generateMapData(15, 0.55, 0.35, 0.4), 1, 5, 5),//makeHardPuzzle(generateMapData(42, 0.55, 0.35, 0.4), 1, 6, 5),
+        mapData: makeHardPuzzle(generateMapData(18, 0.2, 0.5, 0.5), 1, 6, 5),
           colorToWin: 1,
-          regionSize: 5,
+          regionSize: 6,
       },
       {
         id: "5",
