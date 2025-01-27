@@ -125,10 +125,10 @@ const puzzles = [
         regionSize: 6,
       },
       {
-        id: "3a",
+        id: "5a",
         q: 4,
-        r: -1,
-        s: -3,
+        r: 0,
+        s: -4,
         difficulty: "medium",
         mapData: 
         // makeHardPuzzle(GridGenerator.rectangle(7, 5).map((hex, idx) => ({
@@ -187,6 +187,16 @@ const puzzles = [
           regionSize: 6,
       },
       {
+        id: "4a",
+        q: 1,
+        r: 1,
+        s: -2,
+        difficulty: "easy",
+        mapData: makeHardPuzzle(generateMapData(18, 0.2, 0.5, 0.5), 1, 6, 5),
+        colorToWin: 1,
+        regionSize: 6,
+      },
+      {
         id: "5",
         q: 3,
         r: 0,
@@ -200,6 +210,16 @@ const puzzles = [
           })),
         colorToWin: 1,
         regionSize: 5,
+      },
+      {
+        id: "3a",
+        q: 4,
+        r: -2,
+        s: -2,
+        difficulty: "easy",
+        mapData: [{q:0,r:0,s:0,color:0},{q:1,r:-1,s:0,color:0},{q:-1,r:0,s:1,color:0},{q:0,r:-1,s:1,color:1},{q:2,r:-2,s:0,color:1},{q:2,r:-1,s:-1,color:1},{q:1,r:0,s:-1,color:1},{q:1,r:-2,s:1,color:0},{q:2,r:0,s:-2,color:0},{q:1,r:1,s:-2,color:0},{q:0,r:1,s:-1,color:1},{q:-1,r:1,s:0,color:1},{q:-2,r:1,s:1,color:1},{q:-2,r:0,s:2,color:0},{q:-1,r:-1,s:2,color:1},{q:0,r:2,s:-2,color:0},{q:-3,r:1,s:2,color:0},{q:-2,r:-1,s:3,color:0}],
+        colorToWin: 1,
+        regionSize: 6,
       },
       {
         id: "6",
@@ -248,12 +268,6 @@ const puzzles = [
       },
     // Add more puzzles as needed
   ];
-  function serializeWithoutQuotes(data) {
-    return '[\n' + data.map(item => {
-      // Convert each object to a string without quotes around keys
-      return `  { q: ${item.q}, r: ${item.r}, s: ${item.s}, color: ${item.color} }`;
-    }).join(',\n') + '\n]';
-  }
   console.log(JSON.stringify(puzzles.find((p) => p.id === "4").mapData).replace(/"/g, ''));
   export default puzzles;
 
@@ -261,4 +275,7 @@ const puzzles = [
 /*
 possible 4
 [{q:0,r:0,s:0,color:0},{q:1,r:0,s:-1,color:0},{q:0,r:1,s:-1,color:0},{q:-1,r:1,s:0,color:1},{q:-1,r:0,s:1,color:0},{q:0,r:-1,s:1,color:1},{q:1,r:-2,s:1,color:0},{q:1,r:-1,s:0,color:1},{q:-1,r:-1,s:2,color:0},{q:0,r:-2,s:2,color:1},{q:2,r:-2,s:0,color:0},{q:2,r:-1,s:-1,color:0},{q:2,r:0,s:-2,color:1},{q:-1,r:2,s:-1,color:1},{q:-2,r:2,s:0,color:0},{q:-2,r:1,s:1,color:1},{q:1,r:-3,s:2,color:1},{q:-1,r:-2,s:3,color:1},{q:0,r:-3,s:3,color:0},{q:3,r:-2,s:-1,color:1},{q:3,r:-1,s:-2,color:0},{q:1,r:1,s:-2,color:0},{q:0,r:2,s:-2,color:1},{q:1,r:2,s:-3,color:0},{q:-1,r:3,s:-2,color:0},{q:-2,r:0,s:2,color:0},{q:-2,r:-1,s:3,color:0},{q:0,r:3,s:-3,color:0},{q:-1,r:4,s:-3,color:1},{q:-2,r:4,s:-2,color:0},{q:-2,r:3,s:-1,color:0},{q:-2,r:5,s:-3,color:0},{q:-3,r:5,s:-2,color:0},{q:-3,r:4,s:-1,color:1},{q:4,r:-3,s:-1,color:1},{q:4,r:-2,s:-2,color:0},{q:3,r:-3,s:0,color:0},{q:1,r:3,s:-4,color:1},{q:0,r:4,s:-4,color:1},{q:2,r:-4,s:2,color:0},{q:2,r:-3,s:1,color:0},{q:1,r:-4,s:3,color:0}]
+*/
+/*6 region size, 3a
+[{q:0,r:0,s:0,color:0},{q:1,r:-1,s:0,color:0},{q:-1,r:0,s:1,color:0},{q:0,r:-1,s:1,color:1},{q:2,r:-2,s:0,color:1},{q:2,r:-1,s:-1,color:1},{q:1,r:0,s:-1,color:1},{q:1,r:-2,s:1,color:0},{q:2,r:0,s:-2,color:0},{q:1,r:1,s:-2,color:0},{q:0,r:1,s:-1,color:1},{q:-1,r:1,s:0,color:1},{q:-2,r:1,s:1,color:1},{q:-2,r:0,s:2,color:0},{q:-1,r:-1,s:2,color:1},{q:0,r:2,s:-2,color:0},{q:-3,r:1,s:2,color:0},{q:-2,r:-1,s:3,color:0}]
 */

@@ -174,6 +174,7 @@ export default function HexPuzzleWrapper({
           flexDirection: "column",
           alignItems: "center",
           maxHeight: "100%", // Ensure it doesn't exceed the wrapper's height
+          userSelect: "none", // Prevent text selection
         }}
       >
         {/* Puzzle Info Above the Puzzle */}
@@ -185,7 +186,6 @@ export default function HexPuzzleWrapper({
             alignItems: "center",
             fontSize: 20,
             flexShrink: 0, // Prevent shrinking
-            userSelect: "none", // Prevent text selection
           }}
         >
           {/* Color to Win */}
@@ -247,7 +247,7 @@ export default function HexPuzzleWrapper({
             alignItems: "center",
             fontSize: 20,
             flexShrink: 0, // Prevent shrinking
-            userSelect: "none", // Prevent text selection
+            // userSelect: "none", // Prevent text selection
           }}
         >
           {/* Regions Made */}
@@ -269,100 +269,100 @@ export default function HexPuzzleWrapper({
 
         {/* Puzzle Complete Overlay */}
         {isComplete && (
-  <>
-    {/* CSS-in-JS Styles with Backdrop and Box Animations */}
-    <style jsx>{`
-      /* Keyframes for Backdrop Fade-In */
-      @keyframes backdropFadeIn {
-        0% {
-          background-color: rgba(255, 255, 255, 0);
-        }
-        100% {
-          background-color: rgba(255, 255, 255, 0.6);
-        }
-      }
+            <>
+                {/* CSS-in-JS Styles with Backdrop and Box Animations */}
+                <style jsx>{`
+                /* Keyframes for Backdrop Fade-In */
+                @keyframes backdropFadeIn {
+                    0% {
+                    background-color: rgba(255, 255, 255, 0);
+                    }
+                    100% {
+                    background-color: rgba(255, 255, 255, 0.6);
+                    }
+                }
 
-      /* Keyframes for Box Fade-In and Scale-Up */
-      @keyframes popupFadeIn {
-        0% {
-          opacity: 0;
-          transform: scale(0.8);
-        }
-        100% {
-          opacity: 1;
-          transform: scale(1);
-        }
-      }
+                /* Keyframes for Box Fade-In and Scale-Up */
+                @keyframes popupFadeIn {
+                    0% {
+                    opacity: 0;
+                    transform: scale(0.8);
+                    }
+                    100% {
+                    opacity: 1;
+                    transform: scale(1);
+                    }
+                }
 
-      /* Overlay Container with Backdrop Animation */
-      .overlayContainer {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        /* Initial background set to transparent */
-        background-color: rgba(255, 255, 255, 0);
-        z-index: 9999;
-        /* Apply backdrop fade-in animation */
-        animation: backdropFadeIn 0.3s ease forwards;
-      }
+                /* Overlay Container with Backdrop Animation */
+                .overlayContainer {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    /* Initial background set to transparent */
+                    background-color: rgba(255, 255, 255, 0);
+                    z-index: 9999;
+                    /* Apply backdrop fade-in animation */
+                    animation: backdropFadeIn 0.3s ease forwards;
+                }
 
-      /* Overlay Box with Popup Animation */
-      .overlayBox {
-        background: #ffd;
-        border: 6px solid #228B22;
-        border-radius: 10px;
-        padding: 20px 30px;
-        text-align: center;
-        box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-        /* Apply popup fade-in and scale-up animation */
-        animation: popupFadeIn 0.4s ease forwards;
-      }
+                /* Overlay Box with Popup Animation */
+                .overlayBox {
+                    background: #ffd;
+                    border: 6px solid #228B22;
+                    border-radius: 10px;
+                    padding: 20px 30px;
+                    text-align: center;
+                    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+                    /* Apply popup fade-in and scale-up animation */
+                    animation: popupFadeIn 0.4s ease forwards;
+                }
 
-      /* Heading Styles */
-      .overlayHeading {
-        margin: 0;
-        margin-bottom: 25px;
-        font-family: 'Press Start 2P', sans-serif;
-      }
+                /* Heading Styles */
+                .overlayHeading {
+                    margin: 0;
+                    margin-bottom: 25px;
+                    font-family: 'Press Start 2P', sans-serif;
+                }
 
-      /* Button Styles */
-      .overlayButton {
-        padding: 10px 20px;
-        font-size: 18px;
-        cursor: pointer;
-        background-color: #a3bf56;
-        color: white;
-        border: none;
-        border-radius: 10px;
-        font-family: 'Press Start 2P', sans-serif;
-        transition: background-color 0.3s ease;
-      }
+                /* Button Styles */
+                .overlayButton {
+                    padding: 10px 20px;
+                    font-size: 18px;
+                    cursor: pointer;
+                    background-color: #a3bf56;
+                    color: white;
+                    border: none;
+                    border-radius: 10px;
+                    font-family: 'Press Start 2P', sans-serif;
+                    transition: background-color 0.3s ease;
+                }
 
-      /* Button Hover Effect */
-      .overlayButton:hover {
-        background-color: #8fae45; /* Darken button on hover */
-      }
-    `}</style>
+                /* Button Hover Effect */
+                .overlayButton:hover {
+                    background-color: #8fae45; /* Darken button on hover */
+                }
+                `}</style>
 
-    {/* Overlay Structure with Applied Classes */}
-    <div className="overlayContainer">
-      <div className="overlayBox">
-        <h2 className="overlayHeading">Level Completed!</h2>
-        <button
-          className="overlayButton"
-          onClick={() => router.push("/puzzle-select")}
-        >
-          Home
-        </button>
-      </div>
-    </div>
-  </>
-)}
+                {/* Overlay Structure with Applied Classes */}
+                <div className="overlayContainer">
+                <div className="overlayBox">
+                    <h2 className="overlayHeading">Level {puzzleId} Completed!</h2>
+                    <button
+                    className="overlayButton"
+                    onClick={() => router.push("/puzzle-select")}
+                    >
+                    Home
+                    </button>
+                </div>
+                </div>
+            </>
+            )}
 
         {/* Keyboard Shortcuts fixed at the bottom */}
         <div
