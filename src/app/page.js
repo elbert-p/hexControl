@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import HexPuzzleWrapper from "../components/HexPuzzleWrapper";
 import { GridGenerator } from "react-hexgrid";
 import PuzzleSelectPage from "./puzzle-select/page";
+import { Analytics } from '@vercel/analytics/next';
 
 export default function HomePage() {
   // Example puzzle data
@@ -44,6 +45,9 @@ export default function HomePage() {
     //     regionSize={3}
     //   />
     // </main>
-    <PuzzleSelectPage />
+    <>
+      <PuzzleSelectPage />
+      <Analytics />
+    </>
   );
 }
