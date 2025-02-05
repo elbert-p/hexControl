@@ -252,16 +252,16 @@ export default function HexPuzzleWrapper({
         >
           {/* Regions Made */}
           <div>
-            Regions Made:{" "}
-            <strong style={{ fontFamily: "'Press Start 2P', sans-serif" }}>
+            Regions Made: <wbr />
+            <strong style={{ fontFamily: "'Press Start 2P', sans-serif", whiteSpace: "nowrap" }}>
               {regionsMade} / {totalRegions}
             </strong>
           </div>
 
           {/* Regions Won */}
           <div>
-            Regions Won:{" "}
-            <strong style={{ fontFamily: "'Press Start 2P', sans-serif" }}>
+            Regions Won: <wbr />
+            <strong style={{ fontFamily: "'Press Start 2P', sans-serif", whiteSpace: "nowrap" }}>
               {regionsWon} / {neededForMajority}
             </strong>
           </div>
