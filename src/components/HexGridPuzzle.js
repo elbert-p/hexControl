@@ -404,32 +404,6 @@ export default function HexGridPuzzle({
     origin: { x: 0, y: 0 }, // Fixed origin
   };
 
-  useEffect(() => {
-    function handleTouchMove(e) {
-      e.preventDefault();
-      // Use the first touch (for multi-touch you’d need more logic)
-      const touch = e.touches[0];
-      if (!touch) return;
-      // Get the element at the touch position
-      const target = document.elementFromPoint(touch.clientX, touch.clientY);
-      if (target) {
-        // Check if the target is one of our hexagons by reading its data attributes
-        const qAttr = target.getAttribute("data-q");
-        const rAttr = target.getAttribute("data-r");
-        const sAttr = target.getAttribute("data-s");
-        if (qAttr !== null && rAttr !== null && sAttr !== null) {
-          // Call your onHexEnter function with these coordinates
-          onHexEnter(Number(qAttr), Number(rAttr), Number(sAttr));
-        }
-      }
-    }
-    // Attach the listener on the document (or on a ref to your container div)
-    document.addEventListener("touchmove", handleTouchMove, { passive: false });
-    return () => {
-      document.removeEventListener("touchmove", handleTouchMove);
-    };
-  }, [onHexEnter]);
-
   // 1) Immediately compute the initial bounds from mapData
   const initialBounds = computePixelBounds(mapData, layoutParamsBase);
 
@@ -502,6 +476,32 @@ export default function HexGridPuzzle({
     };
     // solve();// Comment this line to disable auto-solving
   }, [mapData]);
+
+  useEffect(() => {
+    function handleTouchMove(e) {
+      e.preventDefault();
+      // Use the first touch (for multi-touch you’d need more logic)
+      const touch = e.touches[0];
+      if (!touch) return;
+      // Get the element at the touch position
+      const target = document.elementFromPoint(touch.clientX, touch.clientY);
+      if (target) {
+        // Check if the target is one of our hexagons by reading its data attributes
+        const qAttr = target.getAttribute("data-q");
+        const rAttr = target.getAttribute("data-r");
+        const sAttr = target.getAttribute("data-s");
+        if (qAttr !== null && rAttr !== null && sAttr !== null) {
+          // Call your onHexEnter function with these coordinates
+          onHexEnter(Number(qAttr), Number(rAttr), Number(sAttr));
+        }
+      }
+    }
+    // Attach the listener on the document (or on a ref to your container div)
+    document.addEventListener("touchmove", handleTouchMove, { passive: false });
+    return () => {
+      document.removeEventListener("touchmove", handleTouchMove);
+    };
+  }, [onHexEnter]);
 
   /** Helper function to compare two sets for equality */
   const areSetsEqual = (setA, setB) => {
@@ -802,6 +802,9 @@ export default function HexGridPuzzle({
                 q={hex.q}
                 r={hex.r}
                 s={hex.s}
+                data-q={hex.q}
+                data-r={hex.r}
+                data-s={hex.s}
                 onMouseDown={(e) => onHexMouseDown(hex.q, hex.r, hex.s, e)}
                 onMouseEnter={() => onHexEnter(hex.q, hex.r, hex.s)}
                 onTouchStart={(e) => {
