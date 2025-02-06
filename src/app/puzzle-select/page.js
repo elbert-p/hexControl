@@ -446,7 +446,7 @@ export default function PuzzleSelectPage() {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        height: "100vh",
+        height: "100dvh",
         backgroundColor: "#c6e2e9", // Same background as puzzle page
       }}
     >

@@ -128,12 +128,19 @@ export default function HexPuzzleWrapper({
   const measureAndSetScale = () => {
     if (puzzleContainerRef.current && puzzleRef.current) {
       const containerHeight = puzzleContainerRef.current.offsetHeight;
+      const containerWidth = puzzleContainerRef.current.offsetWidth;
       const puzzleHeight = puzzleRef.current.offsetHeight;
-      if (puzzleHeight > containerHeight) {
-        setScale(containerHeight / puzzleHeight);
-      } else {
-        setScale(1);
-      }
+      const puzzleWidth = puzzleRef.current.offsetWidth;
+  
+      const heightScale = containerHeight / puzzleHeight;
+      const widthScale = containerWidth / puzzleWidth;
+      console.log("containerWidth / puzzleWidth", containerWidth, puzzleWidth);
+      console.log("heightScale", heightScale);
+      // Use the smaller of the two scales
+      const newScale = Math.min(heightScale, widthScale);
+      console.log(newScale)
+      // Only shrink if needed; otherwise keep scale at 1
+      setScale(newScale < 1 ? newScale : 1);
     }
   };
 
@@ -160,7 +167,9 @@ export default function HexPuzzleWrapper({
   return (
     <div
       style={{
-        height: "calc(100vh - 160px)", // Set height to window height minus 150px
+        height: "calc(100dvh - 160px)", // Set height to window height minus 150px
+        maxWidth: "100%", // Ensure it doesn't exceed the wrapper's height
+
         display: "flex",
         justifyContent: "center", // Center vertically
         alignItems: "center",
@@ -174,6 +183,8 @@ export default function HexPuzzleWrapper({
           flexDirection: "column",
           alignItems: "center",
           maxHeight: "100%", // Ensure it doesn't exceed the wrapper's height
+          maxWidth: "100%", // Ensure it doesn't exceed the wrapper's height
+
           userSelect: "none", // Prevent text selection
         }}
       >
@@ -218,13 +229,13 @@ export default function HexPuzzleWrapper({
             height: "100%",
             width: "100%",
             overflow: "hidden", // Hide overflow (if any)
+            touchAction: "none", // Prevent touch scrolling
           }}
         >
           {/* Scalable Wrapper (with ref to measure puzzle size) */}
           <div
             ref={puzzleRef}
             style={{
-              touchAction: "none", // Prevent touch scrolling
               transform: `scale(${scale})`,
               transformOrigin: "center",
             }}
@@ -253,7 +264,7 @@ export default function HexPuzzleWrapper({
         >
           {/* Regions Made */}
           <div>
-            Regions Made: <wbr />
+            Regions Made: {" "} <wbr/>
             <strong style={{ fontFamily: "'Press Start 2P', sans-serif", whiteSpace: "nowrap" }}>
               {regionsMade} / {totalRegions}
             </strong>
@@ -261,7 +272,7 @@ export default function HexPuzzleWrapper({
 
           {/* Regions Won */}
           <div>
-            Regions Won: <wbr />
+            Regions Won: {" "} <wbr/>
             <strong style={{ fontFamily: "'Press Start 2P', sans-serif", whiteSpace: "nowrap" }}>
               {regionsWon} / {neededForMajority}
             </strong>

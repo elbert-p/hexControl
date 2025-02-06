@@ -4,9 +4,11 @@ import React, { useState, useEffect } from "react";
 import HexPuzzleWrapper from "../components/HexPuzzleWrapper";
 import { GridGenerator } from "react-hexgrid";
 import PuzzleSelectPage from "./puzzle-select/page";
-import { Analytics } from '@vercel/analytics/next';
+import { redirect } from "next/navigation";
 
 export default function HomePage() {
+  redirect("/puzzle-select");
+
   // Example puzzle data
   const mapData = [
     { q: 0, r: 0, s: 0, color: 1 },   // 1 => #eee
@@ -47,7 +49,6 @@ export default function HomePage() {
     // </main>
     <>
       <PuzzleSelectPage />
-      <Analytics />
     </>
   );
 }

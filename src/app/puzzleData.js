@@ -266,6 +266,16 @@ const puzzles = [
         colorToWin: 1,
         regionSize: 7,
       },
+      // {
+      //   id: "7",
+      //   q: 4,
+      //   r: 1,
+      //   s: -5,
+      //   difficulty: "medium",
+      //   mapData: makeHardPuzzle(generateMapData(27, 0.2, 0.5, 0.5), 1, 9, 5),
+      //   colorToWin: 1,
+      //   regionSize: 9,
+      // },
     // Add more puzzles as needed
   ];
   console.log(JSON.stringify(puzzles.find((p) => p.id === "4").mapData).replace(/"/g, ''));

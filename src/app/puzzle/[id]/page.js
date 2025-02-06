@@ -19,8 +19,8 @@ export default function PuzzlePage() {
   return (
     <div
       style={{
-        width: "100vw",
-        height: "100vh",
+        width: "100dvw",
+        height: "100dvh",
         backgroundColor: "#c6e2e9", // Same background as puzzle-select page
         display: "flex",
         justifyContent: "center",
