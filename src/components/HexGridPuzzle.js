@@ -318,6 +318,7 @@ function shallowEqualSelections(a, b) {
  */
 function removeHexAndSplit(selections, regionIndex, hexKey, hexStates) {
   const region = selections[regionIndex];
+  console.log(region)
   const newCells = region.cells.filter((ck) => ck !== hexKey);
 
   if (newCells.length === 0) {
@@ -479,6 +480,7 @@ export default function HexGridPuzzle({
 
   useEffect(() => {
     function handleGlobalPointerMove(e) {
+      if (e.pointerType !== "touch") return;
       if (!isDragging) return;
   
       // Get the element at the pointer's current position
