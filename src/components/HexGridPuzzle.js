@@ -478,30 +478,31 @@ export default function HexGridPuzzle({
   }, [mapData]);
 
   useEffect(() => {
-    function handleTouchMove(e) {
-      e.preventDefault();
-      // Use the first touch (for multi-touch you’d need more logic)
-      const touch = e.touches[0];
-      if (!touch) return;
-      // Get the element at the touch position
-      const target = document.elementFromPoint(touch.clientX, touch.clientY);
-      if (target) {
-        // Check if the target is one of our hexagons by reading its data attributes
-        const qAttr = target.getAttribute("data-q");
-        const rAttr = target.getAttribute("data-r");
-        const sAttr = target.getAttribute("data-s");
-        if (qAttr !== null && rAttr !== null && sAttr !== null) {
-          // Call your onHexEnter function with these coordinates
-          onHexEnter(Number(qAttr), Number(rAttr), Number(sAttr));
-        }
+    function handleGlobalPointerMove(e) {
+      if (!isDragging) return;
+  
+      // Get the element at the pointer's current position
+      const rawTarget = document.elementFromPoint(e.clientX, e.clientY);
+      const target = findHexElement(rawTarget);
+      if (!target) return;
+  
+      // Now read the data attributes from the found element
+      const qAttr = target.getAttribute("data-q");
+      const rAttr = target.getAttribute("data-r");
+      const sAttr = target.getAttribute("data-s");
+  
+      if (qAttr !== null && rAttr !== null && sAttr !== null) {
+        onHexEnter(Number(qAttr), Number(rAttr), Number(sAttr));
       }
     }
-    // Attach the listener on the document (or on a ref to your container div)
-    document.addEventListener("touchmove", handleTouchMove, { passive: false });
+  
+    document.addEventListener("pointermove", handleGlobalPointerMove);
     return () => {
-      document.removeEventListener("touchmove", handleTouchMove);
+      document.removeEventListener("pointermove", handleGlobalPointerMove);
     };
-  }, [onHexEnter]);
+  }, [isDragging, onHexEnter]);
+  
+
 
   /** Helper function to compare two sets for equality */
   const areSetsEqual = (setA, setB) => {
@@ -511,6 +512,17 @@ export default function HexGridPuzzle({
     }
     return true;
   };
+
+  function findHexElement(el) {
+    // You can customize the stopping condition (for example, if you know your puzzle container)
+    while (el && el !== document.body) {
+      if (el.hasAttribute("data-q") && el.hasAttribute("data-r") && el.hasAttribute("data-s")) {
+        return el;
+      }
+      el = el.parentElement;
+    }
+    return null;
+  }
 
   /** ADDED: Refs to track initial hex and drag occurrence */
   const initialHexRef = useRef(null);
@@ -776,15 +788,15 @@ export default function HexGridPuzzle({
   useEffect(() => {
     if (!isDragging) return;
 
-    const handleGlobalMouseUp = () => {
+    const handleGlobalPointerUp = () => {
       onMouseUp();
     };
 
-    window.addEventListener("mouseup", handleGlobalMouseUp);
+    window.addEventListener("pointerup", handleGlobalPointerUp);
 
     // Cleanup the event listener when dragging ends
     return () => {
-      window.removeEventListener("mouseup", handleGlobalMouseUp);
+      window.removeEventListener("pointerup", handleGlobalPointerUp);
     };
   }, [isDragging, activeSelection, selections, hexStates, pickedRegion]);
 
@@ -805,17 +817,12 @@ export default function HexGridPuzzle({
                 data-q={hex.q}
                 data-r={hex.r}
                 data-s={hex.s}
-                onMouseDown={(e) => onHexMouseDown(hex.q, hex.r, hex.s, e)}
-                onMouseEnter={() => onHexEnter(hex.q, hex.r, hex.s)}
-                onTouchStart={(e) => {
-                  e.preventDefault(); // stops default scrolling
-                  onHexMouseDown(hex.q, hex.r, hex.s, e);
-                }}
-                onTouchEnd={(e) => {
+                onPointerDown={(e) => {
                   e.preventDefault();
-                  onMouseUp();
+                  onHexMouseDown(hex.q, hex.r, hex.s, e)
                 }}
-              
+                onPointerEnter={() => onHexEnter(hex.q, hex.r, hex.s)}
+
                 style={{
                   fill: fillColor,
                   stroke: "#fff",

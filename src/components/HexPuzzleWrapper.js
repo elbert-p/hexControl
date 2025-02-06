@@ -224,6 +224,7 @@ export default function HexPuzzleWrapper({
           <div
             ref={puzzleRef}
             style={{
+              touchAction: "none", // Prevent touch scrolling
               transform: `scale(${scale})`,
               transformOrigin: "center",
             }}
