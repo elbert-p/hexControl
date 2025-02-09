@@ -8,12 +8,10 @@ const puzzle2acolors =
     0, 0, 0, 0, 0, 1, 1, 0, 1, 0,
     0, 1, 0, 0, 0, 1, 1, 0, 0, 1,
     1, 0, 0, 0, 0, 0, 0, 0, 1, 0,]
-const puzzle3colors = 
-    [1, 0, 1, 1, 0, 
-    0, 0, 1, 0, 0,
-    1, 0, 0, 0, 1,
-    0, 1, 0, 1, 1,
-    1, 0, 0, 0, 0]
+    const puzzle0colors = 
+    [0, 0, 1, 0,
+      1, 1, 0, 0,
+      1, 1, 0, 1]
 const puzzle5colors = 
     [0, 0, 0, 0, 0, 1, 1, 
     0, 1, 0, 0, 0, 0, 0, 
@@ -27,13 +25,15 @@ const puzzles = [
         r: 0,
         s: 0,
         difficulty: "easy",
-        mapData: [
-            { q: -2, r: 0, s: 2, color: 1 },
-            { q: -1, r: 0, s: 1, color: 1 },
-            { q: 0, r: 0, s: 0, color: 0 },
-            { q: 1, r: 0, s: -1, color: 0 },
-            { q: 2, r: 0, s: -2, color: 1 },
-        ],
+        mapData: 
+        [...GridGenerator.rectangle(4, 3).map((hex, idx) => {
+                return {
+                  q: hex.q,
+                  r: hex.r,
+                  s: hex.s,
+                  color: puzzle0colors[idx],
+                };
+              }), { q: -1, r: 3, s: -2, color: 0 }, { q: 0, r: 3, s: -3, color: 0 }, { q: 1, r: 3, s: -4, color: 0 }],
         colorToWin: 1,
         regionSize: 5,
     },

@@ -318,7 +318,7 @@ function shallowEqualSelections(a, b) {
  */
 function removeHexAndSplit(selections, regionIndex, hexKey, hexStates) {
   const region = selections[regionIndex];
-  console.log(region)
+  // console.log(region)
   const newCells = region.cells.filter((ck) => ck !== hexKey);
 
   if (newCells.length === 0) {

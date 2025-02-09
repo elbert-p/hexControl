@@ -1,7 +1,7 @@
 import { Analytics } from '@vercel/analytics/next';
 
 export const metadata = {
-  title: "My App",
+  title: "Hex Control",
 };
 
 export const viewport = {

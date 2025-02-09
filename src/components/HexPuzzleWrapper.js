@@ -134,11 +134,11 @@ export default function HexPuzzleWrapper({
   
       const heightScale = containerHeight / puzzleHeight;
       const widthScale = containerWidth / puzzleWidth;
-      console.log("containerWidth / puzzleWidth", containerWidth, puzzleWidth);
-      console.log("heightScale", heightScale);
+      // console.log("containerWidth / puzzleWidth", containerWidth, puzzleWidth);
+      // console.log("heightScale", heightScale);
       // Use the smaller of the two scales
       const newScale = Math.min(heightScale, widthScale);
-      console.log(newScale)
+      // console.log(newScale)
       // Only shrink if needed; otherwise keep scale at 1
       setScale(newScale < 1 ? newScale : 1);
     }
