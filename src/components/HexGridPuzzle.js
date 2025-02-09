@@ -51,16 +51,6 @@ function blendColors(baseColor, outlineColor, alpha = 0.3) {
   );
 }
 
-/** 4) Check if active selection overlaps existing selections. */
-function checkOverlap(newSet, selections) {
-  for (const sel of selections) {
-    for (const ck of sel.cells) {
-      if (newSet.has(ck)) return true;
-    }
-  }
-  return false;
-}
-
 /** 5) Build region object with { cells, count0, count1 }. */
 function buildRegionObject(cellArray, hexStates) {
   let count0 = 0;
@@ -172,28 +162,28 @@ function computeInsetOutline(cellKeys, layout, offsetDelta = -600) { // Default 
 }
 
 /** Helper function to calculate the bounding box of the cluster */
-function calculateBounds(mapData) {
-  const qs = mapData.map((h) => h.q);
-  const rs = mapData.map((h) => h.r);
-  const minQ = Math.min(...qs);
-  const maxQ = Math.max(...qs);
-  const minR = Math.min(...rs);
-  const maxR = Math.max(...rs);
-  return { minQ, maxQ, minR, maxR };
-}
+// function calculateBounds(mapData) {
+//   const qs = mapData.map((h) => h.q);
+//   const rs = mapData.map((h) => h.r);
+//   const minQ = Math.min(...qs);
+//   const maxQ = Math.max(...qs);
+//   const minR = Math.min(...rs);
+//   const maxR = Math.max(...rs);
+//   return { minQ, maxQ, minR, maxR };
+// }
 
 /** 
  * Helper function to calculate the center of the cluster in pixel coordinates 
  * Updated to compute the centroid instead of the midpoint of bounds
  */
-function calculateCenter(mapData, layout) {
-  const total = mapData.length;
-  const sumQ = mapData.reduce((acc, h) => acc + h.q, 0);
-  const sumR = mapData.reduce((acc, h) => acc + h.r, 0);
-  const centerQ = sumQ / total;
-  const centerR = sumR / total;
-  return hexToPixel(centerQ, centerR, layout);
-}
+// function calculateCenter(mapData, layout) {
+//   const total = mapData.length;
+//   const sumQ = mapData.reduce((acc, h) => acc + h.q, 0);
+//   const sumR = mapData.reduce((acc, h) => acc + h.r, 0);
+//   const centerQ = sumQ / total;
+//   const centerR = sumR / total;
+//   return hexToPixel(centerQ, centerR, layout);
+// }
 
 /** Helper function to find the region containing a specific hex */
 function findRegionContaining(hexKey, selections) {
@@ -375,6 +365,8 @@ export default function HexGridPuzzle({
   regionSize = 3,
   sizeMultiplier = 1.5,
   onPuzzleStateChange,
+  puzzleComplete,          // True when the puzzle is complete (from the wrapper)
+  onAnimationComplete,
 }) {
   const [hexStates, setHexStates] = useState(() => {
     const st = {};
@@ -418,7 +410,7 @@ export default function HexGridPuzzle({
   }, [mapData]);
 
   // Calculate the center of the cluster (not used to shift origin, but you could if desired)
-  const clusterCenter = calculateCenter(mapData, layoutParamsBase);
+  // const clusterCenter = calculateCenter(mapData, layoutParamsBase);
 
   // Final layout parameters with fixed origin
   const layoutParams = {
@@ -504,7 +496,6 @@ export default function HexGridPuzzle({
     };
   }, [isDragging, onHexEnter]);
   
-
 
   /** Helper function to compare two sets for equality */
   const areSetsEqual = (setA, setB) => {
@@ -687,9 +678,9 @@ export default function HexGridPuzzle({
   }  
 
   // Define stroke widths
-  const hexStrokeWidth = 2.4 * sizeMultiplier;
+  const hexStrokeWidth = 3.6 * sizeMultiplier;
   const selectionStrokeWidth = 3.6 * sizeMultiplier;
-  const activeSelectionStrokeWidth = 4.2 * sizeMultiplier;
+  const activeSelectionStrokeWidth = 4 * sizeMultiplier;
 
   // Define the scaling factor
   const SCALE = 1000;
@@ -716,9 +707,40 @@ export default function HexGridPuzzle({
   const selectionData = selections.map((sel) => {
     const paths = computeInsetOutline(sel.cells, layoutParamsBase, selectionInset);
     const color = getSelectionOutlineColor(sel, regionSize, colorToWin);
-    return { paths, color };
+    const majorityFill =
+    sel.count0 === sel.count1
+      ? colorToHex(colorToWin === 1 ? 0 : 1)  // if tied, always choose the opposite of colorToWin
+      : sel.count0 > sel.count1
+      ? colorToHex(0)
+      : colorToHex(1);
+
+    return { paths, color, majorityFill };
   });
-  const hexToFinalColor = {};
+
+  const [animatedRegionCount, setAnimatedRegionCount] = useState(0);
+
+  // When the puzzle is complete, start sequentially animating the regions.
+  useEffect(() => {
+    if (puzzleComplete) {
+      // Reset the count.
+      setAnimatedRegionCount(0);
+      const interval = setInterval(() => {
+        setAnimatedRegionCount((prev) => {
+          const next = prev + 1;
+          if (next >= selectionData.length) {
+            clearInterval(interval);
+            // After a short delay, signal that the animation is complete.
+            setTimeout(() => {
+              if (onAnimationComplete) onAnimationComplete();
+            }, 1750);
+          }
+          return next;
+        });
+      }, 750); // Adjust the delay (in ms) between region animations as desired.
+      return () => clearInterval(interval);
+    }
+  }, [puzzleComplete, selectionData.length]);
+  // const hexToFinalColor = {};
   // selections.forEach((sel) => {
   //   // Build the region object so we get the correct outline color
   //   const regionObj = buildRegionObject(sel.cells, hexStates);
@@ -809,7 +831,7 @@ export default function HexGridPuzzle({
           {mapData.map((hex) => {
             const k = hexKey(hex.q, hex.r, hex.s);
             const baseColor = colorToHex(hexStates[k]);
-            const fillColor = hexToFinalColor[k] || baseColor
+            // const fillColor = baseColor //hexToFinalColor[k] || 
             return (
               <Hexagon
                 key={k}
@@ -826,7 +848,7 @@ export default function HexGridPuzzle({
                 onPointerEnter={() => onHexEnter(hex.q, hex.r, hex.s)}
 
                 style={{
-                  fill: fillColor,
+                  fill: baseColor,
                   stroke: "#fff",
                   strokeWidth: hexStrokeWidth,
                   cursor: "pointer",
@@ -849,7 +871,23 @@ export default function HexGridPuzzle({
             );
           })}
         </Layout>
-        
+{/* Render each region’s inset outline.
+          They will transition from transparent (fillOpacity 0) to fully filled (fillOpacity 1) one at a time. */}
+      {puzzleComplete && selectionData.map((selData, regionIndex) =>
+        selData.paths.map((d, i) => (
+          <path
+            key={`sel-${regionIndex}-${i}`}
+            d={d}
+            fill={regionIndex < animatedRegionCount ? selData.majorityFill : "none"}
+            stroke={selData.majorityFill}
+            strokeWidth={selectionStrokeWidth}
+            style={{
+              fillOpacity: regionIndex < animatedRegionCount ? 1 : 0,
+              transition: "fill-opacity 1s linear",
+            }}
+          />
+        ))
+      )}
 
         {/* In-progress (active) selection outline */}
         {activePaths.map((d, idx) => (

@@ -68,6 +68,8 @@ export default function HexPuzzleWrapper({
   // Determine if the puzzle is complete
   const isComplete = regionsMade === totalRegions && regionsWon >= neededForMajority;
 
+  const [showOverlay, setShowOverlay] = useState(false);
+
   // HexIcon Component (unchanged)
   const HexIcon = ({
     text,
@@ -246,6 +248,8 @@ export default function HexPuzzleWrapper({
               regionSize={regionSize}
               sizeMultiplier={sizeMultiplier}
               onPuzzleStateChange={handlePuzzleStateChange}
+              puzzleComplete={isComplete}
+              onAnimationComplete={() => setShowOverlay(true)}
             />
           </div>
         </div>
@@ -280,7 +284,7 @@ export default function HexPuzzleWrapper({
         </div>
 
         {/* Puzzle Complete Overlay */}
-        {isComplete && (
+        {showOverlay && (
             <>
                 {/* CSS-in-JS Styles with Backdrop and Box Animations */}
                 <style jsx>{`
