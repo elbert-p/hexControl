@@ -321,7 +321,7 @@ export default function HexPuzzleWrapper({
 
               /* Overlay Box with Popup Animation */
               .overlayBox {
-                  background: #ffd;
+                  background: white; //#ffd
                   border: 6px solid #228B22;
                   border-radius: 10px;
                   padding: 20px 30px;

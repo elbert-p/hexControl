@@ -42,13 +42,13 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false }) => {
             fontSize: "18px",
             }}
         >
-            <strong>Goal:</strong> Split the map into regions to win.
+            <strong>Goal:</strong> Split the map into <strong>regions</strong> to win.
             <br /> 
-            The color with the most hexes wins that region.
+            The color with the most <strong>hexes</strong> wins that region.
             <br /> 
-            The <strong>majority</strong> of regions must be the winning color.
+            The <strong>majority</strong> of <strong>regions</strong> must be the winning color.
             <br /> 
-            <strong>All</strong> hexes must be part of a region.
+            <strong>All hexes</strong> must be part of a region.
         </p>
         <p
             style={{
@@ -213,15 +213,15 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false }) => {
         <style jsx>{`
         @keyframes pulse {
           0% {
-            background-color: yellow;
+            background-color: #c6e2e9;
             transform: scale(1);
           }
           50% {
-            background-color: #ffd700;
-            transform: scale(1.1);
+            background-color: yellow;
+            transform: scale(1.3);
           }
           100% {
-            background-color: yellow;
+            background-color: #c6e2e9;
             transform: scale(1);
           }
         }
