@@ -28,7 +28,7 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false }) => {
             padding: "15px 0 10px 0",
             }}
         >
-            Completed levels are outlined in <strong style={{ color: "green" }}>green</strong>.
+            <strong>Completed</strong> levels are outlined in <strong style={{ color: "green" }}>green</strong>.
             <br />
             <strong>Click</strong> a level <strong>next to</strong> a completed level to play.
         </p>

@@ -10,7 +10,7 @@ export default function HexPuzzleWrapper({
   colorToWin,
   regionSize,
   sizeMultiplier,
-  puzzleId, // Added puzzleId prop to identify the puzzle
+  puzzleId,
 }) {
   const router = useRouter();
   // The puzzle will send us its internal states via onPuzzleStateChange
@@ -52,7 +52,7 @@ export default function HexPuzzleWrapper({
   }, 0);
 
   // Hex code for the color that should win:
-  const colorHexToWin = colorToWin === 0 ? "#ff8888" : "#88f"; // Example colors
+  const colorHexToWin = colorToWin === 0 ? "#ff8888" : "#88f";
 
   // Determine if the puzzle is complete
   const isComplete = regionsMade === totalRegions && regionsWon >= neededForMajority;
@@ -360,7 +360,9 @@ export default function HexPuzzleWrapper({
               {/* Overlay Structure with Applied Classes */}
               <div className="overlayContainer">
               <div className="overlayBox">
-                  <h2 className="overlayHeading">Level {puzzleId} Completed!</h2>
+              <h2 className="overlayHeading">
+                <span style={{ fontWeight: 'normal' }}>You solved</span> Level {puzzleId}!
+              </h2>
                   <button
                   className="overlayButton"
                   onClick={() => router.push("/puzzle-select")}
