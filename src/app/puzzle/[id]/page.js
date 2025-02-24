@@ -5,6 +5,8 @@ import React from "react";
 import { useParams } from "next/navigation";
 import puzzles from "../../puzzleData"; // Adjusted import path
 import HexPuzzleWrapper from "../../../components/HexPuzzleWrapper"; // Adjust path as necessary
+import PuzzleHeader  from "../../../components/PuzzleHeader"; // Added import for PuzzleHeader
+
 
 export default function PuzzlePage() {
   const params = useParams();
@@ -23,9 +25,12 @@ export default function PuzzlePage() {
         height: "100dvh",
         backgroundColor: "#c6e2e9", // Same background as puzzle-select page
         display: "flex",
-        justifyContent: "center",
+        flexDirection: "column", // Stack children vertically
+        alignItems: "center", // Center children horizontally
       }}
     >
+      <PuzzleHeader puzzleId={puzzleId} />
+  
       <HexPuzzleWrapper
         mapData={puzzle.mapData}
         colorToWin={puzzle.colorToWin}

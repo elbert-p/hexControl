@@ -7,6 +7,8 @@ import { useRouter } from "next/navigation";
 import { HexGrid, Layout, Hexagon } from "react-hexgrid";
 import ClipperLib from "clipper-lib";
 import puzzles from "./../puzzleData";
+import PuzzleHeader  from "../../components/PuzzleHeader"; // Added import for PuzzleHeader
+
 // console.log(puzzles[5].mapData)
 
 /** Difficulty → color mapping */
@@ -197,7 +199,7 @@ function HexGridSelector({ puzzles, completedPuzzles }) {
   const viewBox = `${bounds.minX - margin} ${bounds.minY - margin} ${widthPx} ${heightPx}`;
 
   // Define stroke widths and insets to match HexGridPuzzle component
-  const hexStrokeWidth = 2.4 * 1.5;
+  const hexStrokeWidth = 3.6 * 1.5;
   const selectionStrokeWidth = 3.6 * 1.5;
   const activeSelectionStrokeWidth = 4.2 * 1.5;
   const SCALE = 1000;
@@ -313,7 +315,13 @@ function onHexMouseDown(q, r, s, e) {
   
 
   return (
-    <div style={{ display: "inline-block", userSelect: "none" }}>
+    <div style={{ 
+      display: "inline-block", 
+      userSelect: "none", 
+      padding: "40px",
+      outline: "2px solid white",
+      borderRadius: "20px", 
+      }}>
       <HexGrid
         width={widthPx}
         height={heightPx}
@@ -444,13 +452,25 @@ export default function PuzzleSelectPage() {
     <main
       style={{
         display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100dvh",
-        backgroundColor: "#c6e2e9", // Same background as puzzle page
+        flexDirection: "column",
+        height: "100vh",
+        backgroundColor: "#c6e2e9",
       }}
     >
-      <HexGridSelector puzzles={puzzles} completedPuzzles={completedPuzzles} />
+      <div>
+        <PuzzleHeader isSelectMode = "true" />
+      </div>
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <HexGridSelector puzzles={puzzles} completedPuzzles={completedPuzzles} />
+      </div>
     </main>
   );
+  
 }

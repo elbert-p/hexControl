@@ -5,17 +5,6 @@ import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import HexGridPuzzle from "./HexGridPuzzle";
 import { useRouter } from "next/navigation";
 
-/**
- * A wrapper for HexGridPuzzle that:
- *  1) Accepts mapData, colorToWin, regionSize.
- *  2) Displays puzzle stats:
- *     - Color to Win (as a small hex)
- *     - Hexes per Region (displayed above the puzzle)
- *     - Regions Made (# correct-size selections / total)
- *     - Regions Won (# that have colorToWin majority / needed for majority)
- *  3) Has keyboard shortcuts text.
- *  4) Displays a "Return to Home" button upon puzzle completion.
- */
 export default function HexPuzzleWrapper({
   mapData,
   colorToWin,
@@ -169,9 +158,9 @@ export default function HexPuzzleWrapper({
   return (
     <div
       style={{
-        height: "calc(100dvh - 160px)", // Set height to window height minus 150px
+        height: "100%",
         maxWidth: "100%", // Ensure it doesn't exceed the wrapper's height
-
+        //height: "calc(100dvh - 160px)", // Set height to window height minus 160px
         display: "flex",
         justifyContent: "center", // Center vertically
         alignItems: "center",
@@ -181,6 +170,9 @@ export default function HexPuzzleWrapper({
     >
       <div
         style={{
+          padding: "40px",
+          outline: "2px solid white",
+          borderRadius: "20px",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -285,124 +277,100 @@ export default function HexPuzzleWrapper({
 
         {/* Puzzle Complete Overlay */}
         {showOverlay && (
-            <>
-                {/* CSS-in-JS Styles with Backdrop and Box Animations */}
-                <style jsx>{`
-                /* Keyframes for Backdrop Fade-In */
-                @keyframes backdropFadeIn {
-                    0% {
-                    background-color: rgba(255, 255, 255, 0);
-                    }
-                    100% {
-                    background-color: rgba(255, 255, 255, 0.6);
-                    }
-                }
+          <>
+              {/* CSS-in-JS Styles with Backdrop and Box Animations */}
+              <style jsx>{`
+              /* Keyframes for Backdrop Fade-In */
+              @keyframes backdropFadeIn {
+                  0% {
+                  background-color: rgba(255, 255, 255, 0);
+                  }
+                  100% {
+                  background-color: rgba(255, 255, 255, 0.6);
+                  }
+              }
 
-                /* Keyframes for Box Fade-In and Scale-Up */
-                @keyframes popupFadeIn {
-                    0% {
-                    opacity: 0;
-                    transform: scale(0.8);
-                    }
-                    100% {
-                    opacity: 1;
-                    transform: scale(1);
-                    }
-                }
+              /* Keyframes for Box Fade-In and Scale-Up */
+              @keyframes popupFadeIn {
+                  0% {
+                  opacity: 0;
+                  transform: scale(0.8);
+                  }
+                  100% {
+                  opacity: 1;
+                  transform: scale(1);
+                  }
+              }
 
-                /* Overlay Container with Backdrop Animation */
-                .overlayContainer {
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    right: 0;
-                    bottom: 0;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    /* Initial background set to transparent */
-                    background-color: rgba(255, 255, 255, 0);
-                    z-index: 9999;
-                    /* Apply backdrop fade-in animation */
-                    animation: backdropFadeIn 0.3s ease forwards;
-                }
+              /* Overlay Container with Backdrop Animation */
+              .overlayContainer {
+                  position: absolute;
+                  top: 0;
+                  left: 0;
+                  right: 0;
+                  bottom: 0;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  /* Initial background set to transparent */
+                  background-color: rgba(255, 255, 255, 0);
+                  z-index: 9999;
+                  /* Apply backdrop fade-in animation */
+                  animation: backdropFadeIn 0.3s ease forwards;
+              }
 
-                /* Overlay Box with Popup Animation */
-                .overlayBox {
-                    background: #ffd;
-                    border: 6px solid #228B22;
-                    border-radius: 10px;
-                    padding: 20px 30px;
-                    text-align: center;
-                    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-                    /* Apply popup fade-in and scale-up animation */
-                    animation: popupFadeIn 0.4s ease forwards;
-                }
+              /* Overlay Box with Popup Animation */
+              .overlayBox {
+                  background: #ffd;
+                  border: 6px solid #228B22;
+                  border-radius: 10px;
+                  padding: 20px 30px;
+                  text-align: center;
+                  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+                  /* Apply popup fade-in and scale-up animation */
+                  animation: popupFadeIn 0.4s ease forwards;
+              }
 
-                /* Heading Styles */
-                .overlayHeading {
-                    margin: 0;
-                    margin-bottom: 25px;
-                    font-family: 'Press Start 2P', sans-serif;
-                }
+              /* Heading Styles */
+              .overlayHeading {
+                  margin: 0;
+                  margin-bottom: 25px;
+                  font-family: 'Press Start 2P', sans-serif;
+              }
 
-                /* Button Styles */
-                .overlayButton {
-                    padding: 10px 20px;
-                    font-size: 18px;
-                    cursor: pointer;
-                    background-color: #a3bf56;
-                    color: white;
-                    border: none;
-                    border-radius: 10px;
-                    font-family: 'Press Start 2P', sans-serif;
-                    transition: background-color 0.3s ease;
-                }
+              /* Button Styles */
+              .overlayButton {
+                  padding: 10px 20px;
+                  font-size: 18px;
+                  cursor: pointer;
+                  background-color: #a3bf56;
+                  color: white;
+                  border: none;
+                  border-radius: 10px;
+                  font-family: 'Press Start 2P', sans-serif;
+                  transition: background-color 0.3s ease;
+              }
 
-                /* Button Hover Effect */
-                .overlayButton:hover {
-                    background-color: #8fae45; /* Darken button on hover */
-                }
-                `}</style>
+              /* Button Hover Effect */
+              .overlayButton:hover {
+                  background-color: #8fae45; /* Darken button on hover */
+              }
+              `}</style>
 
-                {/* Overlay Structure with Applied Classes */}
-                <div className="overlayContainer">
-                <div className="overlayBox">
-                    <h2 className="overlayHeading">Level {puzzleId} Completed!</h2>
-                    <button
-                    className="overlayButton"
-                    onClick={() => router.push("/puzzle-select")}
-                    >
-                    Home
-                    </button>
-                </div>
-                </div>
-            </>
-            )}
-
-        {/* Keyboard Shortcuts fixed at the bottom */}
-        <div
-          style={{
-            position: "absolute",
-            bottom: 40, // Adjusted for better spacing
-            textAlign: "center",
-            fontSize: 18,
-            padding: 20,
-            userSelect: "none", // Prevent text selection
-          }}
-        >
-          <p style={{ marginTop: 0 }}>
-            <strong>Keyboard Shortcuts:</strong>
-          </p>
-          <ul style={{ listStyleType: "none", padding: 0, margin: 0 }}>
-            <li>
-              <kbd>Z</kbd>: Undo the last selection
-            </li>
-            <li>
-              <kbd>R</kbd>: Reset all selections
-            </li>
-          </ul>
-        </div>
+              {/* Overlay Structure with Applied Classes */}
+              <div className="overlayContainer">
+              <div className="overlayBox">
+                  <h2 className="overlayHeading">Level {puzzleId} Completed!</h2>
+                  <button
+                  className="overlayButton"
+                  onClick={() => router.push("/puzzle-select")}
+                  >
+                  Home
+                  </button>
+              </div>
+              </div>
+          </>
+          )}
       </div>
     </div>
   );
