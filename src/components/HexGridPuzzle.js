@@ -467,7 +467,7 @@ export default function HexGridPuzzle({
         console.log("⚠️ No valid solutions found.");
       }
     };
-    // solve();// Comment this line to disable auto-solving
+    solve();// Comment this line to disable auto-solving
   }, [mapData]);
 
   useEffect(() => {

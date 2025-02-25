@@ -315,18 +315,12 @@ function onHexMouseDown(q, r, s, e) {
   
 
   return (
-    <div style={{ 
-      display: "inline-block", 
-      userSelect: "none", 
-      padding: "40px",
-      outline: "2px solid white",
-      borderRadius: "20px", 
-      }}>
+    <div className = "selectWrapper">
       <HexGrid
         width={widthPx}
         height={heightPx}
         viewBox={viewBox}
-        onMouseLeave={onGridMouseLeave} // Add onMouseLeave handler
+        onMouseLeave={onGridMouseLeave}
       >
         <Layout {...layoutParams}>
           {puzzles.map((hex) => {

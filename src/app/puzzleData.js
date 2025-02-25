@@ -2,6 +2,8 @@
 import { GridGenerator } from "react-hexgrid";
 import generateMapData from "./generateMapData";
 import makeHardPuzzle from "./makePuzzle";
+import hardPuzzleGeneratorGA from './hardPuzzleGA.js';
+
 const puzzle2acolors = 
     [1, 0, 0, 0, 1, 1, 1, 0, 0, 0,
     0, 0, 0, 0, 0, 1, 1, 1, 1, 1,
@@ -18,6 +20,23 @@ const puzzle5colors =
     1, 0, 0, 1, 0, 0, 1, 
     0, 1, 0, 0, 1, 0, 1,
     1, 0, 0, 1, 0, 1, 0]
+// const result = hardPuzzleGeneratorGA({
+//   cellCount: 25,
+//   regionSize: 5,
+//   colorToWin: 1,
+//   maxSolutions: 2,
+//   difficultyThreshold: 4,
+//   populationSize: 20,
+//   maxGenerations: 20,
+//   mutationRate: 0.1,
+// });
+// if (result) {
+//   console.log("Found a puzzle after", result.generation, "generations");
+//   console.log("Edges/hex:", result.edgesPerHex, "Solutions:", result.solutionCount);
+//   console.log(result.mapData);  // the final layout with color bits from the GA
+// } else {
+//   console.log("No suitable puzzle found in time.");
+// }
 const puzzles = [
     {
         id: "0",
@@ -199,7 +218,7 @@ const puzzles = [
         r: 1,
         s: -2,
         difficulty: "easy",
-        mapData: makeHardPuzzle(generateMapData(18, 0.2, 0.5, 0.5), 1, 6, 5),
+        mapData: makeHardPuzzle(generateMapData(18, 0.2, 0.5, 0.5), 1, 6, 4),
         colorToWin: 1,
         regionSize: 6,
       },
@@ -283,9 +302,40 @@ const puzzles = [
       //   colorToWin: 1,
       //   regionSize: 9,
       // },
+      // {
+      //   id: "7",
+      //   q: 4,
+      //   r: 1,
+      //   s: -5,
+      //   difficulty: "medium",
+      //   // mapData: result.mapData,
+      //   mapData: [
+      //     {q: 0, r: 0, s: 0, color: 0},
+      //     {q: 1, r: -1, s: 0, color: 1},
+      //     {q: 2, r: -2, s: -1, color: 0},
+      //     {q: 3, r: -3, s: -1, color: 1},
+      //     {q: 4, r: -4, s: 0, color: 0},
+      //     {q: 5, r: -5, s: 1, color: 0},
+      //     {q: 6, r: -6, s: 1, color: 0},
+      //     {q: 7, r: -7, s: 0, color: 1},
+      //     {q: 8, r: -8, s: 0, color: 1},
+      //     {q: 9, r: -9, s: 0, color: 0},
+      //     {q: 10, r: -10, s: 0, color: 0},
+      //     {q: 11, r: -11, s: 0, color: 0},
+      //     {q: 12, r: -12, s: -1, color: 0}, 
+      //     {q: 1, r: -2, s: 1, color: 1},
+      //     {q: -1, r: -1, s: 2, color: 0}, 
+      //     {q: 0, r: -2, s: 2, color: 0},
+      //     {q: 2, r: -1, s: -1, color: 0},
+      //     {q: -2, r: 0, s: 2, color: 0},
+      //     {q: 2, r: 0, s: -2, color: 0},
+      //     {q: 1, r: 1, s: -2, color: 1},
+      //     {q: 3, r: -1, s: -2, color: 0},],
+      //   regionSize: 5,
+      // },
     // Add more puzzles as needed
   ];
-  console.log(JSON.stringify(puzzles.find((p) => p.id === "4").mapData).replace(/"/g, ''));
+  console.log(JSON.stringify(puzzles.find((p) => p.id === "4a").mapData).replace(/"/g, ''));
   export default puzzles;
 
 

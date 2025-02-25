@@ -156,29 +156,32 @@ export default function HexPuzzleWrapper({
 //   }, [puzzleState, mapData]);
 
   return (
-    <div
-      style={{
-        height: "100%",
-        maxWidth: "100%", // Ensure it doesn't exceed the wrapper's height
-        //height: "calc(100dvh - 160px)", // Set height to window height minus 160px
+    <div className="dynamicWrapper">
+      {/* style={{
+        outline: "2px solid white",
+        borderRadius: "20px",
+        margin: "20px",
+        // height: "100%",
+        flex: "1 1 0%",
+        minHeight: 0,
+        maxWidth: "calc(100dvw - 40px)", // Ensure it doesn't exceed the wrapper's width    
+        // height: "calc(100dvh - 54px - 80px)", // Set height to window height minus top bar and padding
         display: "flex",
         justifyContent: "center", // Center vertically
         alignItems: "center",
-        padding: "20px", // Added padding for better spacing on smaller screens
+        padding: "40px", // Added padding for better spacing on smaller screens
         boxSizing: "border-box",
       }}
-    >
+    > */}
       <div
         style={{
-          padding: "40px",
-          outline: "2px solid white",
-          borderRadius: "20px",
+          // padding: "40px",
+          // borderRadius: "20px",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           maxHeight: "100%", // Ensure it doesn't exceed the wrapper's height
           maxWidth: "100%", // Ensure it doesn't exceed the wrapper's height
-
           userSelect: "none", // Prevent text selection
         }}
       >
@@ -232,6 +235,7 @@ export default function HexPuzzleWrapper({
             style={{
               transform: `scale(${scale})`,
               transformOrigin: "center",
+              
             }}
           >
             <HexGridPuzzle
@@ -334,7 +338,7 @@ export default function HexPuzzleWrapper({
               /* Heading Styles */
               .overlayHeading {
                   margin: 0;
-                  margin-bottom: 25px;
+                  margin-bottom: 20px;
                   font-family: 'Press Start 2P', sans-serif;
               }
 

@@ -1,4 +1,4 @@
-:root {
+/* :root {
   --background: #ffffff;
   --foreground: #171717;
 }
@@ -38,5 +38,39 @@ a {
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
+  }
+} */
+
+.dynamicWrapper {
+  outline: 2px solid white;
+  border-radius: 20px;
+  margin: 20px;                         /* default (larger screens) */
+  /* flex: 1 1 0%; */
+  min-height: 0;
+  min-width: 0;
+  max-width: calc(100dvw - 40px);       /* default (larger screens) */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  box-sizing: border-box;
+}
+.selectWrapper {
+  padding: 40px;
+  outline: 2px solid white;
+  display: inline-block;
+  user-select: none;
+  border-radius: 20px;
+}
+
+@media (max-width: 600px) { /* small screens */
+  .dynamicWrapper {
+    /* margin: 10px;                        
+    max-width: calc(100dvw - 20px);       */
+    padding: 20px;
+  }
+  .selectWrapper {
+    padding: 0px;
+    outline: none;
   }
 }

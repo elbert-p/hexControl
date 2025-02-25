@@ -140,7 +140,7 @@ export default function solvePuzzle(mapData, colorToWin = 1, regionSize = 7, max
     }
     // For region_size N, we need more than N/2 of colorVal => at least floor(N/2) + 1
     const neededPerRegion = Math.floor(size / 2) + 1;
-    return Math.floor(colorCountLeft / neededPerRegion);
+    return colorCountLeft / neededPerRegion;
   }
 
   // Create a stable "canonical" representation of a list of region sets
@@ -171,6 +171,7 @@ export default function solvePuzzle(mapData, colorToWin = 1, regionSize = 7, max
 
   // Main backtracking function
   function backtrack(currentRegions, remainingHexes, winsSoFar) {
+
     // If no remaining hexes, we've formed a complete partition
     if (remainingHexes.size === 0) {
       // Check if colorToWin has majority
@@ -180,6 +181,7 @@ export default function solvePuzzle(mapData, colorToWin = 1, regionSize = 7, max
         if (!solutionsSet.has(solKey)) {
           solutionsSet.add(solKey);
           // Make a copy of currentRegions to store in solutionsFound
+          // console.log("found")
           solutionsFound.push([...currentRegions]);
         }
       }
@@ -193,8 +195,9 @@ export default function solvePuzzle(mapData, colorToWin = 1, regionSize = 7, max
 
     const neededWins = neededWinsSoFar(winsSoFar, neededToWinMajority);
 
+    const possibleWins = maxPossibleWins(remainingHexes, colorToWin, regionSize);
     // Prune if not enough color cells left to form the needed winning regions
-    if (maxPossibleWins(remainingHexes, colorToWin, regionSize) < neededWins) {
+    if (possibleWins < neededWins) {
       // console.log("Pruning: Not enough color left to form needed winning regions.");
       return;
     }
@@ -226,6 +229,8 @@ export default function solvePuzzle(mapData, colorToWin = 1, regionSize = 7, max
     // Sort so we pick them in a consistent order
     colorToWinCells.sort();
 
+    const forcedScenario = (colorToWinCells.length === neededWins * regionSize);
+
     // Puzzle logic: try each colorToWin cell as a start cell for a winning region
     for (const startCell of colorToWinCells) {
       // All possible winning regions (connected sets of regionSize) that include startCell
@@ -237,12 +242,12 @@ export default function solvePuzzle(mapData, colorToWin = 1, regionSize = 7, max
       );
 
       if (possibleWinningRegions.length === 0) {
-        // Exclude this cell from future tries (remove from remainingHexes) and recurse
-        const newRemaining = new Set(remainingHexes);
-        newRemaining.delete(startCell);
-        backtrack(currentRegions, newRemaining, winsSoFar);
-        // After doing that exclusion, return (following the puzzle's logic)
-        return;
+        // Exclude this cell from future tries and recurse
+        const originalColor = hexes[startCell];
+        hexes[startCell] = (colorToWin === 1 ? 0 : 1);
+        backtrack(currentRegions, remainingHexes, winsSoFar);
+        hexes[startCell] = originalColor;
+        return; // After calling the recursive with the updated cells, return
       } else {
         // If multiple, sort by ascending number of colorToWin cells used
         possibleWinningRegions.sort((a, b) => {
@@ -286,8 +291,10 @@ export default function solvePuzzle(mapData, colorToWin = 1, regionSize = 7, max
           }
         }
 
-        // After trying all winning regions from startCell, return (puzzle logic)
-        return;
+        if(possibleWins === neededWins) {
+          return; // only return if there is the exact amount of colorToWin cells left because any all the 
+          // colorToWin cells must be included in the branch
+        }
       }
     }
   }
@@ -300,6 +307,7 @@ export default function solvePuzzle(mapData, colorToWin = 1, regionSize = 7, max
         const solKey = canonicalSolution(currentRegions);
         if (!solutionsSet.has(solKey)) {
           solutionsSet.add(solKey);
+          // console.log("found")
           solutionsFound.push([...currentRegions]);
         }
       }
