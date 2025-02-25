@@ -162,6 +162,7 @@ export default function HexPuzzleWrapper({
       display: "flex",
       justifyContent: "center",
       flexDirection: "column",
+      minHeight: 0,
     }}>
 
     <div className="dynamicWrapper">

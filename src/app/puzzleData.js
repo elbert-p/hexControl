@@ -21,13 +21,13 @@ const puzzle5colors =
     0, 1, 0, 0, 1, 0, 1,
     1, 0, 0, 1, 0, 1, 0]
 // const result = hardPuzzleGeneratorGA({
-//   cellCount: 25,
-//   regionSize: 5,
+//   cellCount: 35,
+//   regionSize: 7,
 //   colorToWin: 1,
-//   maxSolutions: 2,
-//   difficultyThreshold: 4,
+//   maxSolutions: 5,
+//   difficultyThreshold: 3,
 //   populationSize: 20,
-//   maxGenerations: 20,
+//   maxGenerations: 10,
 //   mutationRate: 0.1,
 // });
 // if (result) {
@@ -155,7 +155,7 @@ const puzzles = [
         q: 4,
         r: 0,
         s: -4,
-        difficulty: "medium",
+        difficulty: "intermediate",
         mapData: 
         // makeHardPuzzle(GridGenerator.rectangle(7, 5).map((hex, idx) => ({
         //     q: hex.q,
@@ -302,40 +302,31 @@ const puzzles = [
       //   colorToWin: 1,
       //   regionSize: 9,
       // },
+      {
+        id: "7",
+        q: 4,
+        r: 1,
+        s: -5,
+        difficulty: "medium",
+        // mapData: result.mapData,
+        mapData: [{q:0,r:0,s:0,color:0},{q:1,r:-1,s:0,color:1},{q:1,r:0,s:-1,color:1},{q:-1,r:0,s:1,color:1},{q:0,r:-1,s:1,color:0},{q:2,r:-1,s:-1,color:0},{q:2,r:0,s:-2,color:0},{q:1,r:-2,s:1,color:0},{q:-1,r:1,s:0,color:0},{q:-2,r:1,s:1,color:1},{q:-2,r:0,s:2,color:0},{q:-1,r:-1,s:2,color:1},{q:-1,r:-2,s:3,color:1},{q:-3,r:0,s:3,color:0},{q:-2,r:-1,s:3,color:1},{q:-3,r:-1,s:4,color:0},{q:-2,r:2,s:0,color:0},{q:-3,r:2,s:1,color:1},{q:-3,r:1,s:2,color:0},{q:3,r:-2,s:-1,color:1},{q:3,r:-1,s:-2,color:0}],
+        colorToWin: 1,
+        regionSize: 7,
+      },
       // {
-      //   id: "7",
-      //   q: 4,
-      //   r: 1,
+      //   id: "8",
+      //   q: 3,
+      //   r: 2,
       //   s: -5,
       //   difficulty: "medium",
       //   // mapData: result.mapData,
-      //   mapData: [
-      //     {q: 0, r: 0, s: 0, color: 0},
-      //     {q: 1, r: -1, s: 0, color: 1},
-      //     {q: 2, r: -2, s: -1, color: 0},
-      //     {q: 3, r: -3, s: -1, color: 1},
-      //     {q: 4, r: -4, s: 0, color: 0},
-      //     {q: 5, r: -5, s: 1, color: 0},
-      //     {q: 6, r: -6, s: 1, color: 0},
-      //     {q: 7, r: -7, s: 0, color: 1},
-      //     {q: 8, r: -8, s: 0, color: 1},
-      //     {q: 9, r: -9, s: 0, color: 0},
-      //     {q: 10, r: -10, s: 0, color: 0},
-      //     {q: 11, r: -11, s: 0, color: 0},
-      //     {q: 12, r: -12, s: -1, color: 0}, 
-      //     {q: 1, r: -2, s: 1, color: 1},
-      //     {q: -1, r: -1, s: 2, color: 0}, 
-      //     {q: 0, r: -2, s: 2, color: 0},
-      //     {q: 2, r: -1, s: -1, color: 0},
-      //     {q: -2, r: 0, s: 2, color: 0},
-      //     {q: 2, r: 0, s: -2, color: 0},
-      //     {q: 1, r: 1, s: -2, color: 1},
-      //     {q: 3, r: -1, s: -2, color: 0},],
-      //   regionSize: 5,
+      //   mapData: [{q:0,r:0,s:0,color:0},{q:1,r:-1,s:0,color:1},{q:1,r:0,s:-1,color:0},{q:0,r:1,s:-1,color:0},{q:-1,r:1,s:0,color:0},{q:0,r:-1,s:1,color:1},{q:1,r:-2,s:1,color:0},{q:-2,r:2,s:0,color:0},{q:-1,r:2,s:-1,color:1},{q:-2,r:3,s:-1,color:0},{q:-3,r:3,s:0,color:1},{q:-3,r:2,s:1,color:0},{q:2,r:-1,s:-1,color:1},{q:2,r:0,s:-2,color:0},{q:-1,r:-1,s:2,color:1},{q:0,r:-2,s:2,color:1},{q:-1,r:-2,s:3,color:0},{q:0,r:-3,s:3,color:0},{q:3,r:-2,s:-1,color:1},{q:2,r:-2,s:0,color:0},{q:-1,r:0,s:1,color:0},{q:-2,r:0,s:2,color:1},{q:-2,r:-1,s:3,color:0},{q:-1,r:-3,s:4,color:0},{q:-2,r:1,s:1,color:0},{q:-4,r:2,s:2,color:0},{q:-5,r:3,s:2,color:1},{q:-4,r:1,s:3,color:0},{q:-4,r:4,s:0,color:1},{q:-1,r:3,s:-2,color:0},{q:-2,r:4,s:-2,color:0},{q:0,r:2,s:-2,color:1},{q:-1,r:4,s:-3,color:0},{q:-2,r:5,s:-3,color:1},{q:-3,r:5,s:-2,color:1}],
+      //   colorToWin: 1,
+      //   regionSize: 7,
       // },
     // Add more puzzles as needed
   ];
-  console.log(JSON.stringify(puzzles.find((p) => p.id === "4a").mapData).replace(/"/g, ''));
+  console.log(JSON.stringify(puzzles.find((p) => p.id === "7").mapData).replace(/"/g, ''));
   export default puzzles;
 
 

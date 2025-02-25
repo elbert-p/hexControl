@@ -17,7 +17,7 @@ function difficultyColor(diff) {
     case "easy":
       return "#c9e773"; //d8ee99
     case "intermediate":
-      return "#ffe380"; //ffdf88
+      return "#ffe173"; //ffdf88
     case "medium":
       return "#ffd188";
     case "hard":
