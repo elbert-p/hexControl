@@ -15,13 +15,17 @@ import PuzzleHeader  from "../../components/PuzzleHeader"; // Added import for P
 function difficultyColor(diff) {
   switch (diff) {
     case "easy":
-      return "#c9e773"; // Easy color //d8ee99
+      return "#c9e773"; //d8ee99
+    case "intermediate":
+      return "#ffe380"; //ffdf88
     case "medium":
-      return "#ffd188"; // Medium color
+      return "#ffd188";
     case "hard":
-      return "#ff8888"; // Hard color
+      return "#ff8888";
+    case "extreme":
+      return "#ff8888"; //change to purple
     default:
-      return "#eeeeee"; // Default color
+      return "#eeeeee";
   }
 }
 

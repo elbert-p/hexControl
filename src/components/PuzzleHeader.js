@@ -214,7 +214,7 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false }) => {
         @keyframes pulse {
           0% {
             background-color: #c6e2e9;
-            transform: scale(1);
+            transform: scale(0.9);
           }
           50% {
             background-color: yellow;
@@ -222,7 +222,7 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false }) => {
           }
           100% {
             background-color: #c6e2e9;
-            transform: scale(1);
+            transform: scale(0.9);
           }
         }
         @keyframes backdropFadeIn {

@@ -114,7 +114,7 @@ const puzzles = [
         q: 3,
         r: -2,
         s: -1,
-        difficulty: "medium",
+        difficulty: "intermediate",
         mapData: GridGenerator.rectangle(10, 5).map((hex, idx) => {
             // if (hex.r % 2 !== 0) {
             //   hex.q -= 1; // Shift odd rows to the left
@@ -145,7 +145,7 @@ const puzzles = [
         q: 3,
         r: -1,
         s: -2,
-        difficulty: "easy",
+        difficulty: "intermediate",
         mapData: [{q:0,r:0,s:0,color:0},{q:0,r:1,s:-1,color:0},{q:-1,r:0,s:1,color:0},{q:0,r:-1,s:1,color:1},{q:1,r:-1,s:0,color:1},{q:-1,r:-1,s:2,color:0},{q:2,r:-2,s:0,color:1},{q:1,r:-2,s:1,color:1},{q:-1,r:1,s:0,color:1},{q:1,r:0,s:-1,color:0},{q:0,r:2,s:-2,color:1},{q:3,r:-2,s:-1,color:0},{q:3,r:-1,s:-2,color:0},{q:3,r:-3,s:0,color:0},{q:2,r:-1,s:-1,color:1},{q:2,r:0,s:-2,color:1},{q:-2,r:-1,s:3,color:1},{q:0,r:-2,s:2,color:0}],
         colorToWin: 1,
         regionSize: 6,
