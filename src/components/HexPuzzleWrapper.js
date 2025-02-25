@@ -156,13 +156,21 @@ export default function HexPuzzleWrapper({
 //   }, [puzzleState, mapData]);
 
   return (
+    <div  
+    style={{
+      flex: "1 1 0%",
+      display: "flex",
+      justifyContent: "center",
+      flexDirection: "column",
+    }}>
+
     <div className="dynamicWrapper">
       {/* style={{
         outline: "2px solid white",
         borderRadius: "20px",
         margin: "20px",
         // height: "100%",
-        flex: "1 1 0%",
+        // flex: "1 1 0%",
         minHeight: 0,
         maxWidth: "calc(100dvw - 40px)", // Ensure it doesn't exceed the wrapper's width    
         // height: "calc(100dvh - 54px - 80px)", // Set height to window height minus top bar and padding
@@ -378,6 +386,7 @@ export default function HexPuzzleWrapper({
           </>
           )}
       </div>
+    </div>
     </div>
   );
 }
