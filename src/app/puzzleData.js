@@ -145,8 +145,8 @@ const puzzles = [
         q: 3,
         r: -1,
         s: -2,
-        difficulty: "intermediate",
-        mapData: [{q:0,r:0,s:0,color:0},{q:0,r:1,s:-1,color:0},{q:-1,r:0,s:1,color:0},{q:0,r:-1,s:1,color:1},{q:1,r:-1,s:0,color:1},{q:-1,r:-1,s:2,color:0},{q:2,r:-2,s:0,color:1},{q:1,r:-2,s:1,color:1},{q:-1,r:1,s:0,color:1},{q:1,r:0,s:-1,color:0},{q:0,r:2,s:-2,color:1},{q:3,r:-2,s:-1,color:0},{q:3,r:-1,s:-2,color:0},{q:3,r:-3,s:0,color:0},{q:2,r:-1,s:-1,color:1},{q:2,r:0,s:-2,color:1},{q:-2,r:-1,s:3,color:1},{q:0,r:-2,s:2,color:0}],
+        difficulty: "easy",
+        mapData: [{q:0,r:0,s:0,color:0},{q:1,r:-1,s:0,color:0},{q:-1,r:0,s:1,color:0},{q:0,r:-1,s:1,color:1},{q:2,r:-2,s:0,color:1},{q:2,r:-1,s:-1,color:1},{q:1,r:0,s:-1,color:1},{q:1,r:-2,s:1,color:0},{q:2,r:0,s:-2,color:0},{q:1,r:1,s:-2,color:0},{q:0,r:1,s:-1,color:1},{q:-1,r:1,s:0,color:1},{q:-2,r:1,s:1,color:1},{q:-2,r:0,s:2,color:0},{q:-1,r:-1,s:2,color:1},{q:0,r:2,s:-2,color:0},{q:-3,r:1,s:2,color:0},{q:-2,r:-1,s:3,color:0}],
         colorToWin: 1,
         regionSize: 6,
       },
@@ -207,18 +207,18 @@ const puzzles = [
         q: 2,
         r: 0,
         s: -2,
-        difficulty: "easy",
-        mapData: makeHardPuzzle(generateMapData(18, 0.2, 0.5, 0.5), 1, 6, 5),
-          colorToWin: 1,
-          regionSize: 6,
+        difficulty: "intermediate",
+        mapData: [{q:0,r:0,s:0,color:0},{q:0,r:1,s:-1,color:0},{q:-1,r:0,s:1,color:0},{q:0,r:-1,s:1,color:1},{q:1,r:-1,s:0,color:1},{q:-1,r:-1,s:2,color:0},{q:2,r:-2,s:0,color:1},{q:1,r:-2,s:1,color:1},{q:-1,r:1,s:0,color:1},{q:1,r:0,s:-1,color:0},{q:0,r:2,s:-2,color:1},{q:3,r:-2,s:-1,color:0},{q:3,r:-1,s:-2,color:0},{q:3,r:-3,s:0,color:0},{q:2,r:-1,s:-1,color:1},{q:2,r:0,s:-2,color:1},{q:-2,r:-1,s:3,color:1},{q:0,r:-2,s:2,color:0}],
+        colorToWin: 1,
+        regionSize: 6,
       },
       {
         id: "4a",
         q: 1,
         r: 1,
         s: -2,
-        difficulty: "easy",
-        mapData: makeHardPuzzle(generateMapData(18, 0.2, 0.5, 0.5), 1, 6, 4),
+        difficulty: "medium",
+        mapData: [{q:0,r:0,s:0,color:1},{q:1,r:-1,s:0,color:1},{q:1,r:0,s:-1,color:1},{q:-1,r:1,s:0,color:0},{q:-1,r:0,s:1,color:0},{q:0,r:-1,s:1,color:0},{q:0,r:1,s:-1,color:1},{q:-1,r:2,s:-1,color:0},{q:-2,r:2,s:0,color:1},{q:-2,r:1,s:1,color:0},{q:2,r:-1,s:-1,color:1},{q:2,r:0,s:-2,color:0},{q:1,r:1,s:-2,color:1},{q:-3,r:2,s:1,color:1},{q:-2,r:0,s:2,color:0},{q:-1,r:-1,s:2,color:0},{q:3,r:-2,s:-1,color:1},{q:2,r:-2,s:0,color:1},{q:3,r:0,s:-3,color:0},{q:4,r:0,s:-4,color:0},{q:3,r:1,s:-4,color:1},{q:2,r:1,s:-3,color:0},{q:3,r:-1,s:-2,color:1},{q:4,r:-3,s:-1,color:0},{q:4,r:-2,s:-2,color:0},{q:3,r:-3,s:0,color:1},{q:-2,r:3,s:-1,color:0},{q:-3,r:3,s:0,color:0},{q:-2,r:-1,s:3,color:0},{q:-1,r:-2,s:3,color:1}],
         colorToWin: 1,
         regionSize: 6,
       },
@@ -243,7 +243,7 @@ const puzzles = [
         r: -2,
         s: -2,
         difficulty: "easy",
-        mapData: [{q:0,r:0,s:0,color:0},{q:1,r:-1,s:0,color:0},{q:-1,r:0,s:1,color:0},{q:0,r:-1,s:1,color:1},{q:2,r:-2,s:0,color:1},{q:2,r:-1,s:-1,color:1},{q:1,r:0,s:-1,color:1},{q:1,r:-2,s:1,color:0},{q:2,r:0,s:-2,color:0},{q:1,r:1,s:-2,color:0},{q:0,r:1,s:-1,color:1},{q:-1,r:1,s:0,color:1},{q:-2,r:1,s:1,color:1},{q:-2,r:0,s:2,color:0},{q:-1,r:-1,s:2,color:1},{q:0,r:2,s:-2,color:0},{q:-3,r:1,s:2,color:0},{q:-2,r:-1,s:3,color:0}],
+        mapData: makeHardPuzzle(generateMapData(18, 0.2, 0.5, 0.5), 1, 6, 5),
         colorToWin: 1,
         regionSize: 6,
       },
@@ -324,9 +324,19 @@ const puzzles = [
       //   colorToWin: 1,
       //   regionSize: 7,
       // },
+
+      // mapData: hardPuzzleGeneratorGA({
+      //   cellCount: 30,
+      //   regionSize: 6,
+      //   colorToWin: 1,
+      //   maxSolutions: 2,
+      //   difficultyThreshold: 3.5,
+      //   populationSize: 20,
+      //   maxGenerations: 10,
+      //   mutationRate: 0.1}).mapData,
     // Add more puzzles as needed
   ];
-  console.log(JSON.stringify(puzzles.find((p) => p.id === "7").mapData).replace(/"/g, ''));
+  console.log(JSON.stringify(puzzles.find((p) => p.id === "4").mapData).replace(/"/g, ''));
   export default puzzles;
 
 

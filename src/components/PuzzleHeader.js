@@ -120,6 +120,7 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false }) => {
                 fontFamily: "'Press Start 2P', sans-serif",
                 fontSize: "24px",
                 userSelect: "none",
+                fontWeight: "normal",
             }}
             >
             {titleText}

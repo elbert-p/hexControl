@@ -11,6 +11,47 @@ import PuzzleHeader  from "../../components/PuzzleHeader"; // Added import for P
 
 // console.log(puzzles[5].mapData)
 
+const CURRENT_VERSION = 1;
+// Migration log
+const migrationLog = {   //puzzles that have changed and should have completion removed
+  1: ["4a", "3a"],
+  // In version 2, these puzzles were updated.
+  // 2: ["3a", "5"],
+};
+
+// Helper function to collect all changed puzzle IDs from storedVersion+1 up to CURRENT_VERSION.
+function getChangedPuzzleIds(storedVersion, currentVersion) {
+  const changed = new Set();
+  for (let version = storedVersion + 1; version <= currentVersion; version++) {
+    if (migrationLog[version]) {
+      migrationLog[version].forEach((puzzleId) => changed.add(puzzleId));
+    }
+  }
+  return changed;
+}
+
+// Function to load and migrate completed puzzles based on version differences.
+function loadAndMigrateCompletedPuzzles() {
+  // Retrieve the stored version; default to 0 if not found.
+  const storedVersion = parseInt(localStorage.getItem("lastVersion") || "0", 10);
+  // Retrieve the completed puzzles list (an array of puzzle IDs)
+  let completedPuzzles = JSON.parse(localStorage.getItem("completedPuzzles") || "[]");
+
+  // If the stored version is older than the current version, perform migration.
+  if (storedVersion < CURRENT_VERSION) {
+    // Get all puzzle IDs that changed in versions newer than the stored version.
+    const changedPuzzles = getChangedPuzzleIds(storedVersion, CURRENT_VERSION);
+    // Remove any completed puzzles that are now outdated.
+    completedPuzzles = completedPuzzles.filter((puzzleId) => !changedPuzzles.has(puzzleId));
+
+    // Update localStorage with the migrated data and the current version.
+    localStorage.setItem("completedPuzzles", JSON.stringify(completedPuzzles));
+    localStorage.setItem("lastVersion", CURRENT_VERSION.toString());
+  }
+  return completedPuzzles;
+}
+
+
 /** Difficulty → color mapping */
 function difficultyColor(diff) {
   switch (diff) {
@@ -416,13 +457,13 @@ export default function PuzzleSelectPage() {
   const [completedPuzzles, setCompletedPuzzles] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load completed puzzles from localStorage
+  // Load completed puzzles from localStorage with migration
   useEffect(() => {
     try {
-      const stored = JSON.parse(localStorage.getItem("completedPuzzles")) || [];
-      setCompletedPuzzles(stored);
+      const migratedPuzzles = loadAndMigrateCompletedPuzzles();
+      setCompletedPuzzles(migratedPuzzles);
     } catch (error) {
-      console.error("Failed to parse completedPuzzles from localStorage:", error);
+      console.error("Failed to load completed puzzles from localStorage:", error);
       setCompletedPuzzles([]);
     } finally {
       setIsLoading(false);
