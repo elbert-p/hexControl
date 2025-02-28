@@ -243,7 +243,26 @@ const puzzles = [
         r: -2,
         s: -2,
         difficulty: "easy",
-        mapData: makeHardPuzzle(generateMapData(18, 0.2, 0.5, 0.5), 1, 6, 5),
+        mapData: [
+          {q: -1, r: -2, s:  3, color: 1},
+          {q:  1, r: -2, s:  1, color: 1},
+          {q: -2, r: -1, s:  3, color: 1}, // blue
+          {q: -1, r: -1, s:  2, color: 0}, // red
+          {q:  0, r: -1, s:  1, color: 1}, // blue
+          {q:  1, r: -1, s:  0, color: 0}, // red
+          {q:  2, r: -1, s: -1, color: 0}, // red
+          {q: -3, r:  0, s:  3, color: 0}, // red
+          {q: -2, r:  0, s:  2, color: 0}, // red
+          {q: -1, r:  0, s:  1, color: 0}, // red
+          {q:  0, r:  0, s:  0, color: 1},
+          {q:  1, r:  0, s: -1, color: 1}, // blue
+          {q:  2, r:  0, s: -2, color: 0},
+          {q: -2, r:  1, s:  1, color: 1}, // blue
+          {q: -1, r:  1, s:  0, color: 0}, // red
+          {q:  0, r:  1, s: -1, color: 0}, // red
+          {q: -1, r:  2, s: -1, color: 1}, // blue
+          {q:  0, r:  2, s: -2, color: 1}  // blue
+        ],
         colorToWin: 1,
         regionSize: 6,
       },
@@ -313,16 +332,48 @@ const puzzles = [
         colorToWin: 1,
         regionSize: 7,
       },
+      {
+        id: "8",
+        q: 3,
+        r: 2,
+        s: -5,
+        difficulty: "easy",
+        // mapData: makeHardPuzzle(generateMapData(20, 0.2, 0.5, 0.5), 1, 5, 1, 50, 3.5),
+        // mapData: makeHardPuzzle(
+        // [{q:0,r:0,s:0,color:0},{q:1,r:-1,s:0,color:1},{q:1,r:0,s:-1,color:0},{q:0,r:1,s:-1,color:1},{q:-1,r:1,s:0,color:0},{q:-1,r:0,s:1,color:0},{q:0,r:-1,s:1,color:0},{q:-1,r:2,s:-1,color:1},{q:-2,r:2,s:0,color:1},{q:-2,r:1,s:1,color:0},{q:0,r:2,s:-2,color:0},{q:-1,r:3,s:-2,color:0},{q:-2,r:3,s:-1,color:0},{q:1,r:-2,s:1,color:1},{q:-1,r:-1,s:2,color:0},{q:0,r:-2,s:2,color:0},{q:2,r:-1,s:-1,color:0},{q:-2,r:0,s:2,color:0},{q:2,r:0,s:-2,color:0},{q:1,r:1,s:-2,color:1},{q:3,r:-1,s:-2,color:0},{q:2,r:-2,s:0,color:0},{q:-3,r:2,s:1,color:1},{q:-3,r:1,s:2,color:0},{q:-2,r:4,s:-2,color:1},{q:-3,r:4,s:-1,color:0},{q:-3,r:3,s:0,color:0},{q:-4,r:2,s:2,color:0},{q:-4,r:1,s:3,color:1},{q:-3,r:0,s:3,color:1},{q:-4,r:3,s:1,color:0},{q:-5,r:3,s:2,color:0},{q:-5,r:2,s:3,color:1},{q:-2,r:-1,s:3,color:0},{q:-1,r:-2,s:3,color:1}]
+        // , 1, 7, 3, 10, 3.5),
+        mapData: null,
+        colorToWin: 1,
+        regionSize: 5,
+        generationSettings: {
+          baseData: generateMapData(35, 0.2, 0.5, 0.5), // or store the parameters and do it in the worker
+          colorToWin: 1,
+          regionSize: 5,
+          maxSolutions: 1,
+          maxAttempts: 5000,
+          difficultyThreshold: 4,
+        },
+      },
+      //generateMapData(35, 0.2, 0.5, 0.4)
+      //generateMapData(35, 1, 1, 0.4)
       // {
-      //   id: "8",
-      //   q: 3,
+      //   id: "9",
+      //   q: 2,
       //   r: 2,
-      //   s: -5,
+      //   s: -4,
       //   difficulty: "medium",
       //   // mapData: result.mapData,
-      //   mapData: [{q:0,r:0,s:0,color:0},{q:1,r:-1,s:0,color:1},{q:1,r:0,s:-1,color:0},{q:0,r:1,s:-1,color:0},{q:-1,r:1,s:0,color:0},{q:0,r:-1,s:1,color:1},{q:1,r:-2,s:1,color:0},{q:-2,r:2,s:0,color:0},{q:-1,r:2,s:-1,color:1},{q:-2,r:3,s:-1,color:0},{q:-3,r:3,s:0,color:1},{q:-3,r:2,s:1,color:0},{q:2,r:-1,s:-1,color:1},{q:2,r:0,s:-2,color:0},{q:-1,r:-1,s:2,color:1},{q:0,r:-2,s:2,color:1},{q:-1,r:-2,s:3,color:0},{q:0,r:-3,s:3,color:0},{q:3,r:-2,s:-1,color:1},{q:2,r:-2,s:0,color:0},{q:-1,r:0,s:1,color:0},{q:-2,r:0,s:2,color:1},{q:-2,r:-1,s:3,color:0},{q:-1,r:-3,s:4,color:0},{q:-2,r:1,s:1,color:0},{q:-4,r:2,s:2,color:0},{q:-5,r:3,s:2,color:1},{q:-4,r:1,s:3,color:0},{q:-4,r:4,s:0,color:1},{q:-1,r:3,s:-2,color:0},{q:-2,r:4,s:-2,color:0},{q:0,r:2,s:-2,color:1},{q:-1,r:4,s:-3,color:0},{q:-2,r:5,s:-3,color:1},{q:-3,r:5,s:-2,color:1}],
+      //   mapData: hardPuzzleGeneratorGA({
+      //     cellCount: 35,
+      //     regionSize: 5,
+      //     colorToWin: 1,
+      //     maxSolutions: 2,
+      //     difficultyThreshold: 3.5,
+      //     populationSize: 20,
+      //     maxGenerations: 10,
+      //     mutationRate: 0.1}).mapData,//makeHardPuzzle(generateMapData(35, 0.2, 0.5, 0.5), 1, 5, 2, 200, 3.5),
       //   colorToWin: 1,
-      //   regionSize: 7,
+      //   regionSize: 5,
       // },
 
       // mapData: hardPuzzleGeneratorGA({
@@ -336,7 +387,7 @@ const puzzles = [
       //   mutationRate: 0.1}).mapData,
     // Add more puzzles as needed
   ];
-  console.log(JSON.stringify(puzzles.find((p) => p.id === "4").mapData).replace(/"/g, ''));
+  console.log(JSON.stringify(puzzles.find((p) => p.id === "8").mapData).replace(/"/g, ''));
   export default puzzles;
 
 
@@ -346,4 +397,8 @@ possible 4
 */
 /*6 region size, 3a
 [{q:0,r:0,s:0,color:0},{q:1,r:-1,s:0,color:0},{q:-1,r:0,s:1,color:0},{q:0,r:-1,s:1,color:1},{q:2,r:-2,s:0,color:1},{q:2,r:-1,s:-1,color:1},{q:1,r:0,s:-1,color:1},{q:1,r:-2,s:1,color:0},{q:2,r:0,s:-2,color:0},{q:1,r:1,s:-2,color:0},{q:0,r:1,s:-1,color:1},{q:-1,r:1,s:0,color:1},{q:-2,r:1,s:1,color:1},{q:-2,r:0,s:2,color:0},{q:-1,r:-1,s:2,color:1},{q:0,r:2,s:-2,color:0},{q:-3,r:1,s:2,color:0},{q:-2,r:-1,s:3,color:0}]
+*/
+
+/* possible 8 35 region 5
+[{"q":0,"r":0,"s":0,"color":0},{"q":1,"r":-1,"s":0,"color":1},{"q":1,"r":0,"s":-1,"color":0},{"q":0,"r":1,"s":-1,"color":0},{"q":-1,"r":1,"s":0,"color":0},{"q":-1,"r":0,"s":1,"color":1},{"q":0,"r":-1,"s":1,"color":0},{"q":-1,"r":-1,"s":2,"color":0},{"q":0,"r":-2,"s":2,"color":0},{"q":-2,"r":1,"s":1,"color":0},{"q":-2,"r":0,"s":2,"color":0},{"q":-2,"r":-1,"s":3,"color":1},{"q":-1,"r":-2,"s":3,"color":0},{"q":2,"r":-1,"s":-1,"color":0},{"q":2,"r":0,"s":-2,"color":0},{"q":3,"r":-2,"s":-1,"color":1},{"q":3,"r":-1,"s":-2,"color":0},{"q":-2,"r":2,"s":0,"color":0},{"q":-3,"r":2,"s":1,"color":1},{"q":1,"r":-2,"s":1,"color":1},{"q":1,"r":1,"s":-2,"color":1},{"q":0,"r":2,"s":-2,"color":0},{"q":-1,"r":2,"s":-1,"color":1},{"q":-2,"r":3,"s":-1,"color":0},{"q":-3,"r":3,"s":0,"color":0},{"q":-2,"r":-2,"s":4,"color":0},{"q":4,"r":-1,"s":-3,"color":1},{"q":1,"r":2,"s":-3,"color":0},{"q":0,"r":3,"s":-3,"color":1},{"q":-1,"r":3,"s":-2,"color":1},{"q":2,"r":1,"s":-3,"color":0},{"q":2,"r":2,"s":-4,"color":0},{"q":1,"r":3,"s":-4,"color":1},{"q":-2,"r":4,"s":-2,"color":0},{"q":-3,"r":1,"s":2,"color":0}]
 */

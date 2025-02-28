@@ -12,6 +12,26 @@ export default function HexPuzzleWrapper({
   sizeMultiplier,
   puzzleId,
 }) {
+
+  if (!mapData) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100vh",
+        }}
+      >
+        <h2 style={{                
+          fontFamily: "'Press Start 2P', sans-serif",
+          fontSize: "24px",
+          userSelect: "none",
+          fontWeight: "normal",}}>Generating Puzzle...</h2>
+      </div>
+    );
+  }
+  
   const router = useRouter();
   // The puzzle will send us its internal states via onPuzzleStateChange
   const [puzzleState, setPuzzleState] = useState({
@@ -164,7 +184,21 @@ export default function HexPuzzleWrapper({
       flexDirection: "column",
       minHeight: 0,
     }}>
-
+    {!mapData ? (
+      <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "100vh",
+      }}
+    >
+      <h2 style={{                
+        fontFamily: "'Press Start 2P', sans-serif",
+        fontSize: "24px",
+        userSelect: "none",
+        fontWeight: "normal",}}>Generating Puzzle...</h2>
+    </div>) : (
     <div className="dynamicWrapper">
       {/* style={{
         outline: "2px solid white",
@@ -388,6 +422,7 @@ export default function HexPuzzleWrapper({
           )}
       </div>
     </div>
+    )}
     </div>
   );
 }

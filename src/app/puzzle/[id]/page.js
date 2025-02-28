@@ -3,7 +3,8 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import puzzles from "../../puzzleData"; 
+// import puzzles from "../../puzzleData"; 
+import { usePuzzles } from "../../../context/puzzleContext";
 import HexPuzzleWrapper from "../../../components/HexPuzzleWrapper"; // Adjust path as necessary
 import PuzzleHeader  from "../../../components/PuzzleHeader"; // Added import for PuzzleHeader
 
@@ -29,6 +30,7 @@ export default function PuzzlePage() {
   const params = useParams();
   const puzzleId = params.id;
   const router = useRouter();
+  const { puzzles } = usePuzzles();
 
   // Find the puzzle with this ID
   const puzzle = puzzles.find((p) => p.id === puzzleId);
