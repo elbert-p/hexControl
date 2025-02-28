@@ -1,11 +1,11 @@
 // src/workers/puzzleWorker.js
-import makeHardPuzzle from "/Users/philipelbert/hexcontrol/src/app/makePuzzle.js";
-import solvePuzzle from "/Users/philipelbert/hexcontrol/src/app/solvePuzzle.js";
+import makeHardPuzzle from "../app/makePuzzle.js";
+import solvePuzzle from "../app/solvePuzzle.js";
 
 self.onmessage = async (event) => {
   const {
     puzzleIndex,
-    baseData,           // the minimal shape or partial map
+    baseData,
     colorToWin,
     regionSize,
     maxSolutions,

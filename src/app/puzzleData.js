@@ -337,7 +337,7 @@ const puzzles = [
         q: 3,
         r: 2,
         s: -5,
-        difficulty: "easy",
+        difficulty: "intermediate",
         // mapData: makeHardPuzzle(generateMapData(20, 0.2, 0.5, 0.5), 1, 5, 1, 50, 3.5),
         // mapData: makeHardPuzzle(
         // [{q:0,r:0,s:0,color:0},{q:1,r:-1,s:0,color:1},{q:1,r:0,s:-1,color:0},{q:0,r:1,s:-1,color:1},{q:-1,r:1,s:0,color:0},{q:-1,r:0,s:1,color:0},{q:0,r:-1,s:1,color:0},{q:-1,r:2,s:-1,color:1},{q:-2,r:2,s:0,color:1},{q:-2,r:1,s:1,color:0},{q:0,r:2,s:-2,color:0},{q:-1,r:3,s:-2,color:0},{q:-2,r:3,s:-1,color:0},{q:1,r:-2,s:1,color:1},{q:-1,r:-1,s:2,color:0},{q:0,r:-2,s:2,color:0},{q:2,r:-1,s:-1,color:0},{q:-2,r:0,s:2,color:0},{q:2,r:0,s:-2,color:0},{q:1,r:1,s:-2,color:1},{q:3,r:-1,s:-2,color:0},{q:2,r:-2,s:0,color:0},{q:-3,r:2,s:1,color:1},{q:-3,r:1,s:2,color:0},{q:-2,r:4,s:-2,color:1},{q:-3,r:4,s:-1,color:0},{q:-3,r:3,s:0,color:0},{q:-4,r:2,s:2,color:0},{q:-4,r:1,s:3,color:1},{q:-3,r:0,s:3,color:1},{q:-4,r:3,s:1,color:0},{q:-5,r:3,s:2,color:0},{q:-5,r:2,s:3,color:1},{q:-2,r:-1,s:3,color:0},{q:-1,r:-2,s:3,color:1}]
