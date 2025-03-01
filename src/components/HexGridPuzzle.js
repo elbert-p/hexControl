@@ -16,41 +16,6 @@ function hexKey(q, r, s) {
   return `${q},${r},${s}`;
 }
 
-function blendColors(baseColor, outlineColor, alpha = 0.3) {
-  // Remove "#" if present
-  let b = baseColor.replace("#", "");
-  let o = outlineColor.replace("#", "");
-
-  // Expand shorthand (#abc → #aabbcc)
-  if (b.length === 3) {
-    b = b[0] + b[0] + b[1] + b[1] + b[2] + b[2];
-  }
-  if (o.length === 3) {
-    o = o[0] + o[0] + o[1] + o[1] + o[2] + o[2];
-  }
-
-  // Convert to numeric RGB
-  const baseR = parseInt(b.slice(0, 2), 16),
-        baseG = parseInt(b.slice(2, 4), 16),
-        baseB = parseInt(b.slice(4, 6), 16);
-  const outR = parseInt(o.slice(0, 2), 16),
-        outG = parseInt(o.slice(2, 4), 16),
-        outB = parseInt(o.slice(4, 6), 16);
-
-  // Blended RGB = (1-alpha)*base + alpha*outline
-  const r = Math.round(baseR * (1 - alpha) + outR * alpha);
-  const g = Math.round(baseG * (1 - alpha) + outG * alpha);
-  const bVal = Math.round(baseB * (1 - alpha) + outB * alpha);
-
-  // Convert back to hex
-  return (
-    "#" +
-    r.toString(16).padStart(2, "0") +
-    g.toString(16).padStart(2, "0") +
-    bVal.toString(16).padStart(2, "0")
-  );
-}
-
 /** 5) Build region object with { cells, count0, count1 }. */
 function buildRegionObject(cellArray, hexStates) {
   let count0 = 0;
@@ -160,30 +125,6 @@ function computeInsetOutline(cellKeys, layout, offsetDelta = -600) { // Default 
   // 4) Convert offset polygons => SVG path strings
   return clipperPathsToSvg(offsetSolution, SCALE);
 }
-
-/** Helper function to calculate the bounding box of the cluster */
-// function calculateBounds(mapData) {
-//   const qs = mapData.map((h) => h.q);
-//   const rs = mapData.map((h) => h.r);
-//   const minQ = Math.min(...qs);
-//   const maxQ = Math.max(...qs);
-//   const minR = Math.min(...rs);
-//   const maxR = Math.max(...rs);
-//   return { minQ, maxQ, minR, maxR };
-// }
-
-/** 
- * Helper function to calculate the center of the cluster in pixel coordinates 
- * Updated to compute the centroid instead of the midpoint of bounds
- */
-// function calculateCenter(mapData, layout) {
-//   const total = mapData.length;
-//   const sumQ = mapData.reduce((acc, h) => acc + h.q, 0);
-//   const sumR = mapData.reduce((acc, h) => acc + h.r, 0);
-//   const centerQ = sumQ / total;
-//   const centerR = sumR / total;
-//   return hexToPixel(centerQ, centerR, layout);
-// }
 
 /** Helper function to find the region containing a specific hex */
 function findRegionContaining(hexKey, selections) {
@@ -717,13 +658,53 @@ export default function HexGridPuzzle({
     return { paths, color, majorityFill };
   });
 
+  // const [animatedHexes, setAnimatedHexes] = useState(new Set());
+
+  // useEffect(() => {
+  //   if (puzzleComplete) {
+  //     const sortedHexes = [...mapData].sort((a, b) => b.s - a.s);
+  //     sortedHexes.forEach((hex, index) => {
+  //       const key = hexKey(hex.q, hex.r, hex.s);
+  //       setTimeout(() => {
+  //         // Add the key to trigger the scale-up.
+  //         setAnimatedHexes(prev => {
+  //           const newSet = new Set(prev);
+  //           newSet.add(key);
+  //           return newSet;
+  //         });
+  //         // Schedule removal so the hex scales back to normal.
+  //         setTimeout(() => {
+  //           setAnimatedHexes(prev => {
+  //             const newSet = new Set(prev);
+  //             newSet.delete(key);
+  //             return newSet;
+  //           });
+  //         }, 300); // Adjust this delay (in ms) for how long the hex stays big.
+  
+  //         // When the last hex animation finishes, start the region fill animation.
+  //         if (index === sortedHexes.length - 1) {
+  //           startRegionFillAnimation();
+  //         }
+  //       }, index * 100); // Delay between each hex in the wave.
+  //     });
+  //   } else {
+  //     setAnimatedHexes(new Set());
+  //   }
+  // }, [puzzleComplete, mapData]); 
+
   const [animatedRegionCount, setAnimatedRegionCount] = useState(0);
 
   // When the puzzle is complete, start sequentially animating the regions.
   useEffect(() => {
     if (puzzleComplete) {
-      // Reset the count.
       setAnimatedRegionCount(0);
+  
+      // First animation: trigger after a shorter delay, e.g. 250ms.
+      const firstTimeout = setTimeout(() => {
+        setAnimatedRegionCount(1);
+      }, 250);
+  
+      // Start the interval for the remaining regions with the regular delay (750ms).
       const interval = setInterval(() => {
         setAnimatedRegionCount((prev) => {
           const next = prev + 1;
@@ -736,29 +717,33 @@ export default function HexGridPuzzle({
           }
           return next;
         });
-      }, 750); // Adjust the delay (in ms) between region animations as desired.
-      return () => clearInterval(interval);
+      }, 750);
+  
+      // Cleanup both timers when the component unmounts or dependencies change.
+      return () => {
+        clearTimeout(firstTimeout);
+        clearInterval(interval);
+      };
     }
   }, [puzzleComplete, selectionData.length]);
-  // const hexToFinalColor = {};
-  // selections.forEach((sel) => {
-  //   // Build the region object so we get the correct outline color
-  //   const regionObj = buildRegionObject(sel.cells, hexStates);
-  //   const outlineColor = getSelectionOutlineColor(
-  //     regionObj,
-  //     regionSize,
-  //     colorToWin
-  //   );
+  
 
-  //   // For each hex in this region, blend the base color with the outline color
-  //   if(outlineColor != "#FF1493"){
-  //     sel.cells.forEach((cellKey) => {
-  //       const baseColor = colorToHex(hexStates[cellKey]);
-  //       const blendedColor = blendColors(baseColor, outlineColor, 0.1);
-  //       hexToFinalColor[cellKey] = blendedColor;
+  // function startRegionFillAnimation() {
+  //   setAnimatedRegionCount(0);
+  //   const interval = setInterval(() => {
+  //     setAnimatedRegionCount((prev) => {
+  //       const next = prev + 1;
+  //       if (next >= selectionData.length) {
+  //         clearInterval(interval);
+  //         // Call the callback after the region fill animation is done.
+  //         setTimeout(() => {
+  //           if (onAnimationComplete) onAnimationComplete();
+  //         }, 1750);
+  //       }
+  //       return next;
   //     });
-  //   }
-  // });
+  //   }, 750); // Adjust delay between region animations as needed.
+  // }
   
   const clusterOutlinePaths = computeInsetOutline(
     mapData.map(hex => hexKey(hex.q, hex.r, hex.s)),
@@ -831,10 +816,11 @@ export default function HexGridPuzzle({
           {mapData.map((hex) => {
             const k = hexKey(hex.q, hex.r, hex.s);
             const baseColor = colorToHex(hexStates[k]);
-            // const fillColor = baseColor //hexToFinalColor[k] || 
+            // const isAnimated = animatedHexes.has(k);
             return (
               <Hexagon
                 key={k}
+                // className={isAnimated ? "animated-hexagon" : ""}
                 q={hex.q}
                 r={hex.r}
                 s={hex.s}
