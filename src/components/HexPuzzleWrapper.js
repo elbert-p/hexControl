@@ -4,6 +4,7 @@
 import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import HexGridPuzzle from "./HexGridPuzzle";
 import { useRouter } from "next/navigation";
+import { usePuzzles } from "../context/puzzleContext";
 
 export default function HexPuzzleWrapper({
   mapData,
@@ -12,27 +13,10 @@ export default function HexPuzzleWrapper({
   sizeMultiplier,
   puzzleId,
 }) {
-
-  // if (!mapData) {
-  //   return (
-  //     <div
-  //       style={{
-  //         display: "flex",
-  //         alignItems: "center",
-  //         justifyContent: "center",
-  //         height: "100vh",
-  //       }}
-  //     >
-  //       <h2 style={{                
-  //         fontFamily: "'Press Start 2P', sans-serif",
-  //         fontSize: "24px",
-  //         userSelect: "none",
-  //         fontWeight: "normal",}}>Generating Puzzle...</h2>
-  //     </div>
-  //   );
-  // }
   
   const router = useRouter();
+  const { resetPuzzle } = usePuzzles();
+
   // The puzzle will send us its internal states via onPuzzleStateChange
   const [puzzleState, setPuzzleState] = useState({
     selections: [],
@@ -412,7 +396,10 @@ export default function HexPuzzleWrapper({
               </h2>
                   <button
                   className="overlayButton"
-                  onClick={() => router.push("/puzzle-select")}
+                  onClick={() => {
+                    router.push("/puzzle-select")       
+                    resetPuzzle(puzzleId)}
+                  }
                   >
                   Home
                   </button>
