@@ -22,13 +22,15 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false }) => {
         <p
             style={{
             fontFamily: "'Press Start 2P', sans-serif",
-            lineHeight: "1.5",
+            lineHeight: "1.7",
             fontSize: "18px",
             margin: 0,
             padding: "15px 0 10px 0",
             }}
         >
             <strong>Completed</strong> levels are outlined in <strong style={{ color: "green" }}>green</strong>.
+            <br />
+            <strong>Letter</strong> levels (A) are randomly generated and <strong>replayable</strong>.
             <br />
             <strong>Click</strong> a level <strong>next to</strong> a completed level to play.
         </p>

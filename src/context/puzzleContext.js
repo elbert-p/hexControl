@@ -75,7 +75,7 @@ export function PuzzleProvider({ children }) {
   // resets the puzzle's mapData to null in state, and spawns a new worker.
   const resetPuzzle = (puzzleId) => {
     const puzzleIndex = puzzles.findIndex(puzzle => puzzle.id === puzzleId);
-    if (puzzleIndex === -1) return;
+    if (puzzleIndex === -1 || !puzzles[puzzleIndex].generationSettings) return;
     localStorage.removeItem(`puzzle-map-${puzzleId}`);
     setPuzzles(prev => {
       const updated = [...prev];
