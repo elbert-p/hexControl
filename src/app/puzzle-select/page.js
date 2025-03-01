@@ -371,7 +371,7 @@ function onHexMouseDown(q, r, s, e) {
           {puzzles.map((hex) => {
             const k = hexKey(hex.q, hex.r, hex.s);
             const fill = difficultyColor(hex.difficulty);
-
+            // const stroke = hex.generationSettings ? "#0000ff" : "#fff";
             return (
               <Hexagon
                 key={k}

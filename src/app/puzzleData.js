@@ -53,13 +53,23 @@ const puzzles = [
         //           color: puzzle0colors[idx],
         //         };
         //       }), { q: -1, r: 3, s: -2, color: 0 }, { q: 0, r: 3, s: -3, color: 0 }, { q: 1, r: 3, s: -4, color: 0 }],
-          mapData: [
-                { q: -2, r: 0, s: 2, color: 1 },
-                { q: -1, r: 0, s: 1, color: 1 },
-                { q: 0, r: 0, s: 0, color: 0 },
-                { q: 1, r: 0, s: -1, color: 0 },
-                { q: 2, r: 0, s: -2, color: 1 },
-          ],
+        // mapData: [ // straight line
+        //       { q: -2, r: 0, s: 2, color: 1 },
+        //       { q: -1, r: 0, s: 1, color: 1 },
+        //       { q: 0, r: 0, s: 0, color: 0 },
+        //       { q: 1, r: 0, s: -1, color: 0 },
+        //       { q: 2, r: 0, s: -2, color: 1 },
+        // ],
+        mapData: [...GridGenerator.hexagon(1, 1).map((hex) => {
+          return {
+            q: hex.q,
+            r: hex.r,
+            s: hex.s,
+            color: 0,
+          };
+        }), { q: 1, r: 1, s: -2, color: 1 }, { q: 2, r: -1, s: -1, color: 1 }, { q: -1, r: 2, s: -1, color: 1 }, 
+            { q: -1, r: -1, s: 2, color: 1 }, { q: -2, r: 1, s: 1, color: 1 }, { q: 1, r: -2, s: 1, color: 1 },
+            { q: 2, r: -2, s: 0, color: 0 }, { q: -2, r: 2, s: 0, color: 0 }],
         colorToWin: 1,
         regionSize: 5,
     },
@@ -332,12 +342,36 @@ const puzzles = [
         colorToWin: 1,
         regionSize: 7,
       },
+      // {
+      //   id: "8",
+      //   q: 3,
+      //   r: 2,
+      //   s: -5,
+      //   difficulty: "intermediate",
+      //   // mapData: makeHardPuzzle(generateMapData(20, 0.2, 0.5, 0.5), 1, 5, 1, 50, 3.5),
+      //   // mapData: makeHardPuzzle(
+      //   // [{q:0,r:0,s:0,color:0},{q:1,r:-1,s:0,color:1},{q:1,r:0,s:-1,color:0},{q:0,r:1,s:-1,color:1},{q:-1,r:1,s:0,color:0},{q:-1,r:0,s:1,color:0},{q:0,r:-1,s:1,color:0},{q:-1,r:2,s:-1,color:1},{q:-2,r:2,s:0,color:1},{q:-2,r:1,s:1,color:0},{q:0,r:2,s:-2,color:0},{q:-1,r:3,s:-2,color:0},{q:-2,r:3,s:-1,color:0},{q:1,r:-2,s:1,color:1},{q:-1,r:-1,s:2,color:0},{q:0,r:-2,s:2,color:0},{q:2,r:-1,s:-1,color:0},{q:-2,r:0,s:2,color:0},{q:2,r:0,s:-2,color:0},{q:1,r:1,s:-2,color:1},{q:3,r:-1,s:-2,color:0},{q:2,r:-2,s:0,color:0},{q:-3,r:2,s:1,color:1},{q:-3,r:1,s:2,color:0},{q:-2,r:4,s:-2,color:1},{q:-3,r:4,s:-1,color:0},{q:-3,r:3,s:0,color:0},{q:-4,r:2,s:2,color:0},{q:-4,r:1,s:3,color:1},{q:-3,r:0,s:3,color:1},{q:-4,r:3,s:1,color:0},{q:-5,r:3,s:2,color:0},{q:-5,r:2,s:3,color:1},{q:-2,r:-1,s:3,color:0},{q:-1,r:-2,s:3,color:1}]
+      //   // , 1, 7, 3, 10, 3.5),
+      //   mapData: null,
+      //   colorToWin: 1,
+      //   regionSize: 5,
+      //   generationSettings: {
+      //     baseData: generateMapData(35, 0.2, 0.5, 0.5), // or store the parameters and do it in the worker
+      //     colorToWin: 1,
+      //     regionSize: 5,
+      //     maxSolutions: 1,
+      //     maxAttempts: 5000,
+      //     difficultyThreshold: 4,
+      //   },
+      // },
+      //generateMapData(35, 0.2, 0.5, 0.4)
+      //generateMapData(35, 1, 1, 0.4)
       {
-        id: "8",
-        q: 3,
-        r: 2,
-        s: -5,
-        difficulty: "intermediate",
+        id: "A",
+        q: -1,
+        r: 0,
+        s: 1,
+        difficulty: "easy",
         // mapData: makeHardPuzzle(generateMapData(20, 0.2, 0.5, 0.5), 1, 5, 1, 50, 3.5),
         // mapData: makeHardPuzzle(
         // [{q:0,r:0,s:0,color:0},{q:1,r:-1,s:0,color:1},{q:1,r:0,s:-1,color:0},{q:0,r:1,s:-1,color:1},{q:-1,r:1,s:0,color:0},{q:-1,r:0,s:1,color:0},{q:0,r:-1,s:1,color:0},{q:-1,r:2,s:-1,color:1},{q:-2,r:2,s:0,color:1},{q:-2,r:1,s:1,color:0},{q:0,r:2,s:-2,color:0},{q:-1,r:3,s:-2,color:0},{q:-2,r:3,s:-1,color:0},{q:1,r:-2,s:1,color:1},{q:-1,r:-1,s:2,color:0},{q:0,r:-2,s:2,color:0},{q:2,r:-1,s:-1,color:0},{q:-2,r:0,s:2,color:0},{q:2,r:0,s:-2,color:0},{q:1,r:1,s:-2,color:1},{q:3,r:-1,s:-2,color:0},{q:2,r:-2,s:0,color:0},{q:-3,r:2,s:1,color:1},{q:-3,r:1,s:2,color:0},{q:-2,r:4,s:-2,color:1},{q:-3,r:4,s:-1,color:0},{q:-3,r:3,s:0,color:0},{q:-4,r:2,s:2,color:0},{q:-4,r:1,s:3,color:1},{q:-3,r:0,s:3,color:1},{q:-4,r:3,s:1,color:0},{q:-5,r:3,s:2,color:0},{q:-5,r:2,s:3,color:1},{q:-2,r:-1,s:3,color:0},{q:-1,r:-2,s:3,color:1}]
@@ -346,7 +380,7 @@ const puzzles = [
         colorToWin: 1,
         regionSize: 5,
         generationSettings: {
-          baseData: generateMapData(35, 0.2, 0.5, 0.5), // or store the parameters and do it in the worker
+          baseData: generateMapData(15, 0.2, 0.5, 0.5),
           colorToWin: 1,
           regionSize: 5,
           maxSolutions: 1,
@@ -354,8 +388,78 @@ const puzzles = [
           difficultyThreshold: 4,
         },
       },
-      //generateMapData(35, 0.2, 0.5, 0.4)
-      //generateMapData(35, 1, 1, 0.4)
+      {
+        id: "B",
+        q: -2,
+        r: 1,
+        s: 1,
+        difficulty: "intermediate",
+        mapData: null,
+        colorToWin: 1,
+        regionSize: 6,
+        generationSettings: {
+          baseData: generateMapData(18, 0.2, 0.5, 0.5),
+          colorToWin: 1,
+          regionSize: 6,
+          maxSolutions: 1,
+          maxAttempts: 5000,
+          difficultyThreshold: 4,
+        },
+      },
+      {
+        id: "C",
+        q: -2,
+        r: 0,
+        s: 2,
+        difficulty: "intermediate",
+        mapData: null,
+        colorToWin: 1,
+        regionSize: 5,
+        generationSettings: {
+          baseData: generateMapData(25, 0.2, 0.5, 0.5),
+          colorToWin: 1,
+          regionSize: 5,
+          maxSolutions: 1,
+          maxAttempts: 5000,
+          difficultyThreshold: 4.35,
+        },
+      },
+      {
+        id: "D",
+        q: -2,
+        r: -1,
+        s: 3,
+        difficulty: "medium",
+        mapData: null,
+        colorToWin: 1,
+        regionSize: 5,
+        generationSettings: {
+          baseData: generateMapData(35, 0.2, 0.5, 0.5), 
+          colorToWin: 1,
+          regionSize: 5,
+          maxSolutions: 1,
+          maxAttempts: 5000,
+          difficultyThreshold: 4,
+        },
+      },
+      {
+        id: "E",
+        q: -1,
+        r: -2,
+        s: 3,
+        difficulty: "hard",
+        mapData: null,
+        colorToWin: 1,
+        regionSize: 7,
+        generationSettings: {
+          baseData: generateMapData(35, 0.2, 0.5, 0.5),
+          colorToWin: 1,
+          regionSize: 7,
+          maxSolutions: 2,
+          maxAttempts: 5000,
+          difficultyThreshold: 3.5,
+        },
+      },
       // {
       //   id: "9",
       //   q: 2,
@@ -387,7 +491,7 @@ const puzzles = [
       //   mutationRate: 0.1}).mapData,
     // Add more puzzles as needed
   ];
-  console.log(JSON.stringify(puzzles.find((p) => p.id === "8").mapData).replace(/"/g, ''));
+  // console.log(JSON.stringify(puzzles.find((p) => p.id === "E").mapData).replace(/"/g, ''));
   export default puzzles;
 
 
@@ -401,4 +505,12 @@ possible 4
 
 /* possible 8 35 region 5
 [{"q":0,"r":0,"s":0,"color":0},{"q":1,"r":-1,"s":0,"color":1},{"q":1,"r":0,"s":-1,"color":0},{"q":0,"r":1,"s":-1,"color":0},{"q":-1,"r":1,"s":0,"color":0},{"q":-1,"r":0,"s":1,"color":1},{"q":0,"r":-1,"s":1,"color":0},{"q":-1,"r":-1,"s":2,"color":0},{"q":0,"r":-2,"s":2,"color":0},{"q":-2,"r":1,"s":1,"color":0},{"q":-2,"r":0,"s":2,"color":0},{"q":-2,"r":-1,"s":3,"color":1},{"q":-1,"r":-2,"s":3,"color":0},{"q":2,"r":-1,"s":-1,"color":0},{"q":2,"r":0,"s":-2,"color":0},{"q":3,"r":-2,"s":-1,"color":1},{"q":3,"r":-1,"s":-2,"color":0},{"q":-2,"r":2,"s":0,"color":0},{"q":-3,"r":2,"s":1,"color":1},{"q":1,"r":-2,"s":1,"color":1},{"q":1,"r":1,"s":-2,"color":1},{"q":0,"r":2,"s":-2,"color":0},{"q":-1,"r":2,"s":-1,"color":1},{"q":-2,"r":3,"s":-1,"color":0},{"q":-3,"r":3,"s":0,"color":0},{"q":-2,"r":-2,"s":4,"color":0},{"q":4,"r":-1,"s":-3,"color":1},{"q":1,"r":2,"s":-3,"color":0},{"q":0,"r":3,"s":-3,"color":1},{"q":-1,"r":3,"s":-2,"color":1},{"q":2,"r":1,"s":-3,"color":0},{"q":2,"r":2,"s":-4,"color":0},{"q":1,"r":3,"s":-4,"color":1},{"q":-2,"r":4,"s":-2,"color":0},{"q":-3,"r":1,"s":2,"color":0}]
+*/
+
+/* possible 8 nice symmetrical star, turned into 1
+[{q:0,r:0,s:0,color:0},{q:1,r:-1,s:0,color:1},{q:-1,r:1,s:0,color:1},{q:-1,r:0,s:1,color:0},{q:0,r:-1,s:1,color:0},{q:1,r:-2,s:1,color:0},{q:-1,r:-1,s:2,color:0},{q:2,r:-2,s:0,color:0},{q:2,r:-1,s:-1,color:0},{q:1,r:0,s:-1,color:0},{q:3,r:-3,s:0,color:0},{q:3,r:-2,s:-1,color:0},{q:2,r:0,s:-2,color:1},{q:0,r:1,s:-1,color:0},{q:-1,r:2,s:-1,color:0},{q:-2,r:2,s:0,color:0},{q:-2,r:1,s:1,color:0},{q:3,r:-1,s:-2,color:0},{q:3,r:0,s:-3,color:0},{q:2,r:1,s:-3,color:0},{q:1,r:1,s:-2,color:0},{q:4,r:-1,s:-3,color:1},{q:3,r:1,s:-4,color:1},{q:0,r:2,s:-2,color:1},{q:4,r:-2,s:-2,color:0},{q:-3,r:3,s:0,color:1},{q:5,r:-3,s:-2,color:1},{q:4,r:-3,s:-1,color:0},{q:-1,r:3,s:-2,color:0},{q:4,r:-4,s:0,color:1},{q:2,r:-3,s:1,color:1},{q:1,r:2,s:-3,color:1},{q:-2,r:0,s:2,color:1},{q:4,r:0,s:-4,color:0},{q:4,r:1,s:-5,color:0}]
+*/
+
+/* easy puzzle, like a 2 or 3 replacement - hexes per region 6
+[{q:0,r:0,s:0,color:0},{q:1,r:0,s:-1,color:0},{q:-1,r:1,s:0,color:0},{q:-1,r:0,s:1,color:0},{q:0,r:1,s:-1,color:1},{q:-2,r:1,s:1,color:1},{q:2,r:-1,s:-1,color:1},{q:2,r:0,s:-2,color:0},{q:1,r:-1,s:0,color:0},{q:3,r:-2,s:-1,color:1},{q:3,r:-1,s:-2,color:0},{q:2,r:-2,s:0,color:0},{q:0,r:-1,s:1,color:1},{q:1,r:-2,s:1,color:1},{q:3,r:-3,s:0,color:0},{q:2,r:-3,s:1,color:1},{q:3,r:-4,s:1,color:0},{q:1,r:-3,s:2,color:1}]
 */

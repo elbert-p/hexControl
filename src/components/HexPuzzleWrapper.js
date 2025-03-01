@@ -13,24 +13,24 @@ export default function HexPuzzleWrapper({
   puzzleId,
 }) {
 
-  if (!mapData) {
-    return (
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          height: "100vh",
-        }}
-      >
-        <h2 style={{                
-          fontFamily: "'Press Start 2P', sans-serif",
-          fontSize: "24px",
-          userSelect: "none",
-          fontWeight: "normal",}}>Generating Puzzle...</h2>
-      </div>
-    );
-  }
+  // if (!mapData) {
+  //   return (
+  //     <div
+  //       style={{
+  //         display: "flex",
+  //         alignItems: "center",
+  //         justifyContent: "center",
+  //         height: "100vh",
+  //       }}
+  //     >
+  //       <h2 style={{                
+  //         fontFamily: "'Press Start 2P', sans-serif",
+  //         fontSize: "24px",
+  //         userSelect: "none",
+  //         fontWeight: "normal",}}>Generating Puzzle...</h2>
+  //     </div>
+  //   );
+  // }
   
   const router = useRouter();
   // The puzzle will send us its internal states via onPuzzleStateChange
@@ -50,7 +50,7 @@ export default function HexPuzzleWrapper({
   }
 
   // Calculate total possible regions:
-  const totalHexes = mapData.length;
+  const totalHexes = mapData ? mapData.length : 0;
   const totalRegions = Math.floor(totalHexes / regionSize);
   const neededForMajority = Math.ceil(totalRegions / 1.9999999);
 
