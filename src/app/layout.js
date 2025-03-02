@@ -4,8 +4,7 @@ import './globals.css';
 
 export const metadata = {
   title: "Hex Control",
-  manifest: "/manifest.json",
-  themeColor: "#ffffff",
+  // manifest: "/manifest.json",
 };
 
 export const viewport = {
@@ -27,8 +26,6 @@ export default function RootLayout({ children }) {
         {/* Link to the manifest file */}
         <link rel="manifest" href="/manifest.json" />
 
-        {/* Optional: viewport settings can be set here if needed */}
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
       <body style={{ margin: 0, padding: 0 }}>
         <PuzzleProvider>

@@ -40,6 +40,12 @@ a {
     color-scheme: dark;
   }
 } */
+html,
+body {
+  /* overflow: hidden; */
+  overscroll-behavior: none; /* Prevents scroll chaining and bounce effects on supported browsers */
+  touch-action: none; /* Disables touch-driven scroll gestures */
+}
 
 .dynamicWrapper {
   outline: 2px solid white;
