@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { HexGrid, Layout, Hexagon } from "react-hexgrid";
 import ClipperLib from "clipper-lib";
 import puzzles from "./../puzzleData";
-import PuzzleHeader  from "../../components/PuzzleHeader"; // Added import for PuzzleHeader
+import PuzzleHeader  from "../../components/PuzzleHeader";
 
 // console.log(puzzles[5].mapData)
 
@@ -201,6 +201,23 @@ function computePixelBounds(hexList, layout) {
 function HexGridSelector({ puzzles, completedPuzzles }) {
   const router = useRouter();
 
+  const containerRef = useRef(null);
+  const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
+
+  useEffect(() => {
+    const updateContainerSize = () => {
+      if (containerRef.current) {
+        setContainerSize({
+          width: containerRef.current.clientWidth,
+          height: containerRef.current.clientHeight,
+        });
+      }
+    };
+    updateContainerSize();
+    window.addEventListener("resize", updateContainerSize);
+    return () => window.removeEventListener("resize", updateContainerSize);
+  }, []);
+
   // Refs to track initial hex and drag state
   const initialHexRef = useRef(null);
   const dragOccurredRef = useRef(false);
@@ -242,6 +259,10 @@ function HexGridSelector({ puzzles, completedPuzzles }) {
   const widthPx = bounds.maxX - bounds.minX + margin * 2;
   const heightPx = bounds.maxY - bounds.minY + margin * 2;
   const viewBox = `${bounds.minX - margin} ${bounds.minY - margin} ${widthPx} ${heightPx}`;
+
+  // Use the container size if available; otherwise, fallback to the computed dimensions
+  const hexGridWidth = containerSize.width > 0 ? containerSize.width : widthPx;
+  const hexGridHeight = containerSize.height > 0 ? containerSize.height : heightPx;
 
   // Define stroke widths and insets to match HexGridPuzzle component
   const hexStrokeWidth = 3.6 * 1.5;
@@ -360,10 +381,10 @@ function onHexMouseDown(q, r, s, e) {
   
 
   return (
-    <div className = "selectWrapper">
+    <div className = "selectWrapper" ref={containerRef} style={{ width: "100%", height: "100%" }}>
       <HexGrid
-        width={widthPx}
-        height={heightPx}
+        width={hexGridWidth}
+        height={hexGridHeight}
         viewBox={viewBox}
         onMouseLeave={onGridMouseLeave}
       >
@@ -492,7 +513,7 @@ export default function PuzzleSelectPage() {
       style={{
         display: "flex",
         flexDirection: "column",
-        height: "100vh",
+        height: "100svh",
         backgroundColor: "#c6e2e9",
       }}
     >
@@ -502,6 +523,7 @@ export default function PuzzleSelectPage() {
       <div
         style={{
           flex: 1,
+          minHeight: 0,
           display: "flex",
           justifyContent: "center",
           alignItems: "center",

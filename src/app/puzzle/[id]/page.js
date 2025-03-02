@@ -79,7 +79,7 @@ export default function PuzzlePage() {
     <div
       style={{
         width: "100dvw",
-        height: "100dvh",
+        height: "100svh",
         backgroundColor: "#c6e2e9", // Same background as puzzle-select page
         display: "flex",
         flexDirection: "column", // Stack children vertically
