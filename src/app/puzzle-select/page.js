@@ -388,8 +388,6 @@ function onHexMouseDown(q, r, s, e) {
   
 
   return (
-    <div>
-    <InstallPrompt />
     <div ref={containerRef} style={{ width: "100%", height: "100%", justifyContent: "center", alignItems: "center", display: "flex" }}>
     <div className = "selectWrapper">
       <HexGrid
@@ -477,7 +475,6 @@ function onHexMouseDown(q, r, s, e) {
           />
         ))}
       </HexGrid>
-    </div>
     </div>
     </div>
   );
