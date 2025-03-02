@@ -260,9 +260,15 @@ function HexGridSelector({ puzzles, completedPuzzles }) {
   const heightPx = bounds.maxY - bounds.minY + margin * 2;
   const viewBox = `${bounds.minX - margin} ${bounds.minY - margin} ${widthPx} ${heightPx}`;
 
+  const scaleFactor =
+  containerSize.width && containerSize.height
+    ? Math.min(1, containerSize.width / widthPx, containerSize.height / heightPx)
+    : 1
+
   // Use the container size if available; otherwise, fallback to the computed dimensions
-  const hexGridWidth = containerSize.width > 0 ? containerSize.width : widthPx;
-  const hexGridHeight = containerSize.height > 0 ? containerSize.height : heightPx;
+  const hexGridWidth = widthPx * scaleFactor;
+  const hexGridHeight = heightPx * scaleFactor;
+  // console.log(containerSize, scaleFactor)
 
   // Define stroke widths and insets to match HexGridPuzzle component
   const hexStrokeWidth = 3.6 * 1.5;
@@ -381,7 +387,8 @@ function onHexMouseDown(q, r, s, e) {
   
 
   return (
-    <div className = "selectWrapper" ref={containerRef} style={{ width: "100%", height: "100%" }}>
+    <div ref={containerRef} style={{ width: "100%", height: "100%", justifyContent: "center", alignItems: "center", display: "flex" }}>
+    <div className = "selectWrapper">
       <HexGrid
         width={hexGridWidth}
         height={hexGridHeight}
@@ -468,6 +475,7 @@ function onHexMouseDown(q, r, s, e) {
         ))}
       </HexGrid>
     </div>
+    </div>
   );
 }
 
@@ -524,9 +532,12 @@ export default function PuzzleSelectPage() {
         style={{
           flex: 1,
           minHeight: 0,
+          minWidth: 0,
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
+          width: "100%",
+          height: "100%",
         }}
       >
         <HexGridSelector puzzles={puzzles} completedPuzzles={completedPuzzles} />

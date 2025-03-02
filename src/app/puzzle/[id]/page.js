@@ -64,7 +64,7 @@ export default function PuzzlePage() {
     const adjacent = neighbors.some((key) => completedCoords.has(key));
 
     // If the puzzle is not adjacent to any completed puzzle, redirect before loading
-    if (!adjacent) {
+    if (!adjacent && completedCoords.size > 0) {
       router.push("/puzzle-select");
     } else {
       setHasChecked(true);
