@@ -3,7 +3,7 @@
     "name": "Hex Control",
     "display": "standalone",
     "orientation": "portrait",
-    "start_url": "/",
+    "start_url": "/puzzle-select",
     "background_color": "#c6e2e9",
     "theme_color": "#c6e2e9",
     "icons": [
