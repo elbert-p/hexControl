@@ -184,7 +184,7 @@ export default function HexPuzzleWrapper({
         userSelect: "none",
         fontWeight: "normal",}}>Generating Puzzle...</h2>
     </div>) : (
-    <div
+    <div className="dynamicWrapper"
       style={{
         outline: "2px solid white",
         borderRadius: "20px",
@@ -195,7 +195,7 @@ export default function HexPuzzleWrapper({
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        padding: "0px",
+        // padding: "0px",
         boxSizing: "border-box"
       }}
     >
@@ -212,13 +212,14 @@ export default function HexPuzzleWrapper({
         }}
       >
         {/* Puzzle Info Above the Puzzle */}
-        <div className="puzzleInfo"
+        <div
           style={{
             display: "flex",
             width: "100%",
             boxSizing: "border-box",
             justifyContent: "space-between",
             gap: "40px", // Space between the two items
+            padding: "20px",
             // marginBottom: "40px", //change to 20px on small screens
             alignItems: "center",
             fontSize: 20,
@@ -281,13 +282,14 @@ export default function HexPuzzleWrapper({
         </div>
 
         {/* Puzzle Info Below the Puzzle */}
-        <div className="puzzleInfo"
+        <div
           style={{
             display: "flex",
             width: "100%",
             boxSizing: "border-box",
             justifyContent: "space-between",
             gap: "40px", // Space between the two items
+            padding: "20px",
             // marginTop: "40px", //change to 20px on small screens
             alignItems: "center",
             fontSize: 20,
