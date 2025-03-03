@@ -258,6 +258,7 @@ export default function HexPuzzleWrapper({
             width: "100%",
             overflow: "hidden",
             touchAction: "none", // Prevent touch scrolling
+            marginBlock: "15px"
           }}
         >
           {/* Scalable Wrapper (with ref to measure puzzle size) */}
@@ -266,7 +267,6 @@ export default function HexPuzzleWrapper({
             style={{
               transform: `scale(${scale})`,
               transformOrigin: "center",
-              
             }}
           >
             <HexGridPuzzle
