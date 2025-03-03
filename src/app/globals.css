@@ -51,21 +51,9 @@ body {
   height: 100%; */
 }
 
-.dynamicWrapper {
-  outline: 2px solid white;
-  border-radius: 20px;
-  margin: 20px;                         /* default (larger screens) */
-  /* flex: 1 1 0%; */
-  /* flex-shrink: 2; */
-  min-height: 0;
-  min-width: 0;
-  max-width: calc(100dvw - 40px);       /* default (larger screens) */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 40px;
-  box-sizing: border-box;
-}
+/* .dynamicWrapper {
+  max-width: calc(100dvw - 40px);
+} */
 .selectWrapper {
   padding: 40px;
   outline: 2px solid white;
@@ -75,16 +63,26 @@ body {
   overflow: hidden;
 }
 
+.puzzleInfo {
+  padding: 40px;
+  /* padding-top: 40px;
+  padding-inline: 40px;
+  margin-bottom: 40px; */
+}
+
 @media (max-width: 600px) { /* small screens */
-  .dynamicWrapper {
-    /* margin: 10px;                        
-    max-width: calc(100dvw - 20px);       */
-    padding: 20px;
-  }
+  /* .dynamicWrapper {
+    max-width: calc(100dvw - 20px);
+  } */
   .selectWrapper {
     padding: 0px;
     outline: none;
-    overflow: hidden;
+  }
+  .puzzleInfo {
+    padding: 20px;
+    /* padding-top: 20px;
+    padding-inline: 20px;
+    margin-bottom: 20px; */
   }
 }
 

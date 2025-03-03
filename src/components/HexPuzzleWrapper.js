@@ -122,6 +122,7 @@ export default function HexPuzzleWrapper({
   // Recalculate the scale if the puzzle is too tall:
   const measureAndSetScale = () => {
     if (puzzleContainerRef.current && puzzleRef.current) {
+      puzzleContainerRef.current.style.height = "100%"; // Reset to measure
       const containerHeight = puzzleContainerRef.current.offsetHeight;
       const containerWidth = puzzleContainerRef.current.offsetWidth;
       const puzzleHeight = puzzleRef.current.offsetHeight;
@@ -134,8 +135,8 @@ export default function HexPuzzleWrapper({
       // Use the smaller of the two scales
       const newScale = Math.min(heightScale, widthScale);
       // console.log(newScale)
-      // Only shrink if needed; otherwise keep scale at 1
       setScale(newScale < 1 ? newScale : 1);
+      puzzleContainerRef.current.style.height = `${puzzleRef.current.offsetHeight * newScale}px`;
     }
   };
 
@@ -183,23 +184,21 @@ export default function HexPuzzleWrapper({
         userSelect: "none",
         fontWeight: "normal",}}>Generating Puzzle...</h2>
     </div>) : (
-    <div className="dynamicWrapper">
-      {/* style={{
+    <div
+      style={{
         outline: "2px solid white",
         borderRadius: "20px",
         margin: "20px",
-        // height: "100%",
-        // flex: "1 1 0%",
-        minHeight: 0,
-        maxWidth: "calc(100dvw - 40px)", // Ensure it doesn't exceed the wrapper's width    
-        // height: "calc(100dvh - 54px - 80px)", // Set height to window height minus top bar and padding
+        minHeight: "0",
+        minWidth: "0",
+        maxWidth: "calc(100dvw - 30px)",
         display: "flex",
-        justifyContent: "center", // Center vertically
+        justifyContent: "center",
         alignItems: "center",
-        padding: "40px", // Added padding for better spacing on smaller screens
-        boxSizing: "border-box",
+        padding: "0px",
+        boxSizing: "border-box"
       }}
-    > */}
+    >
       <div
         style={{
           // padding: "40px",
@@ -213,14 +212,18 @@ export default function HexPuzzleWrapper({
         }}
       >
         {/* Puzzle Info Above the Puzzle */}
-        <div
+        <div className="puzzleInfo"
           style={{
             display: "flex",
+            width: "100%",
+            boxSizing: "border-box",
+            justifyContent: "space-between",
             gap: "40px", // Space between the two items
-            marginBottom: "40px",
+            // marginBottom: "40px", //change to 20px on small screens
             alignItems: "center",
             fontSize: 20,
             flexShrink: 0, // Prevent shrinking
+            // paddingTop: "40px", paddingInline: "40px"//change to 20px on small screens
           }}
         >
           {/* Color to Win */}
@@ -278,15 +281,19 @@ export default function HexPuzzleWrapper({
         </div>
 
         {/* Puzzle Info Below the Puzzle */}
-        <div
+        <div className="puzzleInfo"
           style={{
             display: "flex",
+            width: "100%",
+            boxSizing: "border-box",
+            justifyContent: "space-between",
             gap: "40px", // Space between the two items
-            marginTop: "40px",
+            // marginTop: "40px", //change to 20px on small screens
             alignItems: "center",
             fontSize: 20,
             flexShrink: 0, // Prevent shrinking
-            // userSelect: "none", // Prevent text selection
+            userSelect: "none", // Prevent text selection
+            // paddingBottom: "40px", paddingInline: "40px"//change to 20px on small screens
           }}
         >
           {/* Regions Made */}
