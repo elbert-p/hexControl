@@ -252,7 +252,7 @@ export default function HexPuzzleWrapper({
             position: "relative",
             height: "100%",
             width: "100%",
-            overflow: "hidden", // Hide overflow (if any)
+            overflow: "hidden",
             touchAction: "none", // Prevent touch scrolling
           }}
         >

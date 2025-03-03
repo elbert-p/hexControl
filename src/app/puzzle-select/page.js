@@ -8,7 +8,7 @@ import { HexGrid, Layout, Hexagon } from "react-hexgrid";
 import ClipperLib from "clipper-lib";
 import puzzles from "./../puzzleData";
 import PuzzleHeader  from "../../components/PuzzleHeader";
-import InstallPrompt from '../../components/InstallPrompt';
+// import InstallPrompt from '../../components/InstallPrompt';
 
 // console.log(puzzles[5].mapData)
 

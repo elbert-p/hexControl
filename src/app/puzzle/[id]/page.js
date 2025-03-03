@@ -47,6 +47,11 @@ export default function PuzzlePage() {
     } catch (error) {
       console.error("Error parsing completedPuzzles from localStorage:", error);
     }
+
+    if (storedCompleted.includes(puzzle.id)) {
+      setHasChecked(true);
+      return;
+    }
     
     // Build a set of coordinate keys for each completed puzzle
     const completedCoords = new Set();

@@ -44,6 +44,7 @@ html,
 body {
   /* overflow: hidden; */
   overscroll-behavior: none;
+  touch-action: none;
   background-color: #c6e2e9;
   /* position: fixed;
   width: 100%;

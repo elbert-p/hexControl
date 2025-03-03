@@ -19,58 +19,84 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false }) => {
     //     ? "Click a puzzle adjacent to a completed puzzle to play."
     //     : "Click and drag to make a region.";
     const overlayContent = isSelectMode ? (
-        <p
+        <ul
             style={{
-            fontFamily: "'Press Start 2P', sans-serif",
-            lineHeight: "1.7",
-            fontSize: "18px",
-            margin: 0,
-            padding: "15px 0 10px 0",
+                fontFamily: "'Press Start 2P', sans-serif",
+                lineHeight: "1.5",
+                fontSize: "18px",
+                margin: 0,
+                paddingBlock: "15px 10px",
+                paddingInlineStart: "20px",
+                textAlign: "left",
+                listStylePosition: "outside",
             }}
         >
-            <strong>Completed</strong> levels are outlined in <strong style={{ color: "green" }}>green</strong>.
-            <br />
-            <strong>Letter</strong> levels (A) are randomly generated and <strong>replayable</strong>.
-            <br />
-            <strong>Click</strong> a level <strong>next to</strong> a completed level to play.
-        </p>
-        
+            <li style={{ marginBottom: "15px" }}>
+                <strong>Completed</strong> levels are outlined in{" "}
+                <strong style={{ color: "green" }}>green</strong>.
+            </li>
+            <li style={{ marginBottom: "15px" }}>
+                <strong>Letter</strong> levels [A, B, etc.] are randomly generated and{" "}
+                <strong>replayable</strong>.
+            </li>
+            <li>
+                <strong>Click</strong> a level <strong>next to</strong> a completed level to play.
+            </li>
+        </ul>   
     ) : (
         <>
-        <p
-            style={{
-            fontFamily: "'Press Start 2P', sans-serif",
-            lineHeight: "1.5",
-            fontSize: "18px",
-            }}
-        >
-            <strong>Goal:</strong> Split the map into <strong>regions</strong> to win.
-            <br /> 
-            The color with the most <strong>hexes</strong> wins that region.
-            <br /> 
-            The <strong>majority</strong> of <strong>regions</strong> must be the winning color.
-            <br /> 
-            <strong>All hexes</strong> must be part of a region.
-        </p>
-        <p
-            style={{
-            fontFamily: "'Press Start 2P', sans-serif",
-            lineHeight: "1.5",
-            fontSize: "18px",
-            margin: 0,
-            padding: "0 0 10px 0",
-
-            }}>
-            <strong style={{ fontSize: "20px", lineHeight: "2"}}>Controls: </strong>
-            <br /> 
-            <strong>Drag</strong> to create a region.
-            <br />
-            <strong>Drag</strong> from an existing region to <strong>add</strong> to it.
-            <br />
-            <strong>Click</strong> on a hex to <strong>remove</strong> it from the region.
-            <br />
-            <strong>Z</strong> to undo, <strong>R</strong> to reset.
-        </p>
+            <ul
+                style={{
+                fontFamily: "'Press Start 2P', sans-serif",
+                lineHeight: "1.5",
+                fontSize: "18px",
+                margin: 0,
+                paddingBlock: "15px 10px",
+                paddingInlineStart: "10px",
+                textAlign: "left",
+                listStylePosition: "outside",
+                }}
+            >
+                <li style={{ marginBottom: "10px" }}>
+                <strong>Goal:</strong> Split the map into <strong>regions</strong> to win.
+                </li>
+                <li style={{ marginBottom: "10px" }}>
+                The color with the most <strong>hexes</strong> wins that region.
+                </li>
+                <li style={{ marginBottom: "10px" }}>
+                The <strong>majority</strong> of <strong>regions</strong> must be the winning color.
+                </li>
+                <li style={{ marginBottom: "10px" }}>
+                <strong>All hexes</strong> must be part of a region.
+                </li>
+            </ul>
+            <ul
+                style={{
+                fontFamily: "'Press Start 2P', sans-serif",
+                lineHeight: "1.5",
+                fontSize: "18px",
+                margin: 0,
+                paddingBlock: "0px 10px",
+                paddingInlineStart: "10px",
+                textAlign: "left",
+                listStylePosition: "outside",
+                }}
+            >
+                <strong style={{ fontSize: "20px", color: "#06404B" }}>Controls:</strong>
+                <span style={{ display: "block", marginBottom: "10px" }}></span>
+                <li style={{ marginBottom: "10px" }}>
+                <strong>Drag</strong> to create a region.
+                </li>
+                <li style={{ marginBottom: "10px" }}>
+                <strong>Drag</strong> from an existing region to <strong>add</strong> to it.
+                </li>
+                <li style={{ marginBottom: "10px" }}>
+                <strong>Click</strong> on a hex to <strong>remove</strong> it from the region.
+                </li>
+                <li>
+                <strong>Z</strong> to undo, <strong>R</strong> to reset.
+                </li>
+            </ul>
         </>
     );
 
@@ -173,11 +199,12 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false }) => {
                 background: "white",
                 border: "6px solid #228B22",
                 borderRadius: "10px",
-                padding: "20px 30px",
+                padding: "15px 20px",
                 textAlign: "center",
                 boxShadow: "0 0 20px rgba(0, 0, 0, 0.3)",
                 animation: "popupFadeIn 0.4s ease forwards",
-                maxWidth: "90%",
+                // maxWidth: "90%",
+                maxWidth: "450px",
                 }}
             >
                 <h2
@@ -186,7 +213,8 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false }) => {
                     margin: 0,
                     marginBottom: "5px",
                     fontFamily: "'Press Start 2P', sans-serif",
-                    fontWeight: "bold",
+                    color: "#06404B",
+                    // fontWeight: "normal",
                 }}
                 >
                 How To Play
