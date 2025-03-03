@@ -61,10 +61,10 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false }) => {
                 <strong>Goal:</strong> Split the map into <strong>regions</strong> to win.
                 </li>
                 <li style={{ marginBottom: "10px" }}>
-                The color with the most <strong>hexes</strong> wins that region.
+                The <strong>majority</strong> of <strong>regions</strong> must be the winning color.
                 </li>
                 <li style={{ marginBottom: "10px" }}>
-                The <strong>majority</strong> of <strong>regions</strong> must be the winning color.
+                The color with the most <strong>hexes</strong> wins each region.
                 </li>
                 <li style={{ marginBottom: "10px" }}>
                 <strong>All hexes</strong> must be part of a region.

@@ -1,11 +1,15 @@
 // src/workers/puzzleWorker.js
 import makeHardPuzzle from "../app/makePuzzle.js";
-import solvePuzzle from "../app/solvePuzzle.js";
+import generateMapData from "../app/generateMapData.js";
 
 self.onmessage = async (event) => {
   const {
     puzzleIndex,
-    baseData,
+    cellCount,
+    spreadFactor,
+    directionBias,
+    colorRatio,
+    // baseData,
     colorToWin,
     regionSize,
     maxSolutions,
@@ -14,6 +18,7 @@ self.onmessage = async (event) => {
   } = event.data;
 
   try {
+    const baseData = generateMapData(cellCount, spreadFactor, directionBias, colorRatio);
     // Generate the puzzle in the background
     const puzzleMap = makeHardPuzzle(
       baseData,

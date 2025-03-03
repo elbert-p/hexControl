@@ -42,7 +42,12 @@ export function PuzzleProvider({ children }) {
     // Post the generation settings to the worker.
     worker.postMessage({
       puzzleIndex,
-      baseData: puzzle.generationSettings?.baseData ?? [],
+    //   baseData: puzzle.generationSettings?.baseData ?? [],
+      cellCount: puzzle.generationSettings?.cellCount ?? 25,
+      spreadFactor: puzzle.generationSettings?.spreadFactor ?? 0.2,
+      directionBias: puzzle.generationSettings?.directionBias ?? 0.5,
+      colorRatio: puzzle.generationSettings?.colorRatio ?? 0.5,
+
       colorToWin: puzzle.generationSettings?.colorToWin ?? 1,
       regionSize: puzzle.generationSettings?.regionSize ?? 5,
       maxSolutions: puzzle.generationSettings?.maxSolutions ?? 5,
