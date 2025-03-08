@@ -527,7 +527,7 @@ export default function PuzzleSelectPage() {
       }}
     >
       <div>
-        <PuzzleHeader isSelectMode = "true" />
+        <PuzzleHeader isSelectMode = "true" puzzles = {puzzles} completedPuzzles={completedPuzzles}/>
       </div>
       <div
         style={{
