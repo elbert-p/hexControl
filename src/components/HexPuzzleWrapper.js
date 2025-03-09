@@ -154,6 +154,20 @@ export default function HexPuzzleWrapper({
     };
   }, []);
 
+  useEffect(() => {
+    const handleOrientationChange = () => {
+      // Wait a short time for the orientation change to settle
+      setTimeout(() => {
+        measureAndSetScale();
+      }, 300);
+    };
+  
+    window.addEventListener("orientationchange", handleOrientationChange);
+    return () => {
+      window.removeEventListener("orientationchange", handleOrientationChange);
+    };
+  }, []);
+
   // If the puzzle changes significantly (e.g., color changes, region changes)
   // we can measure again:
 //   useEffect(() => {

@@ -7,6 +7,16 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedP
   // overlayType can be "stats", "howToPlay", or null
   const [overlayType, setOverlayType] = useState(null);
   const [completionCounts, setCompletionCounts] = useState({});
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 600 || window.innerHeight <= 600);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const handleHomeClick = () => {
     router.push("/puzzle-select");
@@ -74,7 +84,7 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedP
       }}
     >
       <li style={{ marginBottom: "15px" }}>
-        <strong>Puzzles Completed:</strong> {completedPuzzles.length} / {puzzles.length}&nbsp;&nbsp;({Math.round(100*completedPuzzles.length / puzzles.length)}%)
+        <strong>Puzzles Completed:</strong> {completedPuzzles.length}&nbsp;/&nbsp;{puzzles.length}&nbsp;&nbsp;({Math.round(100*completedPuzzles.length / puzzles.length)}%)
       </li>
       <li style={{ marginBottom: "15px" }}>
         <strong style={{color: "green"}}>Easy:</strong>&nbsp;{completedDifficultyCounts.easy || 0},
@@ -89,62 +99,90 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedP
   );
 
   // Content for the how-to-play overlay.
-  const howToPlayOverlayContent = (
-    <>
-      <ul
-        style={{
-          fontFamily: "'Press Start 2P', sans-serif",
-          lineHeight: "1.5",
-          fontSize: "18px",
-          margin: 0,
-          paddingBlock: "15px 10px",
-          paddingInlineStart: "10px",
-          textAlign: "left",
-          listStylePosition: "outside",
-        }}
-      >
-        <li style={{ marginBottom: "10px" }}>
-          <strong>Goal:</strong> Split the map into <strong>regions</strong> to win.
-        </li>
-        <li style={{ marginBottom: "10px" }}>
-          The <strong>majority</strong> of <strong>regions</strong> must be the winning color.
-        </li>
-        <li style={{ marginBottom: "10px" }}>
-          The color with the most <strong>hexes</strong> wins each region.
-        </li>
-        <li style={{ marginBottom: "10px" }}>
-          <strong>All hexes</strong> must be part of a region.
-        </li>
-      </ul>
-      <ul
-        style={{
-          fontFamily: "'Press Start 2P', sans-serif",
-          lineHeight: "1.5",
-          fontSize: "18px",
-          margin: 0,
-          paddingBlock: "0px 10px",
-          paddingInlineStart: "10px",
-          textAlign: "left",
-          listStylePosition: "outside",
-        }}
-      >
-        <strong style={{ fontSize: "20px", color: "#06404B" }}>Controls:</strong>
-        <span style={{ display: "block", marginBottom: "10px" }}></span>
-        <li style={{ marginBottom: "10px" }}>
-          <strong>Drag</strong> to create a region.
-        </li>
-        <li style={{ marginBottom: "10px" }}>
-          <strong>Drag</strong> from an existing region to <strong>add</strong> to it.
-        </li>
-        <li style={{ marginBottom: "10px" }}>
-          <strong>Click</strong> on a hex to <strong>remove</strong> it from the region.
-        </li>
-        <li>
-          <strong>Z</strong> to undo, <strong>R</strong> to reset.
-        </li>
-      </ul>
-    </>
-  );
+  const howToPlayOverlayContent = 
+    isSelectMode ? (
+        <ul
+            style={{
+                fontFamily: "'Press Start 2P', sans-serif",
+                lineHeight: "1.5",
+                fontSize: "18px",
+                margin: 0,
+                paddingBlock: "15px 10px",
+                paddingInlineStart: "20px",
+                textAlign: "left",
+                listStylePosition: "outside",
+            }}
+        >
+            <li style={{ marginBottom: "15px" }}>
+                <strong>Completed</strong> levels are outlined in{" "}
+                <strong style={{ color: "green" }}>green</strong>.
+            </li>
+            <li style={{ marginBottom: "15px" }}>
+                <strong>Letter</strong> levels [A, B, etc.] are randomly generated and{" "}
+                <strong>replayable</strong>.
+            </li>
+            <li>
+                <strong>Click</strong> a level <strong>next to</strong> a completed level to play.
+            </li>
+        </ul>   
+    ) : (
+        <>
+        <ul
+            style={{
+            fontFamily: "'Press Start 2P', sans-serif",
+            lineHeight: "1.5",
+            fontSize: "18px",
+            margin: 0,
+            paddingBlock: "15px 10px",
+            paddingInlineStart: "10px",
+            textAlign: "left",
+            listStylePosition: "outside",
+            }}
+        >
+            <li style={{ marginBottom: "10px" }}>
+            <strong>Goal:</strong> Split the map into <strong>regions</strong> to win.
+            </li>
+            <li style={{ marginBottom: "10px" }}>
+            The <strong>majority</strong> of <strong>regions</strong> must be the winning color.
+            </li>
+            <li style={{ marginBottom: "10px" }}>
+            The color with the most <strong>hexes</strong> wins each region.
+            </li>
+            <li style={{ marginBottom: "10px" }}>
+            <strong>All hexes</strong> must be part of a region.
+            </li>
+        </ul>
+        <ul
+            style={{
+            fontFamily: "'Press Start 2P', sans-serif",
+            lineHeight: "1.5",
+            fontSize: "18px",
+            margin: 0,
+            paddingBlock: "0px 10px",
+            paddingInlineStart: "10px",
+            textAlign: "left",
+            listStylePosition: "outside",
+            }}
+        >
+            <strong style={{ fontSize: "20px", color: "#06404B" }}>Controls:</strong>
+            <span style={{ display: "block", marginBottom: "10px" }}></span>
+            <li style={{ marginBottom: "10px" }}>
+            <strong>Drag</strong> to create a region.
+            </li>
+            <li style={{ marginBottom: "10px" }}>
+            <strong>Drag</strong> from an existing region to <strong>add</strong> to it.
+            </li>
+            <li style={{ marginBottom: "10px" }}>
+            <strong>Click</strong> on a hex to <strong>remove</strong> it from the region.
+            </li>
+            {!isMobile && (
+            <li>
+                <strong>Z</strong> to undo, <strong>R</strong> to reset.
+            </li>
+            )}
+        </ul>
+        </>
+    );
 
   // Determine the overlay heading and content based on the overlayType.
   const overlayHeading =
