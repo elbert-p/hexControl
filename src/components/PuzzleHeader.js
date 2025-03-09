@@ -186,7 +186,7 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedP
 
   // Determine the overlay heading and content based on the overlayType.
   const overlayHeading =
-    overlayType === "stats" ? "Statistics" : "How To Play";
+    overlayType === "stats" ? "Statistics" : isSelectMode ? "Level Select" : "How To Play";
   const overlayContent =
     overlayType === "stats" ? statsOverlayContent : howToPlayOverlayContent;
 

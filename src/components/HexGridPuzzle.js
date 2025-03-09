@@ -249,6 +249,7 @@ function shallowEqualSelections(a, b) {
  */
 function removeHexAndSplit(selections, regionIndex, hexKey, hexStates) {
   const region = selections[regionIndex];
+  // if(region)
   // console.log(region)
   const newCells = region.cells.filter((ck) => ck !== hexKey);
 
@@ -322,7 +323,7 @@ export default function HexGridPuzzle({
   // Active selection (Set of cell keys)
   const [activeSelection, setActiveSelection] = useState(new Set());
 
-  const [pickedRegion, setPickedRegion] = useState(null);  // <-- ADDED
+  const [pickedRegion, setPickedRegion] = useState(null);
   // Are we dragging?
   const [isDragging, setIsDragging] = useState(false);
 
@@ -502,7 +503,7 @@ export default function HexGridPuzzle({
   function onHexEnter(q, r, s) {
     if (!isDragging) return;
     const k = hexKey(q, r, s);
-  
+
     // If the cursor enters a different hex than the initial one, it's a real drag
     if (initialHexRef.current && k !== initialHexRef.current) {
       dragOccurredRef.current = true;
@@ -515,12 +516,11 @@ export default function HexGridPuzzle({
     if (!isAdjacentToSelection(k, activeSelection)) return;
   
     // **Remove this hex from whatever other region it might have been in:**
-    const oldRegionIndex = findRegionContaining(k, selections);
-    if (oldRegionIndex !== -1) {
-      setSelections((prev) =>
-        removeHexAndSplit(prev, oldRegionIndex, k, hexStates)
-      );
-    }
+    setSelections((prev) => {
+      const oldRegionIndex = findRegionContaining(k, prev);
+      if (oldRegionIndex === -1) return prev;
+      return removeHexAndSplit(prev, oldRegionIndex, k, hexStates);
+    });
   
     // **Also remove it from pickedRegion itself, if that's where it was:**
     if (pickedRegion && pickedRegion.cells.includes(k)) {
