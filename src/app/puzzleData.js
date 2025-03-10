@@ -252,7 +252,7 @@ const puzzles = [
         q: 4,
         r: -2,
         s: -2,
-        difficulty: "easy",
+        difficulty: "intermediate",
         mapData: [
           {q: -1, r: -2, s:  3, color: 1},
           {q:  1, r: -2, s:  1, color: 1},
@@ -478,7 +478,7 @@ const puzzles = [
           regionSize: 7,
           maxSolutions: 2,
           maxAttempts: 5000,
-          difficultyThreshold: 3.5,
+          difficultyThreshold: 3.6,
         },
       },
       // {
