@@ -347,21 +347,49 @@ const puzzles = [
       //   q: 3,
       //   r: 2,
       //   s: -5,
-      //   difficulty: "intermediate",
+      //   difficulty: "medium",
       //   // mapData: makeHardPuzzle(generateMapData(20, 0.2, 0.5, 0.5), 1, 5, 1, 50, 3.5),
       //   // mapData: makeHardPuzzle(
       //   // [{q:0,r:0,s:0,color:0},{q:1,r:-1,s:0,color:1},{q:1,r:0,s:-1,color:0},{q:0,r:1,s:-1,color:1},{q:-1,r:1,s:0,color:0},{q:-1,r:0,s:1,color:0},{q:0,r:-1,s:1,color:0},{q:-1,r:2,s:-1,color:1},{q:-2,r:2,s:0,color:1},{q:-2,r:1,s:1,color:0},{q:0,r:2,s:-2,color:0},{q:-1,r:3,s:-2,color:0},{q:-2,r:3,s:-1,color:0},{q:1,r:-2,s:1,color:1},{q:-1,r:-1,s:2,color:0},{q:0,r:-2,s:2,color:0},{q:2,r:-1,s:-1,color:0},{q:-2,r:0,s:2,color:0},{q:2,r:0,s:-2,color:0},{q:1,r:1,s:-2,color:1},{q:3,r:-1,s:-2,color:0},{q:2,r:-2,s:0,color:0},{q:-3,r:2,s:1,color:1},{q:-3,r:1,s:2,color:0},{q:-2,r:4,s:-2,color:1},{q:-3,r:4,s:-1,color:0},{q:-3,r:3,s:0,color:0},{q:-4,r:2,s:2,color:0},{q:-4,r:1,s:3,color:1},{q:-3,r:0,s:3,color:1},{q:-4,r:3,s:1,color:0},{q:-5,r:3,s:2,color:0},{q:-5,r:2,s:3,color:1},{q:-2,r:-1,s:3,color:0},{q:-1,r:-2,s:3,color:1}]
       //   // , 1, 7, 3, 10, 3.5),
       //   mapData: null,
       //   colorToWin: 1,
-      //   regionSize: 5,
+      //   regionSize: 10,
       //   generationSettings: {
-      //     baseData: generateMapData(35, 0.2, 0.5, 0.5), // or store the parameters and do it in the worker
+      //     cellCount: 50,
+      //     spreadFactor: 0.2,
+      //     directionBias: 0.5,
+      //     colorRatio: 0.36,
       //     colorToWin: 1,
-      //     regionSize: 5,
-      //     maxSolutions: 1,
+      //     regionSize: 10,
+      //     maxSolutions: 6,
       //     maxAttempts: 5000,
-      //     difficultyThreshold: 4,
+      //     difficultyThreshold: 2,
+      //   },
+      // },
+      // {
+      //   id: "9",
+      //   q: 2,
+      //   r: 2,
+      //   s: -4,
+      //   difficulty: "medium",
+      //   // mapData: makeHardPuzzle(generateMapData(20, 0.2, 0.5, 0.5), 1, 5, 1, 50, 3.5),
+      //   // mapData: makeHardPuzzle(
+      //   // [{q:0,r:0,s:0,color:0},{q:1,r:-1,s:0,color:1},{q:1,r:0,s:-1,color:0},{q:0,r:1,s:-1,color:1},{q:-1,r:1,s:0,color:0},{q:-1,r:0,s:1,color:0},{q:0,r:-1,s:1,color:0},{q:-1,r:2,s:-1,color:1},{q:-2,r:2,s:0,color:1},{q:-2,r:1,s:1,color:0},{q:0,r:2,s:-2,color:0},{q:-1,r:3,s:-2,color:0},{q:-2,r:3,s:-1,color:0},{q:1,r:-2,s:1,color:1},{q:-1,r:-1,s:2,color:0},{q:0,r:-2,s:2,color:0},{q:2,r:-1,s:-1,color:0},{q:-2,r:0,s:2,color:0},{q:2,r:0,s:-2,color:0},{q:1,r:1,s:-2,color:1},{q:3,r:-1,s:-2,color:0},{q:2,r:-2,s:0,color:0},{q:-3,r:2,s:1,color:1},{q:-3,r:1,s:2,color:0},{q:-2,r:4,s:-2,color:1},{q:-3,r:4,s:-1,color:0},{q:-3,r:3,s:0,color:0},{q:-4,r:2,s:2,color:0},{q:-4,r:1,s:3,color:1},{q:-3,r:0,s:3,color:1},{q:-4,r:3,s:1,color:0},{q:-5,r:3,s:2,color:0},{q:-5,r:2,s:3,color:1},{q:-2,r:-1,s:3,color:0},{q:-1,r:-2,s:3,color:1}]
+      //   // , 1, 7, 3, 10, 3.5),
+      //   mapData: null,
+      //   colorToWin: 1,
+      //   regionSize: 10,
+      //   generationSettings: {
+      //     cellCount: 50,
+      //     spreadFactor: 0.2,
+      //     directionBias: 0.5,
+      //     colorRatio: 0.36,
+      //     colorToWin: 1,
+      //     regionSize: 10,
+      //     maxSolutions: 6,
+      //     maxAttempts: 5000,
+      //     difficultyThreshold: 3,
       //   },
       // },
       //generateMapData(35, 0.2, 0.5, 0.4)
@@ -383,7 +411,7 @@ const puzzles = [
           cellCount: 15,
           spreadFactor: 0.2,
           directionBias: 0.5,
-          colorRatio: 0.5,
+          colorRatio: 0.4,
           baseData: generateMapData(15, 0.2, 0.5, 0.5),
           colorToWin: 1,
           regionSize: 5,
@@ -405,7 +433,7 @@ const puzzles = [
           cellCount: 18,
           spreadFactor: 0.2,
           directionBias: 0.5,
-          colorRatio: 0.5,
+          colorRatio: 0.44,
           // baseData: generateMapData(18, 0.2, 0.5, 0.5),
           colorToWin: 1,
           regionSize: 6,
@@ -427,14 +455,14 @@ const puzzles = [
           cellCount: 25,
           spreadFactor: 0.2,
           directionBias: 0.5,
-          colorRatio: 0.5,
+          colorRatio: 0.44,
           // baseData: generateMapData(25, 0.2, 0.5, 0.5),
           
           colorToWin: 1,
           regionSize: 5,
           maxSolutions: 1,
           maxAttempts: 5000,
-          difficultyThreshold: 4.35,
+          difficultyThreshold: 4.2,
         },
       },
       {
@@ -450,7 +478,7 @@ const puzzles = [
           cellCount: 35,
           spreadFactor: 0.2,
           directionBias: 0.5,
-          colorRatio: 0.5,
+          colorRatio: 0.34,
           // baseData: generateMapData(35, 0.2, 0.5, 0.5), 
           colorToWin: 1,
           regionSize: 5,
@@ -464,7 +492,7 @@ const puzzles = [
         q: -1,
         r: -2,
         s: 3,
-        difficulty: "hard",
+        difficulty: "hard", //medium
         mapData: null,
         colorToWin: 1,
         regionSize: 7,
@@ -472,7 +500,7 @@ const puzzles = [
           cellCount: 35,
           spreadFactor: 0.2,
           directionBias: 0.5,
-          colorRatio: 0.5,
+          colorRatio: 0.34,
           // baseData: generateMapData(35, 0.2, 0.5, 0.5),
           colorToWin: 1,
           regionSize: 7,
@@ -482,39 +510,44 @@ const puzzles = [
         },
       },
       // {
-      //   id: "9",
-      //   q: 2,
-      //   r: 2,
-      //   s: -4,
-      //   difficulty: "medium",
-      //   // mapData: result.mapData,
-      //   mapData: hardPuzzleGeneratorGA({
+      //   id: "F",
+      //   q: -2,
+      //   r: -2,
+      //   s: 4,
+      //   difficulty: "hard",
+      //   mapData: null,
+      //   colorToWin: 1,
+      //   regionSize: 7,
+      //   generationSettings: {
       //     cellCount: 35,
-      //     regionSize: 5,
+      //     spreadFactor: 0.2,
+      //     directionBias: 0.5,
+      //     colorRatio: 0.34,
+      //     // baseData: generateMapData(35, 0.2, 0.5, 0.5),
       //     colorToWin: 1,
-      //     maxSolutions: 2,
-      //     difficultyThreshold: 3.5,
-      //     populationSize: 20,
-      //     maxGenerations: 10,
-      //     mutationRate: 0.1}).mapData,//makeHardPuzzle(generateMapData(35, 0.2, 0.5, 0.5), 1, 5, 2, 200, 3.5),
-      //   colorToWin: 1,
-      //   regionSize: 5,
+      //     regionSize: 7,
+      //     maxSolutions: 1,
+      //     maxAttempts: 5000,
+      //     difficultyThreshold: 3.6,
+      //   },
       // },
+      // {
 
-      // mapData: hardPuzzleGeneratorGA({
-      //   cellCount: 30,
-      //   regionSize: 6,
-      //   colorToWin: 1,
-      //   maxSolutions: 2,
-      //   difficultyThreshold: 3.5,
-      //   populationSize: 20,
-      //   maxGenerations: 10,
-      //   mutationRate: 0.1}).mapData,
     // Add more puzzles as needed
   ];
   // console.log(JSON.stringify(puzzles.find((p) => p.id === "E").mapData).replace(/"/g, ''));
   export default puzzles;
 
+
+// mapData: hardPuzzleGeneratorGA({
+//   cellCount: 30,
+//   regionSize: 6,
+//   colorToWin: 1,
+//   maxSolutions: 2,
+//   difficultyThreshold: 3.5,
+//   populationSize: 20,
+//   maxGenerations: 10,
+//   mutationRate: 0.1}).mapData,
 
 /*
 possible 4
@@ -539,4 +572,8 @@ produced from D 35 region 5 -- save the lonely blue
 
 /* hard puzzle 
 [{"q":0,"r":0,"s":0,"color":0},{"q":1,"r":-1,"s":0,"color":1},{"q":0,"r":1,"s":-1,"color":0},{"q":-1,"r":1,"s":0,"color":1},{"q":-1,"r":0,"s":1,"color":1},{"q":1,"r":0,"s":-1,"color":0},{"q":1,"r":-2,"s":1,"color":1},{"q":2,"r":0,"s":-2,"color":0},{"q":1,"r":1,"s":-2,"color":0},{"q":-2,"r":1,"s":1,"color":0},{"q":-2,"r":2,"s":0,"color":1},{"q":-3,"r":2,"s":1,"color":0},{"q":0,"r":-1,"s":1,"color":0},{"q":-2,"r":0,"s":2,"color":1},{"q":-1,"r":-1,"s":2,"color":0},{"q":0,"r":2,"s":-2,"color":0},{"q":-1,"r":2,"s":-1,"color":0},{"q":3,"r":-1,"s":-2,"color":1},{"q":2,"r":1,"s":-3,"color":0},{"q":4,"r":-2,"s":-2,"color":1},{"q":4,"r":-1,"s":-3,"color":1},{"q":3,"r":0,"s":-3,"color":0},{"q":2,"r":-1,"s":-1,"color":0},{"q":-4,"r":3,"s":1,"color":0},{"q":-3,"r":1,"s":2,"color":0},{"q":4,"r":0,"s":-4,"color":1},{"q":3,"r":1,"s":-4,"color":1},{"q":5,"r":-2,"s":-3,"color":0},{"q":3,"r":-2,"s":-1,"color":0},{"q":4,"r":-3,"s":-1,"color":0},{"q":5,"r":-1,"s":-4,"color":1},{"q":-2,"r":3,"s":-1,"color":0},{"q":5,"r":0,"s":-5,"color":1},{"q":4,"r":1,"s":-5,"color":0},{"q":5,"r":-4,"s":-1,"color":0}]
+*/
+
+/* good stuff C
+[{q:0,r:0,s:0,color:0},{q:1,r:0,s:-1,color:1},{q:0,r:1,s:-1,color:1},{q:-1,r:1,s:0,color:1},{q:0,r:-1,s:1,color:0},{q:2,r:-1,s:-1,color:1},{q:2,r:0,s:-2,color:0},{q:1,r:-1,s:0,color:0},{q:-1,r:2,s:-1,color:0},{q:-2,r:2,s:0,color:1},{q:-1,r:0,s:1,color:0},{q:1,r:1,s:-2,color:1},{q:0,r:2,s:-2,color:0},{q:-2,r:3,s:-1,color:1},{q:3,r:-1,s:-2,color:0},{q:2,r:-2,s:0,color:0},{q:3,r:0,s:-3,color:0},{q:0,r:3,s:-3,color:0},{q:-1,r:3,s:-2,color:1},{q:-2,r:1,s:1,color:0},{q:-2,r:0,s:2,color:1},{q:1,r:-2,s:1,color:1},{q:-1,r:-1,s:2,color:0},{q:-3,r:0,s:3,color:0},{q:-2,r:-1,s:3,color:0},{q:-1,r:-2,s:3,color:0},{q:-3,r:-1,s:4,color:0},{q:3,r:1,s:-4,color:1},{q:2,r:1,s:-3,color:0},{q:2,r:2,s:-4,color:0},{q:1,r:2,s:-3,color:0},{q:0,r:-3,s:3,color:0},{q:0,r:-2,s:2,color:0},{q:-2,r:-2,s:4,color:1},{q:-1,r:-3,s:4,color:0}]
 */

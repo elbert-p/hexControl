@@ -59,7 +59,9 @@ export default function HexPuzzleWrapper({
   const colorHexToWin = colorToWin === 0 ? "#ff8888" : "#88f";
 
   // Determine if the puzzle is complete
-  const isComplete = regionsMade === totalRegions && regionsWon >= neededForMajority;
+  const isComplete = mapData 
+  ? regionsMade === totalRegions && regionsWon >= neededForMajority 
+  : false;
 
   const [showOverlay, setShowOverlay] = useState(false);
 
@@ -170,9 +172,9 @@ export default function HexPuzzleWrapper({
 
   // If the puzzle changes significantly (e.g., color changes, region changes)
   // we can measure again:
-//   useEffect(() => {
-//     measureAndSetScale();
-//   }, [puzzleState, mapData]);
+  // useEffect(() => {
+  //   measureAndSetScale();
+  // }, [puzzleState, mapData]);
 
   return (
     <div  
