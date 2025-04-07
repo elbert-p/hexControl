@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { FiHome, FiHelpCircle, FiBarChart2 } from "react-icons/fi";
+import { FiHome, FiHelpCircle, FiBarChart2, FiUser, FiX } from "react-icons/fi";
+import GoogleSignInButton from "./GoogleSignInButton"; // Adjust the path if needed
+import { useAuth } from "../context/AuthContext";
+import { supabase } from "../supabaseClient"; // Import supabase for sign out
 
 const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedPuzzles = [] }) => {
   const router = useRouter();
-  // overlayType can be "stats", "howToPlay", or null
+  // overlayType can be "stats", "howToPlay", "login", "profile", or null
   const [overlayType, setOverlayType] = useState(null);
   const [completionCounts, setCompletionCounts] = useState({});
   const [isMobile, setIsMobile] = useState(false);
+  const { session, localDataVersion } = useAuth();
 
   useEffect(() => {
     const handleResize = () => {
@@ -33,12 +37,67 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedP
         console.error("Error parsing puzzleCompletionCounts:", err);
       }
     }
-  }, []);
+  }, [localDataVersion]);
 
   // Toggle overlay: if the current overlay is open, close it; otherwise, open the requested overlay.
   const toggleOverlay = (type) => {
     setOverlayType((prev) => (prev === type ? null : type));
   };
+
+  // Handler for signing out.
+  const handleSignOut = async () => {
+    console.log(session)
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error("Error signing out:", error);
+    } else {
+      toggleOverlay(null);
+    }
+  };
+
+  // Overlay content for profile (when user is signed in).
+  const profileOverlayContent = (
+    <div
+      style={{
+        fontFamily: "'Press Start 2P', sans-serif",
+        lineHeight: "1.5",
+        fontSize: "18px",
+        margin: 0,
+        paddingInline: "10px",
+        paddingTop: "10px",
+        textAlign: "center",
+      }}
+    >
+      <div style={{ margin: 0}}
+      >
+      {session?.user?.email}
+      </div>
+      <button
+        onClick={handleSignOut}
+        style={{
+          padding: "10px 20px",
+          fontSize: "18px",
+          cursor: "pointer",
+          backgroundColor: "#a3bf56",
+          color: "white",
+          border: "none",
+          borderRadius: "10px",
+          fontFamily: "'Press Start 2P', sans-serif",
+          transition: "background-color 0.3s ease",
+          marginTop: "15px",
+        }}
+      >
+        Sign Out
+      </button>
+    </div>
+  );
+
+  // When no session, use the login overlay content (Google sign in).
+  const loginOverlayContent = (
+    <div>
+      <GoogleSignInButton />
+    </div>
+  );
 
   const titleText = isSelectMode ? "Level Select" : `Level ${puzzleId}`;
 
@@ -67,7 +126,7 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedP
             {index < entries.length - 1 ? ", " : ""}
           </span>
         ))
-      : "None (Complete A, B...)";
+      : "None - Complete A, B...";
 
   // Content for the statistics overlay.
   const statsOverlayContent = (
@@ -84,13 +143,13 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedP
       }}
     >
       <li style={{ marginBottom: "15px" }}>
-        <strong>Puzzles Completed:</strong> {completedPuzzles.length}&nbsp;/&nbsp;{puzzles.length}&nbsp;&nbsp;({Math.round(100*completedPuzzles.length / puzzles.length)}%)
+        <strong>Puzzles Completed:</strong> {completedPuzzles.length}&nbsp;/&nbsp;{puzzles.length}&nbsp;&nbsp;({Math.round(100 * completedPuzzles.length / puzzles.length)}%)
       </li>
       <li style={{ marginBottom: "15px" }}>
-        <strong style={{color: "green"}}>Easy:</strong>&nbsp;{completedDifficultyCounts.easy || 0},
-        <strong style={{color: "#e6cf01"}}> Intermediate:</strong>&nbsp;{completedDifficultyCounts.intermediate || 0},
-        <strong style={{color: "orange"}}> Medium:</strong>&nbsp;{completedDifficultyCounts.medium || 0},
-        <strong style={{color: "red"}}> Hard:</strong>&nbsp;{completedDifficultyCounts.hard || 0}
+        <strong style={{ color: "green" }}>Easy:</strong>&nbsp;{completedDifficultyCounts.easy || 0},
+        <strong style={{ color: "#e6cf01" }}> Intermediate:</strong>&nbsp;{completedDifficultyCounts.intermediate || 0},
+        <strong style={{ color: "orange" }}> Medium:</strong>&nbsp;{completedDifficultyCounts.medium || 0},
+        <strong style={{ color: "red" }}> Hard:</strong>&nbsp;{completedDifficultyCounts.hard || 0}
       </li>
       <li>
         <strong>Infinite Completions:</strong> {infiniteCompletionsDisplay}
@@ -99,36 +158,36 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedP
   );
 
   // Content for the how-to-play overlay.
-  const howToPlayOverlayContent = 
+  const howToPlayOverlayContent =
     isSelectMode ? (
-        <ul
-            style={{
-                fontFamily: "'Press Start 2P', sans-serif",
-                lineHeight: "1.5",
-                fontSize: "18px",
-                margin: 0,
-                paddingBlock: "15px 10px",
-                paddingInlineStart: "20px",
-                textAlign: "left",
-                listStylePosition: "outside",
-            }}
-        >
-            <li style={{ marginBottom: "15px" }}>
-                <strong>Completed</strong> levels are outlined in{" "}
-                <strong style={{ color: "green" }}>green</strong>.
-            </li>
-            <li style={{ marginBottom: "15px" }}>
-                <strong>Letter</strong> levels [A, B, etc.] are randomly generated and{" "}
-                <strong>replayable</strong>.
-            </li>
-            <li>
-                <strong>Click</strong> a level <strong>next to</strong> a completed level to play.
-            </li>
-        </ul>   
+      <ul
+        style={{
+          fontFamily: "'Press Start 2P', sans-serif",
+          lineHeight: "1.5",
+          fontSize: "18px",
+          margin: 0,
+          paddingBlock: "15px 10px",
+          paddingInlineStart: "20px",
+          textAlign: "left",
+          listStylePosition: "outside",
+        }}
+      >
+        <li style={{ marginBottom: "15px" }}>
+          <strong>Completed</strong> levels are outlined in{" "}
+          <strong style={{ color: "green" }}>green</strong>.
+        </li>
+        <li style={{ marginBottom: "15px" }}>
+          <strong>Letter</strong> levels [A, B, etc.] are randomly generated and{" "}
+          <strong>replayable</strong>.
+        </li>
+        <li>
+          <strong>Click</strong> a level <strong>next to</strong> a completed level to play.
+        </li>
+      </ul>
     ) : (
-        <>
+      <>
         <ul
-            style={{
+          style={{
             fontFamily: "'Press Start 2P', sans-serif",
             lineHeight: "1.5",
             fontSize: "18px",
@@ -137,23 +196,23 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedP
             paddingInlineStart: "10px",
             textAlign: "left",
             listStylePosition: "outside",
-            }}
+          }}
         >
-            <li style={{ marginBottom: "10px" }}>
+          <li style={{ marginBottom: "10px" }}>
             <strong>Goal:</strong> Split the map into <strong>regions</strong> to win.
-            </li>
-            <li style={{ marginBottom: "10px" }}>
+          </li>
+          <li style={{ marginBottom: "10px" }}>
             The <strong>majority</strong> of <strong>regions</strong> must be the winning color.
-            </li>
-            <li style={{ marginBottom: "10px" }}>
+          </li>
+          <li style={{ marginBottom: "10px" }}>
             The color with the most <strong>hexes</strong> wins each region.
-            </li>
-            <li style={{ marginBottom: "10px" }}>
+          </li>
+          <li style={{ marginBottom: "10px" }}>
             <strong>All hexes</strong> must be part of a region.
-            </li>
+          </li>
         </ul>
         <ul
-            style={{
+          style={{
             fontFamily: "'Press Start 2P', sans-serif",
             lineHeight: "1.5",
             fontSize: "18px",
@@ -162,33 +221,48 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedP
             paddingInlineStart: "10px",
             textAlign: "left",
             listStylePosition: "outside",
-            }}
+          }}
         >
-            <strong style={{ fontSize: "20px", color: "#06404B" }}>Controls:</strong>
-            <span style={{ display: "block", marginBottom: "10px" }}></span>
-            <li style={{ marginBottom: "10px" }}>
+          <strong style={{ fontSize: "20px", color: "#06404B" }}>Controls:</strong>
+          <span style={{ display: "block", marginBottom: "10px" }}></span>
+          <li style={{ marginBottom: "10px" }}>
             <strong>Drag</strong> to create a region.
-            </li>
-            <li style={{ marginBottom: "10px" }}>
+          </li>
+          <li style={{ marginBottom: "10px" }}>
             <strong>Drag</strong> from an existing region to <strong>add</strong> to it.
-            </li>
-            <li style={{ marginBottom: "10px" }}>
+          </li>
+          <li style={{ marginBottom: "10px" }}>
             <strong>Click</strong> on a hex to <strong>remove</strong> it from the region.
-            </li>
-            {!isMobile && (
+          </li>
+          {!isMobile && (
             <li>
-                <strong>Z</strong> to undo, <strong>R</strong> to reset.
+              <strong>Z</strong> to undo, <strong>R</strong> to reset.
             </li>
-            )}
+          )}
         </ul>
-        </>
+      </>
     );
 
   // Determine the overlay heading and content based on the overlayType.
   const overlayHeading =
-    overlayType === "stats" ? "Statistics" : isSelectMode ? "Level Select" : "How To Play";
+    overlayType === "stats"
+      ? "Statistics"
+      : overlayType === "login"
+      ? "Sign In"
+      : overlayType === "profile"
+      ? "Profile"
+      : isSelectMode
+      ? "Level Select"
+      : "How To Play";
+
   const overlayContent =
-    overlayType === "stats" ? statsOverlayContent : howToPlayOverlayContent;
+    overlayType === "stats"
+      ? statsOverlayContent
+      : overlayType === "login"
+      ? loginOverlayContent
+      : overlayType === "profile"
+      ? profileOverlayContent
+      : howToPlayOverlayContent;
 
   const pulseAnimationStyle =
     puzzleId === "0"
@@ -206,7 +280,6 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedP
           boxSizing: "border-box",
           backgroundColor: "#c6e2e9",
           display: "flex",
-          justifyContent: "space-between",
           alignItems: "center",
           padding: "10px 20px",
           borderBottom: "2px solid white",
@@ -214,71 +287,110 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedP
           zIndex: 1,
         }}
       >
-        {/* Left Icon Button: Home or Statistics based on mode */}
-        {isSelectMode ? (
-          <button
-            onClick={() => toggleOverlay("stats")}
-            style={{
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              fontSize: "32px",
-              display: "flex",
-              alignItems: "center",
-              padding: "0",
-            }}
-            aria-label="Statistics"
-          >
-            <FiBarChart2 />
-          </button>
-        ) : (
-          <button
-            onClick={handleHomeClick}
-            style={{
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              fontSize: "32px",
-              display: "flex",
-              alignItems: "center",
-              padding: "0",
-            }}
-            aria-label="Home"
-          >
-            <FiHome />
-          </button>
-        )}
+        {/* Left Section */}
+        <div style={{ flex: 1, display: "flex", alignItems: "center" }}>
+          {isSelectMode ? (
+            <button
+              onClick={() => toggleOverlay("stats")}
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                fontSize: "32px",
+                display: "flex",
+                alignItems: "center",
+                padding: "0",
+              }}
+              aria-label="Statistics"
+            >
+              <FiBarChart2 />
+            </button>
+          ) : (
+            <button
+              onClick={handleHomeClick}
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                fontSize: "32px",
+                display: "flex",
+                alignItems: "center",
+                padding: "0",
+              }}
+              aria-label="Home"
+            >
+              <FiHome />
+            </button>
+          )}
+        </div>
 
-        {/* Title */}
-        <h1
-          style={{
-            margin: 0,
-            fontFamily: "'Press Start 2P', sans-serif",
-            fontSize: "24px",
-            userSelect: "none",
-            fontWeight: "normal",
-          }}
-        >
-          {titleText}
-        </h1>
+        {/* Center Section: Title */}
+        <div style={{ textAlign: "center" }}>
+          <h1
+            style={{
+              margin: 0,
+              fontFamily: "'Press Start 2P', sans-serif",
+              fontSize: "24px",
+              userSelect: "none",
+              fontWeight: "normal",
+            }}
+          >
+            {titleText}
+          </h1>
+        </div>
 
-        {/* Right Icon Button: Always the How To Play button */}
-        <button
-          onClick={() => toggleOverlay("howToPlay")}
+        {/* Right Section */}
+        <div
           style={{
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-            fontSize: "32px",
+            flex: 1,
             display: "flex",
             alignItems: "center",
-            padding: "0",
-            ...pulseAnimationStyle,
+            justifyContent: "flex-end",
+            gap: "15px",
           }}
-          aria-label="How to Play"
         >
-          <FiHelpCircle />
-        </button>
+          <button
+            onClick={() => toggleOverlay(session ? "profile" : "login")}
+            style={{
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              padding: 0,
+            }}
+          >
+            {session ? (
+              <FiUser size={32} style={{ display: "flex", alignItems: "center" }} />
+            ) : (
+              <h1
+                style={{
+                  margin: 0,
+                  fontFamily: "'Press Start 2P', sans-serif",
+                  fontSize: "16px",
+                  userSelect: "none",
+                  fontWeight: "normal",
+                }}
+              >
+                Sign In
+              </h1>
+            )}
+          </button>
+          <button
+            onClick={() => toggleOverlay("howToPlay")}
+            style={{
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              fontSize: "32px",
+              display: "flex",
+              alignItems: "center",
+              padding: "0",
+              ...pulseAnimationStyle,
+            }}
+            aria-label="How to Play"
+          >
+            <FiHelpCircle />
+          </button>
+        </div>
       </header>
 
       {/* Overlay */}
@@ -326,23 +438,29 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedP
               {overlayHeading}
             </h2>
             {overlayContent}
+            {/* Circular Close Button */}
             <button
-              className="overlayButton"
               onClick={() => toggleOverlay(overlayType)}
               style={{
-                padding: "10px 20px",
-                fontSize: "18px",
+                position: "absolute",
+                top: "-14px",
+                right: "-14px",
+                width: "30px",
+                height: "30px",
+                borderRadius: "50%",
+                backgroundColor: "#fff",       // White background
+                border: "3px solid #333",      // Dark gray border
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
                 cursor: "pointer",
-                backgroundColor: "#a3bf56",
-                color: "white",
-                border: "none",
-                borderRadius: "10px",
-                fontFamily: "'Press Start 2P', sans-serif",
-                transition: "background-color 0.3s ease",
-                marginTop: "15px",
               }}
+              aria-label="Close overlay"
             >
-              Close
+              <FiX
+                color="#333"                // Dark gray "X"
+                style={{ strokeWidth: "4" }}// Thicker stroke for a bolder X
+              />
             </button>
           </div>
         </div>

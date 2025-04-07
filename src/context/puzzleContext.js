@@ -2,6 +2,7 @@
 "use client"
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import basePuzzles from "../app/puzzleData";
+import { useAuth } from "./AuthContext";
 
 const PuzzleContext = createContext();
 
@@ -13,6 +14,7 @@ export function PuzzleProvider({ children }) {
   const [puzzles, setPuzzles] = useState(() => [...basePuzzles]);
   // Ref to track active workers by puzzle index, to prevent duplicate generations.
   const activeWorkersRef = useRef({});
+  const { notifyLocalDataUpdated } = useAuth();
 
   // Helper function to spawn a worker for a specific puzzle index.
   const spawnWorkerForPuzzle = (puzzleIndex) => {
@@ -91,6 +93,7 @@ export function PuzzleProvider({ children }) {
     }
     completionCounts[puzzleId] = (completionCounts[puzzleId] || 0) + 1;
     localStorage.setItem("puzzleCompletionCounts", JSON.stringify(completionCounts));
+    notifyLocalDataUpdated();
 
     const puzzleIndex = puzzles.findIndex(puzzle => puzzle.id === puzzleId);
     if (puzzleIndex === -1 || !puzzles[puzzleIndex].generationSettings) return;

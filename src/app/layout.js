@@ -1,5 +1,7 @@
 import { Analytics } from '@vercel/analytics/next';
 import { PuzzleProvider } from "../context/puzzleContext";
+import { AuthProvider } from "../context/AuthContext";
+
 import './globals.css';
 
 export const metadata = {
@@ -28,9 +30,11 @@ export default function RootLayout({ children }) {
 
       </head>
       <body style={{ margin: 0, padding: 0 }}>
-        <PuzzleProvider>
-          {children}
-        </PuzzleProvider>
+        <AuthProvider>
+          <PuzzleProvider>
+            {children}
+          </PuzzleProvider>
+        </AuthProvider>
         <Analytics />
       </body>
     </html>

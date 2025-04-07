@@ -5,6 +5,7 @@ import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import HexGridPuzzle from "./HexGridPuzzle";
 import { useRouter } from "next/navigation";
 import { usePuzzles } from "../context/puzzleContext";
+import { useAuth } from "../context/AuthContext";
 
 export default function HexPuzzleWrapper({
   mapData,
@@ -16,6 +17,7 @@ export default function HexPuzzleWrapper({
   
   const router = useRouter();
   const { resetPuzzle } = usePuzzles();
+  const { notifyLocalDataUpdated } = useAuth();
 
   // The puzzle will send us its internal states via onPuzzleStateChange
   const [puzzleState, setPuzzleState] = useState({
@@ -111,6 +113,7 @@ export default function HexPuzzleWrapper({
     if (!completedPuzzles.includes(puzzleId)) {
       completedPuzzles.push(puzzleId);
       localStorage.setItem("completedPuzzles", JSON.stringify(completedPuzzles));
+      notifyLocalDataUpdated(); 
     }
   };
 
