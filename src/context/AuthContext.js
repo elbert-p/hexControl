@@ -144,9 +144,9 @@ export const AuthProvider = ({ children }) => {
       } else {
         localStorage.removeItem("puzzleCompletionCounts");
       }
+      // remove the backup key now that we've restored
+      localStorage.removeItem("localProfileBackup");
       notifyLocalDataUpdated(); // Trigger re-renders
-      // Optionally remove the backup key now that we've restored
-      // localStorage.removeItem("localProfileBackup");
     } catch (err) {
       console.error("Error restoring local profile backup:", err);
     }
