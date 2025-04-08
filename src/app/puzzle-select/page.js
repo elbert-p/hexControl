@@ -13,12 +13,14 @@ import { useAuth } from "../../context/AuthContext";
 
 // console.log(puzzles[5].mapData)
 
-const CURRENT_VERSION = 1;
+const CURRENT_VERSION = 2;
 // Migration log
 const migrationLog = {   //puzzles that have changed and should have completion removed
   1: ["4a", "3a"],
   // In version 2, these puzzles were updated.
-  // 2: ["3a", "5"],
+  2: ["8"],
+  // In version 3, these puzzles were updated.
+  // 3: ["8"],
 };
 
 // Helper function to collect all changed puzzle IDs from storedVersion+1 up to CURRENT_VERSION.

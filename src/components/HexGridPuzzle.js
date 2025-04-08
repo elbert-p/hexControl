@@ -838,7 +838,8 @@ export default function HexGridPuzzle({
                   stroke: "#fff",
                   strokeWidth: hexStrokeWidth,
                   cursor: "pointer",
-                }} >
+                }} > 
+                {/* TEXTHERE */}
                 {/* <text
                   textAnchor="middle"
                   dominantBaseline="central"

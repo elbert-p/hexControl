@@ -118,7 +118,12 @@ export const AuthProvider = ({ children }) => {
    */
   function restoreLocalProfileBackup() {
     const backup = localStorage.getItem("localProfileBackup");
-    if (!backup) return;
+    if (!backup) {
+      localStorage.removeItem("completedPuzzles");
+      localStorage.removeItem("puzzleCompletionCounts");
+      notifyLocalDataUpdated(); // Trigger re-renders
+      return;
+    }
 
     try {
       const localData = JSON.parse(backup);
@@ -206,6 +211,8 @@ export const AuthProvider = ({ children }) => {
             console.error("Error upserting new profile:", upsertError.message);
           } else {
             console.log("Local data saved to new account in Supabase.");
+            localStorage.removeItem("localProfileBackup");
+            console.log("Removed localProfileBackup")
           }
         }
       } else {
