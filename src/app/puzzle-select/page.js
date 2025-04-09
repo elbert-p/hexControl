@@ -13,14 +13,15 @@ import { useAuth } from "../../context/AuthContext";
 
 // console.log(puzzles[5].mapData)
 
-const CURRENT_VERSION = 2;
+const CURRENT_VERSION = 3;
 // Migration log
 const migrationLog = {   //puzzles that have changed and should have completion removed
   1: ["4a", "3a"],
   // In version 2, these puzzles were updated.
   2: ["8"],
-  // In version 3, these puzzles were updated.
-  // 3: ["8"],
+  // Version 3 updated the "puzzleCompletionCounts" localStorage item
+  // In version 4, these puzzles were updated.
+  // 4: ["8"],
 };
 
 // Helper function to collect all changed puzzle IDs from storedVersion+1 up to CURRENT_VERSION.
@@ -529,6 +530,16 @@ export default function PuzzleSelectPage() {
         // Write back the updated data
         localStorage.setItem("completedPuzzles", JSON.stringify(loadedPuzzles));
         localStorage.setItem("lastVersion", CURRENT_VERSION.toString());
+
+        if (storedVersion < 3) {
+          const existingCounts = JSON.parse(localStorage.getItem("puzzleCompletionCounts") || "{}");
+          loadedPuzzles.forEach((id) => {
+            if (!(id in existingCounts)) {
+              existingCounts[id] = 1;
+            }
+          });
+          localStorage.setItem("puzzleCompletionCounts", JSON.stringify(existingCounts));
+        }
       }
 
       // 4. Update our component state
