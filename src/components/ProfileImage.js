@@ -2,7 +2,6 @@ import { useState, useEffect, memo } from "react";
 import { FiUser } from "react-icons/fi";
 
 const ProfileImage = memo(function ProfileImage({ src, size = 32 }) {
-  // Try to hydrate from sessionStorage on first render
   const [dataUrl, setDataUrl] = useState(() => {
     if (typeof window === "undefined") return null;
     const lastUrl  = sessionStorage.getItem("avatar:lastUrl");
@@ -13,58 +12,67 @@ const ProfileImage = memo(function ProfileImage({ src, size = 32 }) {
 
   useEffect(() => {
     if (!src) {
-      // no src → clear cache
       setDataUrl(null);
       sessionStorage.removeItem("avatar:lastUrl");
       sessionStorage.removeItem("avatar:lastData");
       return;
     }
-
-    // if we already have it cached, don’t re‑fetch
-    const lastUrl  = sessionStorage.getItem("avatar:lastUrl");
-    const lastData = sessionStorage.getItem("avatar:lastData");
-    if (lastUrl === src && lastData) {
-      setDataUrl(lastData);
+    
+    // If already cached, don't re-fetch
+    if (sessionStorage.getItem("avatar:lastUrl") === src && sessionStorage.getItem("avatar:lastData")) {
+      // For debugging:
+      console.log("Using cached avatar");
+      setDataUrl(sessionStorage.getItem("avatar:lastData"));
       return;
     }
 
     let cancelled = false;
     fetch(src)
       .then(res => {
-        if (!res.ok) throw new Error("network error");
+        if (!res.ok) throw new Error("Network response was not ok");
         return res.blob();
       })
-      .then(blob => new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result);
-        reader.onerror   = reject;
-        reader.readAsDataURL(blob);
-      }))
+      .then(blob =>
+        new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        })
+      )
       .then(data => {
         if (cancelled) return;
-        // cache in state + sessionStorage
+        // Save to state and to sessionStorage
         setDataUrl(data);
-        sessionStorage.setItem("avatar:lastUrl", src);
-        sessionStorage.setItem("avatar:lastData", data);
+        try {
+          sessionStorage.setItem("avatar:lastUrl", src);
+          sessionStorage.setItem("avatar:lastData", data);
+          console.log("Avatar cached successfully");
+        } catch (err) {
+          console.warn("Failed to write to sessionStorage", err);
+        }
       })
-      .catch(() => {
-        if (!cancelled) setErrored(true);
+      .catch(err => {
+        if (!cancelled) {
+          console.error("Failed to load avatar:", err);
+          setErrored(true);
+        }
       });
 
     return () => { cancelled = true; };
   }, [src]);
 
-  // if no src or we hit an error, render the icon
+  // If there’s no src or an error occurred, show the FiUser icon
   if (!src || errored) {
-    return <FiUser size={size} style={{display: "flex",}}/>;
+    return <FiUser size={size} style={{ display: "flex" }} />;
   }
-
-  // while we’re still fetching, you can show a placeholder icon
+  
+  // While fetching, show the icon as a placeholder
   if (!dataUrl) {
-    return <FiUser size={size} style={{display: "flex",}}/>;
+    return <FiUser size={size} style={{ display: "flex" }} />;
   }
 
-  // finally, render the cached data‑URL
+  // Finally, show the image with your inline styles intact
   return (
     <img
       src={dataUrl}
@@ -79,9 +87,6 @@ const ProfileImage = memo(function ProfileImage({ src, size = 32 }) {
       onError={() => setErrored(true)}
     />
   );
-},
-// only re‑render when src or size actually change
-(prev, next) => prev.src === next.src && prev.size === next.size
-);
+}, (prev, next) => prev.src === next.src && prev.size === next.size);
 
 export default ProfileImage;
