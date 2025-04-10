@@ -4,6 +4,7 @@ import { FiHome, FiHelpCircle, FiBarChart2, FiUser, FiX } from "react-icons/fi";
 import GoogleSignInButton from "./GoogleSignInButton"; // Adjust the path if needed
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../supabaseClient"; // Import supabase for sign out
+import ProfileImage from "./ProfileImage";
 
 const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedPuzzles = [] }) => {
   const router = useRouter();
@@ -359,8 +360,8 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedP
             }}
           >
             {session ? (
-              <FiUser size={32} style={{ display: "flex", alignItems: "center" }} />
-            ) : (
+              <ProfileImage src={session.user.user_metadata.avatar_url} />
+              ) : (
               <h1
                 style={{
                   margin: 0,
