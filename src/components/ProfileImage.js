@@ -21,7 +21,7 @@ const ProfileImage = memo(function ProfileImage({ src, size = 32 }) {
     // If already cached, don't re-fetch
     if (sessionStorage.getItem("avatar:lastUrl") === src && sessionStorage.getItem("avatar:lastData")) {
       // For debugging:
-      console.log("Using cached avatar");
+    //   console.log("Using cached avatar");
       setDataUrl(sessionStorage.getItem("avatar:lastData"));
       return;
     }

@@ -1,72 +1,150 @@
+// src/context/AuthContext.js
+/* eslint-disable no-console */
 "use client";
-import { createContext, useContext, useState, useEffect, useRef } from "react";
+
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { supabase } from "../supabaseClient";
+
+/**
+ * ──────────────────────────────────────────────────────────────────────────────
+ *  AuthContext
+ * ──────────────────────────────────────────────────────────────────────────────
+ *
+ * Goals
+ * ─────
+ * 1. Avoid the race condition that appeared when a page was opened and then
+ *    re‑loaded immediately (listener received SIGNED_IN before we knew the
+ *    “previous” user).
+ * 2. Still detect *real* sign‑ins after a redirect.
+ * 3. Persist the last‑known user ID across hard reloads so we can distinguish
+ *    “same user rehydrated” vs “different user signed in”.
+ * 4. Keep all the original backup / restore / sync helpers.
+ * 5. Add generous console logging so problems are easy to trace.
+ * ──────────────────────────────────────────────────────────────────────────────
+ */
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+  // ────────────────────────────────────────────────────────────────────────────
+  //  React state & refs
+  // ────────────────────────────────────────────────────────────────────────────
   const [session, setSession] = useState(null);
 
-  // Keep track of the previously known user ID (so we only run new-account sync for truly new logins).
+  /** ID of the user we *think* is currently signed in (persists in localStorage) */
   const prevUserIdRef = useRef(null);
 
-  // Trigger re-renders in components that need to detect localStorage changes.
+  /** Bump this when localStorage is mutated so components can re‑render */
   const [localDataVersion, setLocalDataVersion] = useState(0);
 
+  // ────────────────────────────────────────────────────────────────────────────
+  //  1.  Initialise session, then subscribe to auth changes
+  // ────────────────────────────────────────────────────────────────────────────
   useEffect(() => {
-    // 1. Check for an existing session on mount
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      prevUserIdRef.current = session?.user?.id || null;
-    });
+    let authSubscription;
+    let isMounted = true; // safety guard in case component unmounts early
 
-    // 2. Listen for auth state changes
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      async (event, currentSession) => {
-        if (event === "SIGNED_IN" && currentSession?.user) {
-          console.log("User signed in:", currentSession.user);
-          const newUserId = currentSession.user.id;
-          // Only do the "new account sync" if it's actually a different user
-          if (newUserId !== prevUserIdRef.current) {
-            console.log("Backing up local profile");
-            backupLocalProfile();
-            await syncNewAccount(currentSession.user);
-          }
-          prevUserIdRef.current = newUserId;
-        }
+    /** One‑off initialisation */
+    const init = async () => {
+      // A. Read the user we *previously* knew about (if any) from localStorage
+      const storedPrevUserId = localStorage.getItem("prevUserId");
+      prevUserIdRef.current = storedPrevUserId;
+      console.log("[Auth] Stored prevUserId =", storedPrevUserId);
 
-        if (event === "SIGNED_OUT") {
-          console.log("User signed out, restoring local profile");
-          restoreLocalProfileBackup();
-          prevUserIdRef.current = null;
-        }
+      // B. Ask Supabase for the current session *before* attaching the listener
+      const {
+        data: { session: initialSession },
+        error: initError,
+      } = await supabase.auth.getSession();
 
-        setSession(currentSession);
+      if (!isMounted) return; // component unmounted meanwhile
+
+      if (initError) {
+        console.error("[Auth] Error getting initial session:", initError);
       }
-    );
 
+      console.log("[Auth] Initial session =", initialSession);
+      setSession(initialSession);
+
+      // C. If a user is present and it's *different* from what we had before,
+      //    treat it as a real sign‑in (this happens after an auth redirect).
+      if (initialSession?.user) {
+        const { id: newUserId } = initialSession.user;
+        if (newUserId !== storedPrevUserId) {
+          console.log(
+            "[Auth] Initial load detected *different* user → backup & sync"
+          );
+          backupLocalProfile();
+          await syncNewAccount(initialSession.user);
+        } else {
+          console.log("[Auth] Initial load: same user, no backup needed");
+        }
+        // Persist current user
+        prevUserIdRef.current = newUserId;
+        localStorage.setItem("prevUserId", newUserId);
+      }
+
+      // D. Now attach the listener.  Because we already handled the session
+      //    above, we *ignore* the INITIAL_SESSION event Supabase fires.
+      authSubscription = supabase.auth
+        .onAuthStateChange(async (event, currentSession) => {
+          console.log("[Auth] Event:", event, currentSession);
+
+          if (event === "INITIAL_SESSION") {
+            // Already dealt with in (B) & (C)
+            return;
+          }
+
+          if (event === "SIGNED_IN" && currentSession?.user) {
+            const newUserId = currentSession.user.id;
+            if (newUserId !== prevUserIdRef.current) {
+              console.log(
+                "[Auth] SIGNED_IN with a *different* user → backup & sync"
+              );
+              backupLocalProfile();
+              await syncNewAccount(currentSession.user);
+            } else {
+              console.log("[Auth] SIGNED_IN for the same user → no backup");
+            }
+            prevUserIdRef.current = newUserId;
+            localStorage.setItem("prevUserId", newUserId);
+          }
+
+          if (event === "SIGNED_OUT") {
+            console.log("[Auth] SIGNED_OUT → restoring local profile backup");
+            restoreLocalProfileBackup();
+            prevUserIdRef.current = null;
+            localStorage.removeItem("prevUserId");
+          }
+
+          // Any event updates the session in context
+          setSession(currentSession);
+        })
+        .data; // .data contains the subscription object
+    };
+
+    init();
+
+    // Cleanup on unmount
     return () => {
-      authListener.unsubscribe();
+      isMounted = false;
+      authSubscription?.unsubscribe();
     };
   }, []);
 
-  /**
-   * Increments a local version number so components can react,
-   * and also syncs localStorage data to Supabase if a user is logged in.
-   */
+  // ────────────────────────────────────────────────────────────────────────────
+  //  2.  Helper: bump localDataVersion + optionally sync to Supabase
+  // ────────────────────────────────────────────────────────────────────────────
   const notifyLocalDataUpdated = async () => {
-    // 1. Increment the local version (triggers re-renders in subscribers)
-    setLocalDataVersion((prev) => prev + 1);
-
-    // 2. If user is logged in, upsert local data to Supabase
+    setLocalDataVersion((v) => v + 1);
     if (session?.user) {
       await syncLocalDataToSupabase();
     }
   };
 
-  /**
-   * Syncs whatever is in localStorage to the logged-in user's profile row in Supabase.
-   */
+  // ────────────────────────────────────────────────────────────────────────────
+  //  3.  Data‑sync helpers  (unchanged except for extra logs)
+  // ────────────────────────────────────────────────────────────────────────────
   const syncLocalDataToSupabase = async () => {
     if (!session?.user) return;
     try {
@@ -81,29 +159,24 @@ export const AuthProvider = ({ children }) => {
         localStorage.getItem("puzzleCompletionCounts") || "{}"
       );
 
-      const { error: upsertError } = await supabase
-        .from("profiles")
-        .upsert({
-          id: session.user.id,
-          email: session.user.email,
-          completed_puzzles: localCompletedPuzzles,
-          last_version: localLastVersion,
-          puzzle_completion_counts: localPuzzleCompletionCounts,
-        });
+      const { error } = await supabase.from("profiles").upsert({
+        id: session.user.id,
+        email: session.user.email,
+        completed_puzzles: localCompletedPuzzles,
+        last_version: localLastVersion,
+        puzzle_completion_counts: localPuzzleCompletionCounts,
+      });
 
-      if (upsertError) {
-        console.error("Error upserting local data to Supabase:", upsertError);
+      if (error) {
+        console.error("[Auth] Error upserting local → Supabase:", error);
       } else {
-        console.log("Local data synced to Supabase for the logged-in user.");
+        console.log("[Auth] Local data synced to Supabase");
       }
     } catch (err) {
-      console.error("Error syncing local data:", err);
+      console.error("[Auth] Error syncing local data:", err);
     }
   };
 
-  /**
-   * Backup the current local profile so we can restore it later if someone else logs in.
-   */
   function backupLocalProfile() {
     const localData = {
       completedPuzzles: localStorage.getItem("completedPuzzles"),
@@ -111,23 +184,22 @@ export const AuthProvider = ({ children }) => {
       puzzleCompletionCounts: localStorage.getItem("puzzleCompletionCounts"),
     };
     localStorage.setItem("localProfileBackup", JSON.stringify(localData));
+    console.log("[Auth] Local profile backed up");
   }
 
-  /**
-   * Restore the local profile from our backup key, if present.
-   */
   function restoreLocalProfileBackup() {
     const backup = localStorage.getItem("localProfileBackup");
     if (!backup) {
+      console.log("[Auth] No backup found, clearing local profile keys");
       localStorage.removeItem("completedPuzzles");
       localStorage.removeItem("puzzleCompletionCounts");
-      notifyLocalDataUpdated(); // Trigger re-renders
+      notifyLocalDataUpdated();
       return;
     }
 
     try {
       const localData = JSON.parse(backup);
-      console.log("Restoring local profile from backup:", localData);
+      console.log("[Auth] Restoring profile from backup:", localData);
 
       if (localData.completedPuzzles !== null) {
         localStorage.setItem("completedPuzzles", localData.completedPuzzles);
@@ -149,17 +221,17 @@ export const AuthProvider = ({ children }) => {
       } else {
         localStorage.removeItem("puzzleCompletionCounts");
       }
-      // remove the backup key now that we've restored
+
       localStorage.removeItem("localProfileBackup");
-      notifyLocalDataUpdated(); // Trigger re-renders
+      notifyLocalDataUpdated();
     } catch (err) {
-      console.error("Error restoring local profile backup:", err);
+      console.error("[Auth] Error restoring profile backup:", err);
     }
   }
 
   /**
-   * If the user’s account (in Supabase) is new/empty, upserts the local data to that account.
-   * If the account already has data, it replaces local with the existing Supabase data.
+   * If the Supabase account is empty, push local data up.
+   * Otherwise overwrite localStorage with Supabase data.
    */
   async function syncNewAccount(user) {
     try {
@@ -181,7 +253,7 @@ export const AuthProvider = ({ children }) => {
         .maybeSingle();
 
       if (fetchError) {
-        console.error("Error fetching profile:", fetchError.message);
+        console.error("[Auth] Error fetching profile:", fetchError);
         return;
       }
 
@@ -191,32 +263,30 @@ export const AuthProvider = ({ children }) => {
         (profileData?.puzzle_completion_counts &&
           Object.keys(profileData.puzzle_completion_counts).length > 0);
 
-      // If the Supabase account is completely empty, upsert local data
       if (!hasAnyData) {
+        // Push local → Supabase
         if (
-          localCompletedPuzzles.length > 0 ||
+          localCompletedPuzzles.length ||
           localLastVersion > 0 ||
-          Object.keys(localPuzzleCompletionCounts).length > 0
+          Object.keys(localPuzzleCompletionCounts).length
         ) {
-          const { error: upsertError } = await supabase
-            .from("profiles")
-            .upsert({
-              id: user.id,
-              email: user.email,
-              completed_puzzles: localCompletedPuzzles,
-              last_version: localLastVersion,
-              puzzle_completion_counts: localPuzzleCompletionCounts,
-            });
+          const { error: upsertError } = await supabase.from("profiles").upsert({
+            id: user.id,
+            email: user.email,
+            completed_puzzles: localCompletedPuzzles,
+            last_version: localLastVersion,
+            puzzle_completion_counts: localPuzzleCompletionCounts,
+          });
+
           if (upsertError) {
-            console.error("Error upserting new profile:", upsertError.message);
+            console.error("[Auth] Error upserting new profile:", upsertError);
           } else {
-            console.log("Local data saved to new account in Supabase.");
+            console.log("[Auth] Local data pushed to *new* Supabase account");
             localStorage.removeItem("localProfileBackup");
-            console.log("Removed localProfileBackup")
           }
         }
       } else {
-        // The account already has data in Supabase. Overwrite local with it:
+        // Pull Supabase → local
         localStorage.setItem(
           "completedPuzzles",
           JSON.stringify(profileData.completed_puzzles || [])
@@ -229,20 +299,23 @@ export const AuthProvider = ({ children }) => {
           "puzzleCompletionCounts",
           JSON.stringify(profileData.puzzle_completion_counts || {})
         );
-        console.log("Account has data; local storage updated from Supabase.");
-        notifyLocalDataUpdated(); // Trigger re-renders
+        console.log("[Auth] Local storage updated from existing Supabase data");
+        notifyLocalDataUpdated();
       }
     } catch (err) {
-      console.error("Error syncing new account:", err);
+      console.error("[Auth] Error in syncNewAccount:", err);
     }
   }
 
+  // ────────────────────────────────────────────────────────────────────────────
+  //  4.  Context value
+  // ────────────────────────────────────────────────────────────────────────────
   return (
     <AuthContext.Provider
       value={{
         session,
-        localDataVersion,          // changes whenever local storage is updated
-        notifyLocalDataUpdated,    // call this after you modify localStorage
+        localDataVersion,
+        notifyLocalDataUpdated,
       }}
     >
       {children}
