@@ -81,19 +81,19 @@ export function PuzzleProvider({ children }) {
   // resetPuzzle accepts a puzzle id. It finds the puzzle's index, removes the stored mapData,
   // resets the puzzle's mapData to null in state, and spawns a new worker.
   const resetPuzzle = (puzzleId) => {
-    // Increment the completion count for this puzzle.
-    const storedCounts = localStorage.getItem("puzzleCompletionCounts");
-    let completionCounts = {};
-    if (storedCounts) {
-      try {
-        completionCounts = JSON.parse(storedCounts);
-      } catch (error) {
-        console.error("Failed to parse puzzleCompletionCounts:", error);
-      }
-    }
-    completionCounts[puzzleId] = (completionCounts[puzzleId] || 0) + 1;
-    localStorage.setItem("puzzleCompletionCounts", JSON.stringify(completionCounts));
-    notifyLocalDataUpdated();
+    // // Increment the completion count for this puzzle. MOVED TO PUZZLE WRAPPER
+    // const storedCounts = localStorage.getItem("puzzleCompletionCounts");
+    // let completionCounts = {};
+    // if (storedCounts) {
+    //   try {
+    //     completionCounts = JSON.parse(storedCounts);
+    //   } catch (error) {
+    //     console.error("Failed to parse puzzleCompletionCounts:", error);
+    //   }
+    // }
+    // completionCounts[puzzleId] = (completionCounts[puzzleId] || 0) + 1;
+    // localStorage.setItem("puzzleCompletionCounts", JSON.stringify(completionCounts));
+    // notifyLocalDataUpdated();
 
     const puzzleIndex = puzzles.findIndex(puzzle => puzzle.id === puzzleId);
     if (puzzleIndex === -1 || !puzzles[puzzleIndex].generationSettings) return;

@@ -400,7 +400,7 @@ const puzzles = [
         q: 5,
         r: 1,
         s: -6,
-        difficulty: "intermediate",
+        difficulty: "medium",
         mapData: [{q:0,r:0,s:0,color:0},{q:1,r:0,s:-1,color:0},{q:-1,r:1,s:0,color:1},{q:-1,r:0,s:1,color:1},{q:2,r:-1,s:-1,color:0},{q:2,r:0,s:-2,color:0},{q:1,r:1,s:-2,color:0},{q:0,r:1,s:-1,color:0},{q:1,r:-1,s:0,color:0},{q:3,r:-1,s:-2,color:1},{q:-2,r:2,s:0,color:0},{q:-2,r:1,s:1,color:0},{q:-3,r:2,s:1,color:0},{q:-3,r:1,s:2,color:1},{q:-2,r:0,s:2,color:0},{q:2,r:-2,s:0,color:0},{q:0,r:-1,s:1,color:0},{q:1,r:-2,s:1,color:0},{q:-3,r:3,s:0,color:0},{q:-4,r:3,s:1,color:0},{q:-4,r:2,s:2,color:0},{q:4,r:-1,s:-3,color:0},{q:3,r:0,s:-3,color:0},{q:3,r:-2,s:-1,color:1},{q:-3,r:4,s:-1,color:1},{q:-5,r:3,s:2,color:1},{q:-1,r:-1,s:2,color:0},{q:-3,r:0,s:3,color:0},{q:-5,r:4,s:1,color:0},{q:-6,r:3,s:3,color:0},{q:-4,r:1,s:3,color:1},{q:4,r:-2,s:-2,color:1},{q:3,r:-3,s:0,color:1},{q:2,r:-3,s:1,color:0},{q:-2,r:-1,s:3,color:1},{q:-1,r:-2,s:3,color:1},{q:0,r:2,s:-2,color:0},{q:-1,r:2,s:-1,color:1},{q:-2,r:3,s:-1,color:0},{q:-2,r:-2,s:4,color:1},{q:-6,r:4,s:2,color:1},{q:-7,r:4,s:3,color:1},{q:-6,r:2,s:4,color:1},{q:-1,r:3,s:-2,color:0},{q:-2,r:4,s:-2,color:0},{q:0,r:-2,s:2,color:0},{q:1,r:-3,s:2,color:0},{q:0,r:-3,s:3,color:0},{q:-1,r:-3,s:4,color:1},{q:-7,r:5,s:2,color:0}],
         colorToWin: 1,
         regionSize: 10,
@@ -608,6 +608,9 @@ const puzzles = [
 //   maxGenerations: 10,
 //   mutationRate: 0.1}).mapData,
 
+/* B hexes per region 6, 1 sacrifice
+[{"q":0,"r":0,"s":0,"color":0},{"q":1,"r":-1,"s":0,"color":1},{"q":1,"r":0,"s":-1,"color":0},{"q":0,"r":1,"s":-1,"color":1},{"q":-1,"r":1,"s":0,"color":0},{"q":-1,"r":0,"s":1,"color":0},{"q":2,"r":0,"s":-2,"color":0},{"q":1,"r":1,"s":-2,"color":1},{"q":-1,"r":2,"s":-1,"color":1},{"q":3,"r":0,"s":-3,"color":1},{"q":2,"r":1,"s":-3,"color":1},{"q":2,"r":-1,"s":-1,"color":1},{"q":1,"r":2,"s":-3,"color":0},{"q":0,"r":2,"s":-2,"color":0},{"q":-1,"r":3,"s":-2,"color":0},{"q":-2,"r":2,"s":0,"color":1},{"q":0,"r":3,"s":-3,"color":1},{"q":-1,"r":4,"s":-3,"color":0}]
+*/
 /*
 possible 4
 [{q:0,r:0,s:0,color:0},{q:1,r:0,s:-1,color:0},{q:0,r:1,s:-1,color:0},{q:-1,r:1,s:0,color:1},{q:-1,r:0,s:1,color:0},{q:0,r:-1,s:1,color:1},{q:1,r:-2,s:1,color:0},{q:1,r:-1,s:0,color:1},{q:-1,r:-1,s:2,color:0},{q:0,r:-2,s:2,color:1},{q:2,r:-2,s:0,color:0},{q:2,r:-1,s:-1,color:0},{q:2,r:0,s:-2,color:1},{q:-1,r:2,s:-1,color:1},{q:-2,r:2,s:0,color:0},{q:-2,r:1,s:1,color:1},{q:1,r:-3,s:2,color:1},{q:-1,r:-2,s:3,color:1},{q:0,r:-3,s:3,color:0},{q:3,r:-2,s:-1,color:1},{q:3,r:-1,s:-2,color:0},{q:1,r:1,s:-2,color:0},{q:0,r:2,s:-2,color:1},{q:1,r:2,s:-3,color:0},{q:-1,r:3,s:-2,color:0},{q:-2,r:0,s:2,color:0},{q:-2,r:-1,s:3,color:0},{q:0,r:3,s:-3,color:0},{q:-1,r:4,s:-3,color:1},{q:-2,r:4,s:-2,color:0},{q:-2,r:3,s:-1,color:0},{q:-2,r:5,s:-3,color:0},{q:-3,r:5,s:-2,color:0},{q:-3,r:4,s:-1,color:1},{q:4,r:-3,s:-1,color:1},{q:4,r:-2,s:-2,color:0},{q:3,r:-3,s:0,color:0},{q:1,r:3,s:-4,color:1},{q:0,r:4,s:-4,color:1},{q:2,r:-4,s:2,color:0},{q:2,r:-3,s:1,color:0},{q:1,r:-4,s:3,color:0}]

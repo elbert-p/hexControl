@@ -308,6 +308,7 @@ export default function HexGridPuzzle({
   sizeMultiplier = 1.5,
   onPuzzleStateChange,
   puzzleComplete,          // True when the puzzle is complete (from the wrapper)
+  showRegionFill = true,
   onAnimationComplete,
 }) {
   const [hexStates, setHexStates] = useState(() => {
@@ -696,7 +697,7 @@ export default function HexGridPuzzle({
 
   // When the puzzle is complete, start sequentially animating the regions.
   useEffect(() => {
-    if (puzzleComplete) {
+    if (puzzleComplete && showRegionFill) {
       setAnimatedRegionCount(0);
   
       // First animation: trigger after a shorter delay, e.g. 250ms.
@@ -725,7 +726,11 @@ export default function HexGridPuzzle({
         clearInterval(interval);
       };
     }
-  }, [puzzleComplete, selectionData.length]);
+  }, [puzzleComplete, showRegionFill, selectionData.length]);
+
+  useEffect(() => {
+    if (!showRegionFill) setAnimatedRegionCount(0);
+  }, [showRegionFill]);
   
 
   // function startRegionFillAnimation() {
@@ -860,7 +865,7 @@ export default function HexGridPuzzle({
         </Layout>
 {/* Render each region’s inset outline.
           They will transition from transparent (fillOpacity 0) to fully filled (fillOpacity 1) one at a time. */}
-      {puzzleComplete && selectionData.map((selData, regionIndex) =>
+      {puzzleComplete && showRegionFill && selectionData.map((selData, regionIndex) =>
         selData.paths.map((d, i) => (
           <path
             key={`sel-${regionIndex}-${i}`}

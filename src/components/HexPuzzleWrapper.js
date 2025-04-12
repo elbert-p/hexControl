@@ -25,6 +25,8 @@ export default function HexPuzzleWrapper({
     hexStates: {},
   });
 
+  const [puzzleCounted, setPuzzleCounted] = useState(false);
+
   // Refs and state for scaling the puzzle if it's too tall
   const puzzleContainerRef = useRef(null);
   const puzzleRef = useRef(null);
@@ -66,6 +68,7 @@ export default function HexPuzzleWrapper({
   : false;
 
   const [showOverlay, setShowOverlay] = useState(false);
+  const [showRegionFill, setShowRegionFill] = useState(true);
 
   // HexIcon Component (unchanged)
   const HexIcon = ({
@@ -106,21 +109,40 @@ export default function HexPuzzleWrapper({
       )}
     </svg>
   );
-
+  const incrementPuzzleCompletionCount = () => {
+    const storedCounts = localStorage.getItem("puzzleCompletionCounts");
+    let completionCounts = {};
+    if (storedCounts) {
+      try {
+        completionCounts = JSON.parse(storedCounts);
+      } catch (error) {
+        console.error("Failed to parse puzzleCompletionCounts:", error);
+      }
+    }
+    completionCounts[puzzleId] = (completionCounts[puzzleId] || 0) + 1;
+    localStorage.setItem("puzzleCompletionCounts", JSON.stringify(completionCounts));
+    notifyLocalDataUpdated();
+  }
+  
   // Function to mark the puzzle as completed
   const markPuzzleAsCompleted = () => {
+    incrementPuzzleCompletionCount();
     const completedPuzzles = JSON.parse(localStorage.getItem("completedPuzzles")) || [];
     if (!completedPuzzles.includes(puzzleId)) {
       completedPuzzles.push(puzzleId);
       localStorage.setItem("completedPuzzles", JSON.stringify(completedPuzzles));
       notifyLocalDataUpdated(); 
     }
+    setPuzzleCounted(true);
   };
 
   // Effect to handle puzzle completion
   useEffect(() => {
-    if (isComplete) {
+    if (isComplete && !puzzleCounted) {
       markPuzzleAsCompleted();
+    } else {
+      setShowRegionFill(true);   // let the fill animation run again
+      setShowOverlay(false);     // make sure the overlay isn’t showing
     }
   }, [isComplete]);
 
@@ -295,6 +317,7 @@ export default function HexPuzzleWrapper({
               sizeMultiplier={sizeMultiplier}
               onPuzzleStateChange={handlePuzzleStateChange}
               puzzleComplete={isComplete}
+              showRegionFill={showRegionFill}
               onAnimationComplete={() => setShowOverlay(true)}
             />
           </div>
@@ -418,20 +441,30 @@ export default function HexPuzzleWrapper({
 
               {/* Overlay Structure with Applied Classes */}
               <div className="overlayContainer">
-              <div className="overlayBox">
-              <h2 className="overlayHeading">
-                <span style={{ fontWeight: 'normal' }}>You solved</span> Level {puzzleId}!
-              </h2>
-                  <button
-                  className="overlayButton"
-                  onClick={() => {
-                    router.push("/puzzle-select")       
-                    resetPuzzle(puzzleId)}
-                  }
-                  >
-                  Home
-                  </button>
-              </div>
+                <div className="overlayBox">
+                <h2 className="overlayHeading">
+                  <span style={{ fontWeight: 'normal' }}>You solved</span> Level {puzzleId}!
+                </h2>
+                    <button
+                    className="overlayButton"
+                    onClick={() => {
+                      router.push("/puzzle-select")       
+                      resetPuzzle(puzzleId)}
+                    }
+                    >
+                    Home
+                    </button>
+                    <button
+                      className="overlayButton"
+                      style={{ marginLeft: 12 }}
+                      onClick={() => {
+                        setShowOverlay(false);   // close the popup
+                        setShowRegionFill(false); // strip the fill
+                      }}
+                    >
+                      View puzzle
+                    </button>
+                </div>
               </div>
           </>
           )}
