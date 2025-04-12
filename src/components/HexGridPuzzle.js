@@ -700,10 +700,10 @@ export default function HexGridPuzzle({
     if (puzzleComplete && showRegionFill) {
       setAnimatedRegionCount(0);
   
-      // First animation: trigger after a shorter delay, e.g. 250ms.
+      // First animation
       const firstTimeout = setTimeout(() => {
         setAnimatedRegionCount(1);
-      }, 250);
+      }, 100);
   
       // Start the interval for the remaining regions with the regular delay (750ms).
       const interval = setInterval(() => {
@@ -714,11 +714,11 @@ export default function HexGridPuzzle({
             // After a short delay, signal that the animation is complete.
             setTimeout(() => {
               if (onAnimationComplete) onAnimationComplete();
-            }, 1750);
+            }, 1600);//1750
           }
           return next;
         });
-      }, 750);
+      }, 500);
   
       // Cleanup both timers when the component unmounts or dependencies change.
       return () => {
