@@ -121,7 +121,7 @@ export default function HexPuzzleWrapper({
     }
     completionCounts[puzzleId] = (completionCounts[puzzleId] || 0) + 1;
     localStorage.setItem("puzzleCompletionCounts", JSON.stringify(completionCounts));
-    notifyLocalDataUpdated();
+    // notifyLocalDataUpdated();
   }
   
   // Function to mark the puzzle as completed
@@ -131,9 +131,9 @@ export default function HexPuzzleWrapper({
     if (!completedPuzzles.includes(puzzleId)) {
       completedPuzzles.push(puzzleId);
       localStorage.setItem("completedPuzzles", JSON.stringify(completedPuzzles));
-      notifyLocalDataUpdated(); 
     }
     setPuzzleCounted(true);
+    notifyLocalDataUpdated(); 
   };
 
   // Effect to handle puzzle completion
@@ -145,6 +145,23 @@ export default function HexPuzzleWrapper({
       setShowOverlay(false);     // make sure the overlay isn’t showing
     }
   }, [isComplete]);
+
+  const puzzleSolvedRef = useRef(false); //for reset to work
+    useEffect(() => {
+      if (isComplete) {
+        puzzleSolvedRef.current = true;
+      }
+  }, [isComplete]);
+
+  
+  useEffect(() => { //reset puzzle when user navigates away
+    return () => {
+      if (puzzleSolvedRef.current) {
+        resetPuzzle(puzzleId);
+      }
+    };
+  }, []);
+  
 
   // Recalculate the scale if the puzzle is too tall:
   const measureAndSetScale = () => {
@@ -449,7 +466,8 @@ export default function HexPuzzleWrapper({
                     className="overlayButton"
                     onClick={() => {
                       router.push("/puzzle-select")       
-                      resetPuzzle(puzzleId)}
+                      // resetPuzzle(puzzleId)
+                      }
                     }
                     >
                     Home
