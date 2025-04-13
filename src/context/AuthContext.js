@@ -159,12 +159,40 @@ export const AuthProvider = ({ children }) => {
         localStorage.getItem("puzzleCompletionCounts") || "{}"
       );
 
+      const { data: profileData, error: fetchError } = await supabase
+      .from("profiles")
+      .select("completed_puzzles, last_version, puzzle_completion_counts")
+      .eq("id", session?.user.id)
+      .maybeSingle();
+
+      if (fetchError) {
+        console.error("[Auth] Error fetching profile:", fetchError);
+        return;
+      }
+
+      const mergedCompletedPuzzles = Array.from(
+        new Set([...profileData.completed_puzzles || [], ...localCompletedPuzzles])
+      );
+      // For version: choose the higher version number.
+      const mergedLastVersion = Math.max(profileData.last_version || 0, localLastVersion);
+      // For puzzle counts: merge by taking the maximum count for each key.
+      const mergedPuzzleCounts = { ...profileData.puzzle_completion_counts || {} };
+      for (const key in localPuzzleCompletionCounts) {
+        mergedPuzzleCounts[key] = Math.max(
+          mergedPuzzleCounts[key] || 0,
+          localPuzzleCompletionCounts[key]
+        );
+      }
+
       const { error } = await supabase.from("profiles").upsert({
         id: session.user.id,
         email: session.user.email,
-        completed_puzzles: localCompletedPuzzles,
-        last_version: localLastVersion,
-        puzzle_completion_counts: localPuzzleCompletionCounts,
+        completed_puzzles: mergedCompletedPuzzles,
+        last_version: mergedLastVersion,
+        puzzle_completion_counts: mergedPuzzleCounts,
+        // completed_puzzles: localCompletedPuzzles,
+        // last_version: localLastVersion,
+        // puzzle_completion_counts: localPuzzleCompletionCounts,
       });
 
       if (error) {
@@ -258,17 +286,17 @@ export const AuthProvider = ({ children }) => {
       }
 
       const hasAnyData =
-        profileData?.completed_puzzles?.length > 0 ||
-        profileData?.last_version > 0 ||
-        (profileData?.puzzle_completion_counts &&
-          Object.keys(profileData.puzzle_completion_counts).length > 0);
+        profileData?.completed_puzzles?.length > 0;
+        // || profileData?.last_version > 0 ||
+        // (profileData?.puzzle_completion_counts &&
+        //   Object.keys(profileData.puzzle_completion_counts).length > 0);
 
       if (!hasAnyData) {
         // Push local → Supabase
         if (
-          localCompletedPuzzles.length ||
-          localLastVersion > 0 ||
-          Object.keys(localPuzzleCompletionCounts).length
+          localCompletedPuzzles.length
+          // || localLastVersion > 0 ||
+          // Object.keys(localPuzzleCompletionCounts).length
         ) {
           const { error: upsertError } = await supabase.from("profiles").upsert({
             id: user.id,
