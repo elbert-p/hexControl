@@ -354,6 +354,7 @@ export default function HexPuzzleWrapper({
             fontSize: 20,
             flexShrink: 0, // Prevent shrinking
             userSelect: "none", // Prevent text selection
+            touchAction: "none", //added
             // paddingBottom: "40px", paddingInline: "40px"//change to 20px on small screens
           }}
         >
@@ -376,119 +377,111 @@ export default function HexPuzzleWrapper({
 
         {/* Puzzle Complete Overlay */}
         {showOverlay && (
-          <>
-              {/* CSS-in-JS Styles with Backdrop and Box Animations */}
-              <style jsx>{`
-              /* Keyframes for Backdrop Fade-In */
-              @keyframes backdropFadeIn {
-                  0% {
-                  background-color: rgba(255, 255, 255, 0);
-                  }
-                  100% {
-                  background-color: rgba(255, 255, 255, 0.6);
-                  }
-              }
-
-              /* Keyframes for Box Fade-In and Scale-Up */
-              @keyframes popupFadeIn {
-                  0% {
-                  opacity: 0;
-                  transform: scale(0.8);
-                  }
-                  100% {
-                  opacity: 1;
-                  transform: scale(1);
-                  }
-              }
-
-              /* Overlay Container with Backdrop Animation */
-              .overlayContainer {
-                  position: absolute;
-                  top: 0;
-                  left: 0;
-                  right: 0;
-                  bottom: 0;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                  /* Initial background set to transparent */
-                  background-color: rgba(255, 255, 255, 0);
-                  z-index: 9999;
-                  /* Apply backdrop fade-in animation */
-                  animation: backdropFadeIn 0.3s ease forwards;
-              }
-
-              /* Overlay Box with Popup Animation */
-              .overlayBox {
-                  background: white; //#ffd
-                  border: 6px solid #228B22;
-                  border-radius: 10px;
-                  padding: 20px 30px;
-                  text-align: center;
-                  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-                  /* Apply popup fade-in and scale-up animation */
-                  animation: popupFadeIn 0.4s ease forwards;
-              }
-
-              /* Heading Styles */
-              .overlayHeading {
-                  margin: 0;
-                  margin-bottom: 20px;
-                  font-family: 'Press Start 2P', sans-serif;
-              }
-
-              /* Button Styles */
-              .overlayButton {
-                  padding: 10px 20px;
-                  font-size: 18px;
-                  cursor: pointer;
-                  background-color: #a3bf56;
-                  color: white;
-                  border: none;
-                  border-radius: 10px;
-                  font-family: 'Press Start 2P', sans-serif;
-                  transition: background-color 0.3s ease;
-              }
-
-              /* Button Hover Effect */
-              .overlayButton:hover {
-                  background-color: #8fae45; /* Darken button on hover */
-              }
-              `}</style>
-
-              {/* Overlay Structure with Applied Classes */}
               <div className="overlayContainer">
                 <div className="overlayBox">
-                <h2 className="overlayHeading">
-                  <span style={{ fontWeight: 'normal' }}>You solved</span> Level {puzzleId}!
-                </h2>
-                    <button
+                  <h2 className="overlayHeading">
+                    <span style={{ fontWeight: "normal" }}>You solved</span> Level {puzzleId}!
+                  </h2>
+                  <button
                     className="overlayButton"
                     onClick={() => {
-                      router.push("/puzzle-select")       
+                      router.push("/puzzle-select");
                       // resetPuzzle(puzzleId)
-                      }
-                    }
-                    >
+                    }}
+                  >
                     Home
-                    </button>
-                    <button
-                      className="overlayButton"
-                      style={{ marginLeft: 12 }}
-                      onClick={() => {
-                        setShowOverlay(false);   // close the popup
-                        setShowRegionFill(false); // strip the fill
-                      }}
-                    >
-                      View puzzle
-                    </button>
+                  </button>
+                  <button
+                    className="overlayButton"
+                    style={{ marginLeft: 12 }}
+                    onClick={() => {
+                      setShowOverlay(false);   // close the popup
+                      setShowRegionFill(false); // strip the fill
+                    }}
+                  >
+                    View puzzle
+                  </button>
                 </div>
               </div>
-          </>
-          )}
-      </div>
-    </div>
-    )}
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* New Continue button (rendered below dynamicWrapper) */}
+      {puzzleCounted && !showOverlay && !showRegionFill && (
+        <div style={{ textAlign: "center", marginTop: "0px", marginBottom: "10px" }}>
+          <button
+            className="overlayButton"
+            onClick={() => router.push("/puzzle-select")}
+          >
+            Continue
+          </button>
+        </div>
+      )}
+
+      {/* Overlay and button common styles */}
+      <style jsx>{`
+        @keyframes backdropFadeIn {
+          0% {
+            background-color: rgba(255, 255, 255, 0);
+          }
+          100% {
+            background-color: rgba(255, 255, 255, 0.6);
+          }
+        }
+        @keyframes popupFadeIn {
+          0% {
+            opacity: 0;
+            transform: scale(0.8);
+          }
+          100% {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+        .overlayContainer {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background-color: rgba(255, 255, 255, 0);
+          z-index: 9999;
+          animation: backdropFadeIn 0.3s ease forwards;
+        }
+        .overlayBox {
+          background: white;
+          border: 6px solid #228B22;
+          border-radius: 10px;
+          padding: 20px 30px;
+          text-align: center;
+          box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+          animation: popupFadeIn 0.4s ease forwards;
+        }
+        .overlayHeading {
+          margin: 0;
+          margin-bottom: 20px;
+          font-family: 'Press Start 2P', sans-serif;
+        }
+        .overlayButton {
+          padding: 10px 20px;
+          font-size: 18px;
+          cursor: pointer;
+          background-color: #a3bf56;
+          color: white;
+          border: none;
+          border-radius: 10px;
+          font-family: 'Press Start 2P', sans-serif;
+          transition: background-color 0.3s ease;
+        }
+        .overlayButton:hover {
+          background-color: #8fae45;
+        }
+      `}</style>
     </div>
   );
 }

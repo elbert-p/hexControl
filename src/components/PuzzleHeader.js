@@ -95,7 +95,21 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedP
 
   // When no session, use the login overlay content (Google sign in).
   const loginOverlayContent = (
-    <div>
+    <div
+      style={{
+        justifyItems: "center",
+      }}>
+      <div
+        style={{
+          fontFamily: "'Press Start 2P', sans-serif",
+          // lineHeight: "1.5",
+          fontSize: "18px",
+          paddingTop : "8px",
+          textAlign: "center",
+        }}
+        >
+        Save progress across devices. <br />
+      </div>
       <GoogleSignInButton />
     </div>
   );
@@ -232,7 +246,7 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedP
           <li style={{ marginBottom: "10px" }}>
             <strong>Drag</strong> from an existing region to <strong>add</strong> to it.
           </li>
-          <li style={{ marginBottom: "10px" }}>
+          <li style={{ marginBottom: isMobile ? "0px" : "10px" }}>
             <strong>Click</strong> on a hex to <strong>remove</strong> it from the region.
           </li>
           {!isMobile && (
@@ -282,7 +296,7 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedP
           backgroundColor: "#c6e2e9",
           display: "flex",
           alignItems: "center",
-          padding: isMobile ? "8px 5px" : "10px 20px",
+          padding: isMobile ? "8px 7px" : "10px 20px",
           borderBottom: "2px solid white",
           position: "relative",
           zIndex: 1,
@@ -301,6 +315,7 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedP
                 display: "flex",
                 alignItems: "center",
                 padding: "0",
+                // paddingLeft: isMobile ? "10px" : "0px",
               }}
               aria-label="Statistics"
             >
@@ -417,6 +432,7 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedP
             className="overlayBox"
             onClick={(e) => e.stopPropagation()}
             style={{
+              marginInline: "10px",
               background: "white",
               border: "6px solid #228B22",
               borderRadius: "10px",
