@@ -282,7 +282,7 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedP
           backgroundColor: "#c6e2e9",
           display: "flex",
           alignItems: "center",
-          padding: "10px 20px",
+          padding: isMobile ? "8px 5px" : "10px 20px",
           borderBottom: "2px solid white",
           position: "relative",
           zIndex: 1,
@@ -347,7 +347,7 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedP
             display: "flex",
             alignItems: "center",
             justifyContent: "flex-end",
-            gap: "15px",
+            gap: isMobile ? "10px" : "15px",
           }}
         >
           <button
