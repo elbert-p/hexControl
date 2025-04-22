@@ -3,6 +3,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { supabase } from "../supabaseClient";
 
 /**
@@ -36,6 +37,9 @@ export const AuthProvider = ({ children }) => {
 
   /** Bump this when localStorage is mutated so components can re‑render */
   const [localDataVersion, setLocalDataVersion] = useState(0);
+
+  const router = useRouter();
+
 
   // ────────────────────────────────────────────────────────────────────────────
   //  1.  Initialise session, then subscribe to auth changes
@@ -115,6 +119,7 @@ export const AuthProvider = ({ children }) => {
             restoreLocalProfileBackup();
             prevUserIdRef.current = null;
             localStorage.removeItem("prevUserId");
+            router.push('/');
           }
 
           // Any event updates the session in context
@@ -329,6 +334,7 @@ export const AuthProvider = ({ children }) => {
         );
         console.log("[Auth] Local storage updated from existing Supabase data");
         notifyLocalDataUpdated();
+        router.push('/');
       }
     } catch (err) {
       console.error("[Auth] Error in syncNewAccount:", err);

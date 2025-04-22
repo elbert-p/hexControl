@@ -13,48 +13,50 @@ import { useAuth } from "../../context/AuthContext";
 
 // console.log(puzzles[5].mapData)
 
-const CURRENT_VERSION = 3;
-// Migration log
-const migrationLog = {   //puzzles that have changed and should have completion removed
-  1: ["4a", "3a"],
-  // In version 2, these puzzles were updated.
-  2: ["8"],
+const CURRENT_VERSION = 4;
+// migrationLog[version] can have { removed?: string[], moved?: Record<string,string> }
+const migrationLog = {
+  1: { removed: ["4a", "3a"] },
+  2: { removed: ["8"] },
   // Version 3 updated the "puzzleCompletionCounts" localStorage item
-  // In version 4, these puzzles were updated.
-  // 4: ["8"],
+  // Example: when going from v4 ➜ v5 we renamed puzzle 4a → 6
+  4: { moved: { "7a": "10", "10": "7a", "9": "11" } },
 };
 
-// Helper function to collect all changed puzzle IDs from storedVersion+1 up to CURRENT_VERSION.
-function getChangedPuzzleIds(storedVersion, currentVersion) {
-  const changed = new Set();
-  for (let version = storedVersion + 1; version <= currentVersion; version++) {
-    if (migrationLog[version]) {
-      migrationLog[version].forEach((puzzleId) => changed.add(puzzleId));
-    }
+function collectMigrationActions(fromVersion, toVersion) {
+  const removed = new Set();
+  const moved   = {};               // { oldId: newId }
+
+  for (let v = fromVersion + 1; v <= toVersion; v++) {
+    const entry = migrationLog[v];
+    if (!entry) continue;
+
+    entry.removed?.forEach(id => removed.add(id));
+    Object.assign(moved, entry.moved);   // later versions overwrite earlier ones
   }
-  return changed;
+  return { removed, moved };
 }
 
-// // Function to load and migrate completed puzzles based on version differences.
-// function loadAndMigrateCompletedPuzzles() {
-//   // Retrieve the stored version; default to 0 if not found.
-//   const storedVersion = parseInt(localStorage.getItem("lastVersion") || "0", 10);
-//   // Retrieve the completed puzzles list (an array of puzzle IDs)
-//   let completedPuzzles = JSON.parse(localStorage.getItem("completedPuzzles") || "[]");
+function applyMigrations({ puzzles, counts }, removed, moved) {
+  /* ---------- completions array ---------- */
+  puzzles = [...new Set(puzzles.map(id => moved[id] ?? id))]
+            .filter(id => !removed.has(id));
 
-//   // If the stored version is older than the current version, perform migration.
-//   if (storedVersion < CURRENT_VERSION) {
-//     // Get all puzzle IDs that changed in versions newer than the stored version.
-//     const changedPuzzles = getChangedPuzzleIds(storedVersion, CURRENT_VERSION);
-//     // Remove any completed puzzles that are now outdated.
-//     completedPuzzles = completedPuzzles.filter((puzzleId) => !changedPuzzles.has(puzzleId));
+  /* ---------- completion‑count object ---------- */
+  if (counts) {
+    const newCounts = {};
 
-//     // Update localStorage with the migrated data and the current version.
-//     localStorage.setItem("completedPuzzles", JSON.stringify(completedPuzzles));
-//     localStorage.setItem("lastVersion", CURRENT_VERSION.toString());
-//   }
-//   return completedPuzzles;
-// }
+    for (const [id, cnt] of Object.entries(counts)) {
+      const dest = moved[id] ?? id;          // rename if needed
+      newCounts[dest] = (newCounts[dest] || 0) + cnt;
+    }
+
+    removed.forEach(id => delete newCounts[id]); // forget any obsolete ids
+    counts = newCounts;
+  }
+
+  return { puzzles, counts };
+}
 
 
 /** Difficulty → color mapping */
@@ -69,7 +71,7 @@ function difficultyColor(diff) {
     case "hard":
       return "#ff8888";
     case "extreme":
-      return "#ff8888"; //change to purple
+      return "#d580ff";
     default:
       return "#eeeeee";
   }
@@ -358,7 +360,8 @@ function onHexMouseDown(q, r, s, e) {
     }
     const puzzleObj = puzzles.find((p) => hexKey(p.q, p.r, p.s) === [...activeSelection][0] );
 
-    router.push(`/puzzle/${puzzleObj.id}`);
+    // encode any “unsafe” characters (including “?”) into %‑escapes
+    router.push(`/puzzle/${encodeURIComponent(puzzleObj.id)}`);
 
     // Reset the refs after click
     initialHexRef.current = null;
@@ -511,51 +514,46 @@ export default function PuzzleSelectPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    let didMigrate = false;
     console.log("localDataVersion changed:", localDataVersion);
-
-    let didMigrate = false; // Track if we actually upgraded local data
-
+  
     try {
-      // 1. Read current version from localStorage (or 0 if none)
-      const storedVersion = parseInt(localStorage.getItem("lastVersion") || "0", 10);
-      // 2. Load any currently stored puzzles
-      let loadedPuzzles = JSON.parse(localStorage.getItem("completedPuzzles") || "[]");
-      // 3. If we have a lower version, migrate
+      const storedVersion  = Number(localStorage.getItem("lastVersion") || 0);
+      let   loadedPuzzles  = JSON.parse(localStorage.getItem("completedPuzzles") || "[]");
+      let   completionCnts = JSON.parse(localStorage.getItem("puzzleCompletionCounts") || "{}");
+  
       if (storedVersion < CURRENT_VERSION) {
         didMigrate = true;
-        // Figure out which puzzles should be removed
-        const changedPuzzles = getChangedPuzzleIds(storedVersion, CURRENT_VERSION);
-        // Filter them out from the loaded puzzles
-        loadedPuzzles = loadedPuzzles.filter((id) => !changedPuzzles.has(id));
-        // Write back the updated data
-        localStorage.setItem("completedPuzzles", JSON.stringify(loadedPuzzles));
-        localStorage.setItem("lastVersion", CURRENT_VERSION.toString());
-
+  
+        // Collect everything that changed since the user’s storedVersion
+        const { removed, moved } = collectMigrationActions(storedVersion, CURRENT_VERSION);
+  
+        // Apply moves + removals in one place
+        ({ puzzles: loadedPuzzles, counts: completionCnts } =
+          applyMigrations({ puzzles: loadedPuzzles, counts: completionCnts }, removed, moved));
+  
+        // If this is the big v3‑upgrade that introduced the count object, seed any new puzzles
         if (storedVersion < 3) {
-          const existingCounts = JSON.parse(localStorage.getItem("puzzleCompletionCounts") || "{}");
-          loadedPuzzles.forEach((id) => {
-            if (!(id in existingCounts)) {
-              existingCounts[id] = 1;
-            }
-          });
-          localStorage.setItem("puzzleCompletionCounts", JSON.stringify(existingCounts));
+          loadedPuzzles.forEach(id => { if (!(id in completionCnts)) completionCnts[id] = 1; });
         }
+  
+        // Persist the migrated data
+        localStorage.setItem("completedPuzzles",       JSON.stringify(loadedPuzzles));
+        localStorage.setItem("puzzleCompletionCounts", JSON.stringify(completionCnts));
+        localStorage.setItem("lastVersion",            String(CURRENT_VERSION));
       }
-
-      // 4. Update our component state
+  
       setCompletedPuzzles(loadedPuzzles);
-    } catch (error) {
-      console.error("Failed to load or migrate puzzles:", error);
+    } catch (err) {
+      console.error("Failed to load or migrate puzzles:", err);
       setCompletedPuzzles([]);
     } finally {
       setIsLoading(false);
     }
-
-    // 5. If we migrated, let AuthContext know so Supabase can be updated
-    if (didMigrate) {
-      notifyLocalDataUpdated(); 
-    }
+  
+    if (didMigrate) notifyLocalDataUpdated();
   }, [localDataVersion]);
+    
 
   // // Load completed puzzles from localStorage with migration
   // useEffect(() => {

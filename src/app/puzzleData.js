@@ -345,9 +345,9 @@ const puzzles = [
       },
       {
         id: "8",
-        q: 3,
+        q: 4,
         r: 2,
-        s: -5,
+        s: -6,
         difficulty: "hard",
         // mapData: makeHardPuzzle(generateMapData(20, 0.2, 0.5, 0.5), 1, 5, 1, 50, 3.5),
         mapData: [{q:0,r:0,s:0,color:0},{q:1,r:0,s:-1,color:1},{q:0,r:1,s:-1,color:1},{q:-1,r:1,s:0,color:1},{q:0,r:-1,s:1,color:0},{q:2,r:-1,s:-1,color:1},{q:2,r:0,s:-2,color:0},{q:1,r:-1,s:0,color:0},{q:-1,r:2,s:-1,color:0},{q:-2,r:2,s:0,color:1},{q:-1,r:0,s:1,color:0},{q:1,r:1,s:-2,color:1},{q:0,r:2,s:-2,color:0},{q:-2,r:3,s:-1,color:1},{q:3,r:-1,s:-2,color:0},{q:2,r:-2,s:0,color:0},{q:3,r:0,s:-3,color:0},{q:0,r:3,s:-3,color:0},{q:-1,r:3,s:-2,color:1},{q:-2,r:1,s:1,color:0},{q:-2,r:0,s:2,color:1},{q:1,r:-2,s:1,color:1},{q:-1,r:-1,s:2,color:0},{q:-3,r:0,s:3,color:0},{q:-2,r:-1,s:3,color:0},{q:-1,r:-2,s:3,color:0},{q:-3,r:-1,s:4,color:0},{q:3,r:1,s:-4,color:1},{q:2,r:1,s:-3,color:0},{q:2,r:2,s:-4,color:0},{q:1,r:2,s:-3,color:0},{q:0,r:-3,s:3,color:0},{q:0,r:-2,s:2,color:0},{q:-2,r:-2,s:4,color:1},{q:-1,r:-3,s:4,color:0}],
@@ -396,35 +396,100 @@ const puzzles = [
       //   regionSize: 10,
       // },
       {
-        id: "7a",
-        q: 5,
-        r: 1,
-        s: -6,
+        id: "11",
+        q: 2,
+        r: 3,
+        s: -5,
         difficulty: "medium",
-        mapData: [{q:0,r:0,s:0,color:0},{q:1,r:0,s:-1,color:0},{q:-1,r:1,s:0,color:1},{q:-1,r:0,s:1,color:1},{q:2,r:-1,s:-1,color:0},{q:2,r:0,s:-2,color:0},{q:1,r:1,s:-2,color:0},{q:0,r:1,s:-1,color:0},{q:1,r:-1,s:0,color:0},{q:3,r:-1,s:-2,color:1},{q:-2,r:2,s:0,color:0},{q:-2,r:1,s:1,color:0},{q:-3,r:2,s:1,color:0},{q:-3,r:1,s:2,color:1},{q:-2,r:0,s:2,color:0},{q:2,r:-2,s:0,color:0},{q:0,r:-1,s:1,color:0},{q:1,r:-2,s:1,color:0},{q:-3,r:3,s:0,color:0},{q:-4,r:3,s:1,color:0},{q:-4,r:2,s:2,color:0},{q:4,r:-1,s:-3,color:0},{q:3,r:0,s:-3,color:0},{q:3,r:-2,s:-1,color:1},{q:-3,r:4,s:-1,color:1},{q:-5,r:3,s:2,color:1},{q:-1,r:-1,s:2,color:0},{q:-3,r:0,s:3,color:0},{q:-5,r:4,s:1,color:0},{q:-6,r:3,s:3,color:0},{q:-4,r:1,s:3,color:1},{q:4,r:-2,s:-2,color:1},{q:3,r:-3,s:0,color:1},{q:2,r:-3,s:1,color:0},{q:-2,r:-1,s:3,color:1},{q:-1,r:-2,s:3,color:1},{q:0,r:2,s:-2,color:0},{q:-1,r:2,s:-1,color:1},{q:-2,r:3,s:-1,color:0},{q:-2,r:-2,s:4,color:1},{q:-6,r:4,s:2,color:1},{q:-7,r:4,s:3,color:1},{q:-6,r:2,s:4,color:1},{q:-1,r:3,s:-2,color:0},{q:-2,r:4,s:-2,color:0},{q:0,r:-2,s:2,color:0},{q:1,r:-3,s:2,color:0},{q:0,r:-3,s:3,color:0},{q:-1,r:-3,s:4,color:1},{q:-7,r:5,s:2,color:0}],
+        mapData: [{"q":0,"r":0,"s":0,"color":0},{"q":1,"r":-1,"s":0,"color":1},{"q":1,"r":0,"s":-1,"color":0},{"q":0,"r":1,"s":-1,"color":0},{"q":-1,"r":1,"s":0,"color":0},{"q":-1,"r":0,"s":1,"color":1},{"q":0,"r":-1,"s":1,"color":0},{"q":-1,"r":-1,"s":2,"color":0},{"q":0,"r":-2,"s":2,"color":0},{"q":-2,"r":1,"s":1,"color":0},{"q":-2,"r":0,"s":2,"color":0},{"q":-2,"r":-1,"s":3,"color":1},{"q":-1,"r":-2,"s":3,"color":0},{"q":2,"r":-1,"s":-1,"color":0},{"q":2,"r":0,"s":-2,"color":0},{"q":3,"r":-2,"s":-1,"color":1},{"q":3,"r":-1,"s":-2,"color":0},{"q":-2,"r":2,"s":0,"color":0},{"q":-3,"r":2,"s":1,"color":1},{"q":1,"r":-2,"s":1,"color":1},{"q":1,"r":1,"s":-2,"color":1},{"q":0,"r":2,"s":-2,"color":0},{"q":-1,"r":2,"s":-1,"color":1},{"q":-2,"r":3,"s":-1,"color":0},{"q":-3,"r":3,"s":0,"color":0},{"q":-2,"r":-2,"s":4,"color":0},{"q":4,"r":-1,"s":-3,"color":1},{"q":1,"r":2,"s":-3,"color":0},{"q":0,"r":3,"s":-3,"color":1},{"q":-1,"r":3,"s":-2,"color":1},{"q":2,"r":1,"s":-3,"color":0},{"q":2,"r":2,"s":-4,"color":0},{"q":1,"r":3,"s":-4,"color":1},{"q":-2,"r":4,"s":-2,"color":0},{"q":-3,"r":1,"s":2,"color":0}],
         colorToWin: 1,
         regionSize: 10,
       },
       {
         id: "9",
-        q: 2,
-        r: 2,
-        s: -4,
-        difficulty: "medium",
-        mapData: [{"q":0,"r":0,"s":0,"color":0},{"q":1,"r":-1,"s":0,"color":1},{"q":1,"r":0,"s":-1,"color":0},{"q":0,"r":1,"s":-1,"color":0},{"q":-1,"r":1,"s":0,"color":0},{"q":-1,"r":0,"s":1,"color":1},{"q":0,"r":-1,"s":1,"color":0},{"q":-1,"r":-1,"s":2,"color":0},{"q":0,"r":-2,"s":2,"color":0},{"q":-2,"r":1,"s":1,"color":0},{"q":-2,"r":0,"s":2,"color":0},{"q":-2,"r":-1,"s":3,"color":1},{"q":-1,"r":-2,"s":3,"color":0},{"q":2,"r":-1,"s":-1,"color":0},{"q":2,"r":0,"s":-2,"color":0},{"q":3,"r":-2,"s":-1,"color":1},{"q":3,"r":-1,"s":-2,"color":0},{"q":-2,"r":2,"s":0,"color":0},{"q":-3,"r":2,"s":1,"color":1},{"q":1,"r":-2,"s":1,"color":1},{"q":1,"r":1,"s":-2,"color":1},{"q":0,"r":2,"s":-2,"color":0},{"q":-1,"r":2,"s":-1,"color":1},{"q":-2,"r":3,"s":-1,"color":0},{"q":-3,"r":3,"s":0,"color":0},{"q":-2,"r":-2,"s":4,"color":0},{"q":4,"r":-1,"s":-3,"color":1},{"q":1,"r":2,"s":-3,"color":0},{"q":0,"r":3,"s":-3,"color":1},{"q":-1,"r":3,"s":-2,"color":1},{"q":2,"r":1,"s":-3,"color":0},{"q":2,"r":2,"s":-4,"color":0},{"q":1,"r":3,"s":-4,"color":1},{"q":-2,"r":4,"s":-2,"color":0},{"q":-3,"r":1,"s":2,"color":0}],
+        q: 3,
+        r: 3,
+        s: -6,
+        difficulty: "intermediate",
+        mapData: [{"q":0,"r":0,"s":0,"color":0},{"q":1,"r":-1,"s":0,"color":1},{"q":1,"r":1,"s":-2,"color":1},{"q":-2,"r":3,"s":-1,"color":1},{"q":-2,"r":4,"s":-2,"color":0},{"q":-1,"r":3,"s":-2,"color":0},{"q":0,"r":2,"s":-2,"color":0},{"q":1,"r":0,"s":-1,"color":0},{"q":2,"r":0,"s":-2,"color":0},{"q":-1,"r":1,"s":0,"color":0},{"q":-1,"r":0,"s":1,"color":0},{"q":0,"r":-1,"s":1,"color":0},{"q":2,"r":-2,"s":0,"color":1},{"q":1,"r":-2,"s":1,"color":0},{"q":0,"r":-2,"s":2,"color":1},{"q":0,"r":1,"s":-1,"color":1},{"q":-1,"r":2,"s":-1,"color":0},{"q":3,"r":-2,"s":-1,"color":0},{"q":2,"r":-1,"s":-1,"color":0},{"q":-2,"r":-1,"s":3,"color":0},{"q":-2,"r":2,"s":0,"color":1},{"q":-2,"r":1,"s":1,"color":1},{"q":-2,"r":0,"s":2,"color":0},{"q":-1,"r":-1,"s":2,"color":1},{"q":-1,"r":-2,"s":3,"color":0}],
         colorToWin: 1,
         regionSize: 5,
       },
       {
-        id: "10",
-        q: 1,
-        r: 3,
-        s: -4,
-        difficulty: "medium",
+        id: "7a",
+        q: 5,
+        r: 1,
+        s: -6,
+        difficulty: "intermediate",
         mapData: [{"q":0,"r":0,"s":0,"color":1},{"q":1,"r":-1,"s":0,"color":0},{"q":1,"r":0,"s":-1,"color":1},{"q":-1,"r":1,"s":0,"color":0},{"q":-1,"r":0,"s":1,"color":0},{"q":0,"r":-1,"s":1,"color":0},{"q":2,"r":-2,"s":0,"color":0},{"q":1,"r":-2,"s":1,"color":0},{"q":2,"r":-3,"s":1,"color":1},{"q":0,"r":-2,"s":2,"color":0},{"q":0,"r":1,"s":-1,"color":1},{"q":-1,"r":2,"s":-1,"color":0},{"q":-2,"r":2,"s":0,"color":1},{"q":-2,"r":1,"s":1,"color":0},{"q":3,"r":-4,"s":1,"color":0},{"q":2,"r":-4,"s":2,"color":0},{"q":-2,"r":0,"s":2,"color":0},{"q":-1,"r":-1,"s":2,"color":0},{"q":-1,"r":-2,"s":3,"color":0},{"q":0,"r":-3,"s":3,"color":1},{"q":4,"r":-5,"s":1,"color":0},{"q":4,"r":-4,"s":0,"color":0},{"q":3,"r":-3,"s":0,"color":1},{"q":3,"r":-5,"s":2,"color":1},{"q":-3,"r":2,"s":1,"color":1},{"q":-3,"r":1,"s":2,"color":0},{"q":-3,"r":3,"s":0,"color":0},{"q":-4,"r":3,"s":1,"color":0},{"q":-4,"r":2,"s":2,"color":1},{"q":-5,"r":2,"s":3,"color":1},{"q":-4,"r":1,"s":3,"color":1},{"q":4,"r":-3,"s":-1,"color":1},{"q":-3,"r":0,"s":3,"color":1},{"q":-4,"r":0,"s":4,"color":0},{"q":5,"r":-4,"s":-1,"color":0}],
         colorToWin: 1,
         regionSize: 7,
       },
+      {
+        id: "13",
+        q: 2,
+        r: 2,
+        s: -4,
+        difficulty: "hard",
+        mapData: [{"q":0,"r":0,"s":0,"color":1},{"q":1,"r":0,"s":-1,"color":1},{"q":0,"r":1,"s":-1,"color":0},{"q":-1,"r":1,"s":0,"color":0},{"q":0,"r":-1,"s":1,"color":0},{"q":-1,"r":-1,"s":2,"color":0},{"q":0,"r":-2,"s":2,"color":1},{"q":-1,"r":2,"s":-1,"color":0},{"q":-2,"r":2,"s":0,"color":1},{"q":-2,"r":1,"s":1,"color":0},{"q":-2,"r":0,"s":2,"color":0},{"q":-2,"r":-1,"s":3,"color":1},{"q":-3,"r":1,"s":2,"color":0},{"q":2,"r":0,"s":-2,"color":1},{"q":1,"r":-1,"s":0,"color":0},{"q":-4,"r":2,"s":2,"color":0},{"q":-4,"r":1,"s":3,"color":1},{"q":-3,"r":0,"s":3,"color":0},{"q":-3,"r":2,"s":1,"color":1},{"q":-5,"r":3,"s":2,"color":0},{"q":-5,"r":2,"s":3,"color":0},{"q":3,"r":-1,"s":-2,"color":1},{"q":3,"r":0,"s":-3,"color":0},{"q":2,"r":1,"s":-3,"color":0},{"q":1,"r":1,"s":-2,"color":0},{"q":2,"r":-1,"s":-1,"color":1},{"q":-3,"r":3,"s":0,"color":1},{"q":2,"r":-2,"s":0,"color":0},{"q":1,"r":-2,"s":1,"color":0},{"q":-1,"r":-2,"s":3,"color":0},{"q":-3,"r":-1,"s":4,"color":0},{"q":-2,"r":-2,"s":4,"color":0},{"q":-1,"r":-3,"s":4,"color":0},{"q":-3,"r":-2,"s":5,"color":0},{"q":-2,"r":-3,"s":5,"color":0},{"q":4,"r":-2,"s":-2,"color":0},{"q":4,"r":-1,"s":-3,"color":1},{"q":3,"r":-2,"s":-1,"color":0},{"q":0,"r":2,"s":-2,"color":0},{"q":1,"r":-3,"s":2,"color":0},{"q":0,"r":-3,"s":3,"color":0},{"q":-4,"r":-2,"s":6,"color":1},{"q":-3,"r":-3,"s":6,"color":0},{"q":-4,"r":0,"s":4,"color":0},{"q":-4,"r":-1,"s":5,"color":1},{"q":2,"r":-3,"s":1,"color":1},{"q":1,"r":-4,"s":3,"color":0},{"q":0,"r":-4,"s":4,"color":1},{"q":-2,"r":-4,"s":6,"color":0}],
+        colorToWin: 1,
+        regionSize: 7,
+      },
+      // {
+      //   id: "?",
+      //   q: 3,
+      //   r: 2,
+      //   s: -5,
+      //   difficulty: "extreme",
+      //   mapData: [{"q":1,"r":-3,"s":2,"color":0},{"q":2,"r":-3,"s":1,"color":0},{"q":0,"r":-2,"s":2,"color":0},{"q":1,"r":-2,"s":1,"color":0},{"q":2,"r":-2,"s":0,"color":0},{"q":-1,"r":-1,"s":2,"color":1},{"q":0,"r":-1,"s":1,"color":0},{"q":1,"r":-1,"s":0,"color":1},{"q":2,"r":-1,"s":-1,"color":0},{"q":-2,"r":0,"s":2,"color":0},{"q":-1,"r":0,"s":1,"color":0},{"q":1,"r":0,"s":-1,"color":1},{"q":2,"r":0,"s":-2,"color":1},{"q":-3,"r":1,"s":2,"color":1},{"q":-2,"r":1,"s":1,"color":1},{"q":-1,"r":1,"s":0,"color":0},{"q":0,"r":1,"s":-1,"color":0},{"q":1,"r":1,"s":-2,"color":0},{"q":2,"r":1,"s":-3,"color":0},{"q":-4,"r":2,"s":2,"color":0},{"q":-3,"r":2,"s":1,"color":1},{"q":-2,"r":2,"s":0,"color":1},{"q":-1,"r":2,"s":-1,"color":1},{"q":0,"r":2,"s":-2,"color":1},{"q":1,"r":2,"s":-3,"color":0},{"q":2,"r":2,"s":-4,"color":0},{"q":-5,"r":3,"s":2,"color":0},{"q":-4,"r":3,"s":1,"color":1},{"q":-2,"r":3,"s":-1,"color":1},{"q":-1,"r":3,"s":-2,"color":0},{"q":1,"r":3,"s":-4,"color":0},{"q":2,"r":3,"s":-5,"color":0},{"q":-6,"r":4,"s":2,"color":0},{"q":-5,"r":4,"s":1,"color":0},{"q":-4,"r":4,"s":0,"color":0},{"q":-3,"r":4,"s":-1,"color":1},{"q":-2,"r":4,"s":-2,"color":0},{"q":-1,"r":4,"s":-3,"color":0},{"q":0,"r":4,"s":-4,"color":0},{"q":1,"r":4,"s":-5,"color":1},{"q":2,"r":4,"s":-6,"color":0},{"q":-6,"r":5,"s":1,"color":1},{"q":-5,"r":5,"s":0,"color":0},{"q":-4,"r":5,"s":-1,"color":0},{"q":-3,"r":5,"s":-2,"color":1},{"q":-2,"r":5,"s":-3,"color":0},{"q":-1,"r":5,"s":-4,"color":0},{"q":0,"r":5,"s":-5,"color":0},{"q":1,"r":5,"s":-6,"color":0}],
+      //   generationSettings: {
+      //     cellCount: 49,
+      //     spreadFactor: 0.2,
+      //     directionBias: 0.5,
+      //     colorRatio: 0.36,
+      //     colorToWin: 1,
+      //     regionSize: 7,
+      //     maxSolutions: 6,
+      //     maxAttempts: 5000,
+      //     difficultyThreshold: 3,
+      //   },
+      //   colorToWin: 1,
+      //   regionSize: 7,
+      // },
+      // {
+      //   id: "13",
+      //   q: 2,
+      //   r: 2,
+      //   s: -4,
+      //   difficulty: "hard",
+      //   mapData: [{"q":0,"r":0,"s":0,"color":1},{"q":1,"r":0,"s":-1,"color":1},{"q":0,"r":1,"s":-1,"color":0},{"q":-1,"r":1,"s":0,"color":0},{"q":0,"r":-1,"s":1,"color":0},{"q":-1,"r":-1,"s":2,"color":0},{"q":0,"r":-2,"s":2,"color":1},{"q":-1,"r":2,"s":-1,"color":0},{"q":-2,"r":2,"s":0,"color":1},{"q":-2,"r":1,"s":1,"color":0},{"q":-2,"r":0,"s":2,"color":0},{"q":-2,"r":-1,"s":3,"color":1},{"q":-3,"r":1,"s":2,"color":0},{"q":2,"r":0,"s":-2,"color":1},{"q":1,"r":-1,"s":0,"color":0},{"q":-4,"r":2,"s":2,"color":0},{"q":-4,"r":1,"s":3,"color":1},{"q":-3,"r":0,"s":3,"color":0},{"q":-3,"r":2,"s":1,"color":1},{"q":-5,"r":3,"s":2,"color":0},{"q":-5,"r":2,"s":3,"color":0},{"q":3,"r":-1,"s":-2,"color":1},{"q":3,"r":0,"s":-3,"color":0},{"q":2,"r":1,"s":-3,"color":0},{"q":1,"r":1,"s":-2,"color":0},{"q":2,"r":-1,"s":-1,"color":1},{"q":-3,"r":3,"s":0,"color":1},{"q":2,"r":-2,"s":0,"color":0},{"q":1,"r":-2,"s":1,"color":0},{"q":-1,"r":-2,"s":3,"color":0},{"q":-3,"r":-1,"s":4,"color":0},{"q":-2,"r":-2,"s":4,"color":0},{"q":-1,"r":-3,"s":4,"color":0},{"q":-3,"r":-2,"s":5,"color":0},{"q":-2,"r":-3,"s":5,"color":0},{"q":4,"r":-2,"s":-2,"color":0},{"q":4,"r":-1,"s":-3,"color":1},{"q":3,"r":-2,"s":-1,"color":0},{"q":0,"r":2,"s":-2,"color":0},{"q":1,"r":-3,"s":2,"color":0},{"q":0,"r":-3,"s":3,"color":0},{"q":-4,"r":-2,"s":6,"color":1},{"q":-3,"r":-3,"s":6,"color":0},{"q":-4,"r":0,"s":4,"color":0},{"q":-4,"r":-1,"s":5,"color":1},{"q":2,"r":-3,"s":1,"color":1},{"q":1,"r":-4,"s":3,"color":0},{"q":0,"r":-4,"s":4,"color":1},{"q":-2,"r":-4,"s":6,"color":0}],
+      //   colorToWin: 1,
+      //   regionSize: 7,
+      // },
+      // {
+      //   id: "12",
+      //   q: 1,
+      //   r: 3,
+      //   s: -6,
+      //   difficulty: "intermediate",
+      //   mapData: [{"q":0,"r":0,"s":0,"color":0},{"q":1,"r":-1,"s":0,"color":1},{"q":1,"r":0,"s":-1,"color":0},{"q":0,"r":1,"s":-1,"color":0},{"q":-1,"r":1,"s":0,"color":0},{"q":-1,"r":0,"s":1,"color":1},{"q":0,"r":-1,"s":1,"color":0},{"q":-1,"r":-1,"s":2,"color":0},{"q":0,"r":-2,"s":2,"color":0},{"q":-2,"r":1,"s":1,"color":0},{"q":-2,"r":0,"s":2,"color":0},{"q":-2,"r":-1,"s":3,"color":1},{"q":-1,"r":-2,"s":3,"color":0},{"q":2,"r":-1,"s":-1,"color":0},{"q":2,"r":0,"s":-2,"color":0},{"q":3,"r":-2,"s":-1,"color":1},{"q":3,"r":-1,"s":-2,"color":0},{"q":-2,"r":2,"s":0,"color":0},{"q":-3,"r":2,"s":1,"color":1},{"q":1,"r":-2,"s":1,"color":1},{"q":1,"r":1,"s":-2,"color":1},{"q":0,"r":2,"s":-2,"color":0},{"q":-1,"r":2,"s":-1,"color":1},{"q":-2,"r":3,"s":-1,"color":0},{"q":-3,"r":3,"s":0,"color":0},{"q":-2,"r":-2,"s":4,"color":0},{"q":4,"r":-1,"s":-3,"color":1},{"q":1,"r":2,"s":-3,"color":0},{"q":0,"r":3,"s":-3,"color":1},{"q":-1,"r":3,"s":-2,"color":1},{"q":2,"r":1,"s":-3,"color":0},{"q":2,"r":2,"s":-4,"color":0},{"q":1,"r":3,"s":-4,"color":1},{"q":-2,"r":4,"s":-2,"color":0},{"q":-3,"r":1,"s":2,"color":0}],
+      //   colorToWin: 1,
+      //   regionSize: 5,
+      // },
+      {
+        id: "10",
+        q: 5,
+        r: 2,
+        s: -7,
+        difficulty: "medium",
+        // mapData: [{"q":0,"r":0,"s":0,"color":0},{"q":1,"r":-1,"s":0,"color":1},{"q":1,"r":0,"s":-1,"color":0},{"q":0,"r":1,"s":-1,"color":0},{"q":-1,"r":1,"s":0,"color":0},{"q":-1,"r":0,"s":1,"color":1},{"q":0,"r":-1,"s":1,"color":0},{"q":-1,"r":-1,"s":2,"color":0},{"q":0,"r":-2,"s":2,"color":0},{"q":-2,"r":1,"s":1,"color":0},{"q":-2,"r":0,"s":2,"color":0},{"q":-2,"r":-1,"s":3,"color":1},{"q":-1,"r":-2,"s":3,"color":0},{"q":2,"r":-1,"s":-1,"color":0},{"q":2,"r":0,"s":-2,"color":0},{"q":3,"r":-2,"s":-1,"color":1},{"q":3,"r":-1,"s":-2,"color":0},{"q":-2,"r":2,"s":0,"color":0},{"q":-3,"r":2,"s":1,"color":1},{"q":1,"r":-2,"s":1,"color":1},{"q":1,"r":1,"s":-2,"color":1},{"q":0,"r":2,"s":-2,"color":0},{"q":-1,"r":2,"s":-1,"color":1},{"q":-2,"r":3,"s":-1,"color":0},{"q":-3,"r":3,"s":0,"color":0},{"q":-2,"r":-2,"s":4,"color":0},{"q":4,"r":-1,"s":-3,"color":1},{"q":1,"r":2,"s":-3,"color":0},{"q":0,"r":3,"s":-3,"color":1},{"q":-1,"r":3,"s":-2,"color":1},{"q":2,"r":1,"s":-3,"color":0},{"q":2,"r":2,"s":-4,"color":0},{"q":1,"r":3,"s":-4,"color":1},{"q":-2,"r":4,"s":-2,"color":0},{"q":-3,"r":1,"s":2,"color":0}],
+        mapData: [{q:0,r:0,s:0,color:0},{q:1,r:0,s:-1,color:0},{q:-1,r:1,s:0,color:1},{q:-1,r:0,s:1,color:1},{q:2,r:-1,s:-1,color:0},{q:2,r:0,s:-2,color:0},{q:1,r:1,s:-2,color:0},{q:0,r:1,s:-1,color:0},{q:1,r:-1,s:0,color:0},{q:3,r:-1,s:-2,color:1},{q:-2,r:2,s:0,color:0},{q:-2,r:1,s:1,color:0},{q:-3,r:2,s:1,color:0},{q:-3,r:1,s:2,color:1},{q:-2,r:0,s:2,color:0},{q:2,r:-2,s:0,color:0},{q:0,r:-1,s:1,color:0},{q:1,r:-2,s:1,color:0},{q:-3,r:3,s:0,color:0},{q:-4,r:3,s:1,color:0},{q:-4,r:2,s:2,color:0},{q:4,r:-1,s:-3,color:0},{q:3,r:0,s:-3,color:0},{q:3,r:-2,s:-1,color:1},{q:-3,r:4,s:-1,color:1},{q:-5,r:3,s:2,color:1},{q:-1,r:-1,s:2,color:0},{q:-3,r:0,s:3,color:0},{q:-5,r:4,s:1,color:0},{q:-6,r:3,s:3,color:0},{q:-4,r:1,s:3,color:1},{q:4,r:-2,s:-2,color:1},{q:3,r:-3,s:0,color:1},{q:2,r:-3,s:1,color:0},{q:-2,r:-1,s:3,color:1},{q:-1,r:-2,s:3,color:1},{q:0,r:2,s:-2,color:0},{q:-1,r:2,s:-1,color:1},{q:-2,r:3,s:-1,color:0},{q:-2,r:-2,s:4,color:1},{q:-6,r:4,s:2,color:1},{q:-7,r:4,s:3,color:1},{q:-6,r:2,s:4,color:1},{q:-1,r:3,s:-2,color:0},{q:-2,r:4,s:-2,color:0},{q:0,r:-2,s:2,color:0},{q:1,r:-3,s:2,color:0},{q:0,r:-3,s:3,color:0},{q:-1,r:-3,s:4,color:1},{q:-7,r:5,s:2,color:0}],
+        colorToWin: 1,
+        regionSize: 10,
+      },
+      // q: 3, //middle of hole
+      // r: 2,
+      // s: -5,
 
       // {
       //   id: "10",
@@ -594,7 +659,7 @@ const puzzles = [
 
     // Add more puzzles as needed
   ];
-  // console.log(JSON.stringify(puzzles.find((p) => p.id === "8").mapData).replace(/"/g, ''));
+  // console.log(JSON.stringify(puzzles.find((p) => p.id === "?").mapData).replace(/"/g, ''));
   export default puzzles;
 
 
@@ -631,10 +696,6 @@ possible 4
 [{"q":0,"r":0,"s":0,"color":0},{"q":1,"r":-1,"s":0,"color":1},{"q":0,"r":1,"s":-1,"color":0},{"q":-1,"r":1,"s":0,"color":1},{"q":-1,"r":0,"s":1,"color":1},{"q":1,"r":0,"s":-1,"color":0},{"q":1,"r":-2,"s":1,"color":1},{"q":2,"r":0,"s":-2,"color":0},{"q":1,"r":1,"s":-2,"color":0},{"q":-2,"r":1,"s":1,"color":0},{"q":-2,"r":2,"s":0,"color":1},{"q":-3,"r":2,"s":1,"color":0},{"q":0,"r":-1,"s":1,"color":0},{"q":-2,"r":0,"s":2,"color":1},{"q":-1,"r":-1,"s":2,"color":0},{"q":0,"r":2,"s":-2,"color":0},{"q":-1,"r":2,"s":-1,"color":0},{"q":3,"r":-1,"s":-2,"color":1},{"q":2,"r":1,"s":-3,"color":0},{"q":4,"r":-2,"s":-2,"color":1},{"q":4,"r":-1,"s":-3,"color":1},{"q":3,"r":0,"s":-3,"color":0},{"q":2,"r":-1,"s":-1,"color":0},{"q":-4,"r":3,"s":1,"color":0},{"q":-3,"r":1,"s":2,"color":0},{"q":4,"r":0,"s":-4,"color":1},{"q":3,"r":1,"s":-4,"color":1},{"q":5,"r":-2,"s":-3,"color":0},{"q":3,"r":-2,"s":-1,"color":0},{"q":4,"r":-3,"s":-1,"color":0},{"q":5,"r":-1,"s":-4,"color":1},{"q":-2,"r":3,"s":-1,"color":0},{"q":5,"r":0,"s":-5,"color":1},{"q":4,"r":1,"s":-5,"color":0},{"q":5,"r":-4,"s":-1,"color":0}]
 */
 
-/* good stuff C (used for 9)
-[{q:0,r:0,s:0,color:0},{q:1,r:0,s:-1,color:1},{q:0,r:1,s:-1,color:1},{q:-1,r:1,s:0,color:1},{q:0,r:-1,s:1,color:0},{q:2,r:-1,s:-1,color:1},{q:2,r:0,s:-2,color:0},{q:1,r:-1,s:0,color:0},{q:-1,r:2,s:-1,color:0},{q:-2,r:2,s:0,color:1},{q:-1,r:0,s:1,color:0},{q:1,r:1,s:-2,color:1},{q:0,r:2,s:-2,color:0},{q:-2,r:3,s:-1,color:1},{q:3,r:-1,s:-2,color:0},{q:2,r:-2,s:0,color:0},{q:3,r:0,s:-3,color:0},{q:0,r:3,s:-3,color:0},{q:-1,r:3,s:-2,color:1},{q:-2,r:1,s:1,color:0},{q:-2,r:0,s:2,color:1},{q:1,r:-2,s:1,color:1},{q:-1,r:-1,s:2,color:0},{q:-3,r:0,s:3,color:0},{q:-2,r:-1,s:3,color:0},{q:-1,r:-2,s:3,color:0},{q:-3,r:-1,s:4,color:0},{q:3,r:1,s:-4,color:1},{q:2,r:1,s:-3,color:0},{q:2,r:2,s:-4,color:0},{q:1,r:2,s:-3,color:0},{q:0,r:-3,s:3,color:0},{q:0,r:-2,s:2,color:0},{q:-2,r:-2,s:4,color:1},{q:-1,r:-3,s:4,color:0}]
-*/
-
 /* 50 level 8 gen
 [{q:0,r:0,s:0,color:0},{q:1,r:0,s:-1,color:0},{q:0,r:1,s:-1,color:0},{q:-1,r:1,s:0,color:0},{q:0,r:2,s:-2,color:0},{q:-1,r:2,s:-1,color:1},{q:-1,r:3,s:-2,color:1},{q:-2,r:3,s:-1,color:1},{q:1,r:1,s:-2,color:0},{q:1,r:2,s:-3,color:0},{q:-3,r:4,s:-1,color:0},{q:-1,r:4,s:-3,color:0},{q:-2,r:4,s:-2,color:1},{q:-1,r:5,s:-4,color:1},{q:-2,r:5,s:-3,color:0},{q:2,r:2,s:-4,color:1},{q:1,r:3,s:-4,color:0},{q:0,r:3,s:-3,color:0},{q:2,r:1,s:-3,color:0},{q:2,r:0,s:-2,color:0},{q:1,r:-1,s:0,color:0},{q:3,r:-1,s:-2,color:0},{q:3,r:0,s:-3,color:0},{q:2,r:-1,s:-1,color:0},{q:-2,r:2,s:0,color:1},{q:-2,r:1,s:1,color:1},{q:-1,r:0,s:1,color:0},{q:0,r:4,s:-4,color:0},{q:0,r:5,s:-5,color:0},{q:-1,r:6,s:-5,color:0},{q:2,r:-2,s:0,color:1},{q:0,r:-1,s:1,color:0},{q:1,r:-2,s:1,color:0},{q:0,r:6,s:-6,color:1},{q:-1,r:7,s:-6,color:1},{q:-2,r:7,s:-5,color:1},{q:2,r:3,s:-5,color:0},{q:1,r:4,s:-5,color:0},{q:-3,r:3,s:0,color:1},{q:-2,r:0,s:2,color:1},{q:-1,r:-1,s:2,color:1},{q:0,r:7,s:-7,color:0},{q:3,r:-3,s:0,color:0},{q:3,r:-2,s:-1,color:1},{q:2,r:-3,s:1,color:0},{q:4,r:-4,s:0,color:1},{q:4,r:-3,s:-1,color:0},{q:-3,r:5,s:-2,color:1},{q:4,r:-2,s:-2,color:0},{q:4,r:-1,s:-3,color:0}]
 */
@@ -645,4 +706,18 @@ possible 4
 
 /* E 35 7
 [{"q":0,"r":0,"s":0,"color":1},{"q":1,"r":-1,"s":0,"color":0},{"q":1,"r":0,"s":-1,"color":1},{"q":-1,"r":1,"s":0,"color":0},{"q":-1,"r":0,"s":1,"color":0},{"q":0,"r":-1,"s":1,"color":0},{"q":2,"r":-2,"s":0,"color":0},{"q":1,"r":-2,"s":1,"color":0},{"q":2,"r":-3,"s":1,"color":1},{"q":0,"r":-2,"s":2,"color":0},{"q":0,"r":1,"s":-1,"color":1},{"q":-1,"r":2,"s":-1,"color":0},{"q":-2,"r":2,"s":0,"color":1},{"q":-2,"r":1,"s":1,"color":0},{"q":3,"r":-4,"s":1,"color":0},{"q":2,"r":-4,"s":2,"color":0},{"q":-2,"r":0,"s":2,"color":0},{"q":-1,"r":-1,"s":2,"color":0},{"q":-1,"r":-2,"s":3,"color":0},{"q":0,"r":-3,"s":3,"color":1},{"q":4,"r":-5,"s":1,"color":0},{"q":4,"r":-4,"s":0,"color":0},{"q":3,"r":-3,"s":0,"color":1},{"q":3,"r":-5,"s":2,"color":1},{"q":-3,"r":2,"s":1,"color":1},{"q":-3,"r":1,"s":2,"color":0},{"q":-3,"r":3,"s":0,"color":0},{"q":-4,"r":3,"s":1,"color":0},{"q":-4,"r":2,"s":2,"color":1},{"q":-5,"r":2,"s":3,"color":1},{"q":-4,"r":1,"s":3,"color":1},{"q":4,"r":-3,"s":-1,"color":1},{"q":-3,"r":0,"s":3,"color":1},{"q":-4,"r":0,"s":4,"color":0},{"q":5,"r":-4,"s":-1,"color":0}]
+*/
+
+/* 13 49 7 with hole in map
+[{"q":0,"r":0,"s":0,"color":1},{"q":1,"r":0,"s":-1,"color":1},{"q":0,"r":1,"s":-1,"color":0},{"q":-1,"r":1,"s":0,"color":0},{"q":0,"r":-1,"s":1,"color":0},{"q":-1,"r":-1,"s":2,"color":0},{"q":0,"r":-2,"s":2,"color":1},{"q":-1,"r":2,"s":-1,"color":0},{"q":-2,"r":2,"s":0,"color":1},{"q":-2,"r":1,"s":1,"color":0},{"q":-2,"r":0,"s":2,"color":0},{"q":-2,"r":-1,"s":3,"color":1},{"q":-3,"r":1,"s":2,"color":0},{"q":2,"r":0,"s":-2,"color":1},{"q":1,"r":-1,"s":0,"color":0},{"q":-4,"r":2,"s":2,"color":0},{"q":-4,"r":1,"s":3,"color":1},{"q":-3,"r":0,"s":3,"color":0},{"q":-3,"r":2,"s":1,"color":1},{"q":-5,"r":3,"s":2,"color":0},{"q":-5,"r":2,"s":3,"color":0},{"q":3,"r":-1,"s":-2,"color":1},{"q":3,"r":0,"s":-3,"color":0},{"q":2,"r":1,"s":-3,"color":0},{"q":1,"r":1,"s":-2,"color":0},{"q":2,"r":-1,"s":-1,"color":1},{"q":-3,"r":3,"s":0,"color":1},{"q":2,"r":-2,"s":0,"color":0},{"q":1,"r":-2,"s":1,"color":0},{"q":-1,"r":-2,"s":3,"color":0},{"q":-3,"r":-1,"s":4,"color":0},{"q":-2,"r":-2,"s":4,"color":0},{"q":-1,"r":-3,"s":4,"color":0},{"q":-3,"r":-2,"s":5,"color":0},{"q":-2,"r":-3,"s":5,"color":0},{"q":4,"r":-2,"s":-2,"color":0},{"q":4,"r":-1,"s":-3,"color":1},{"q":3,"r":-2,"s":-1,"color":0},{"q":0,"r":2,"s":-2,"color":0},{"q":1,"r":-3,"s":2,"color":0},{"q":0,"r":-3,"s":3,"color":0},{"q":-4,"r":-2,"s":6,"color":1},{"q":-3,"r":-3,"s":6,"color":0},{"q":-4,"r":0,"s":4,"color":0},{"q":-4,"r":-1,"s":5,"color":1},{"q":2,"r":-3,"s":1,"color":1},{"q":1,"r":-4,"s":3,"color":0},{"q":0,"r":-4,"s":4,"color":1},{"q":-2,"r":-4,"s":6,"color":0}]
+*/
+
+/* 49 7 shape cool triangle with holes
+[{q:1,r:-3,s:2,color:0},{q:2,r:-3,s:1,color:0},{q:0,r:-2,s:2,color:0},{q:1,r:-2,s:1,color:0},{q:2,r:-2,s:0,color:0},{q:-1,r:-1,s:2,color:1},{q:0,r:-1,s:1,color:0},{q:1,r:-1,s:0,color:1},{q:2,r:-1,s:-1,color:1},{q:-2,r:0,s:2,color:0},{q:-1,r:0,s:1,color:0},{q:1,r:0,s:-1,color:1},{q:2,r:0,s:-2,color:1},{q:-3,r:1,s:2,color:1},{q:-2,r:1,s:1,color:1},{q:-1,r:1,s:0,color:0},{q:0,r:1,s:-1,color:0},{q:1,r:1,s:-2,color:0},{q:2,r:1,s:-3,color:0},{q:-4,r:2,s:2,color:0},{q:-3,r:2,s:1,color:0},{q:-2,r:2,s:0,color:1},{q:-1,r:2,s:-1,color:1},{q:0,r:2,s:-2,color:1},{q:1,r:2,s:-3,color:0},{q:2,r:2,s:-4,color:0},{q:-5,r:3,s:2,color:0},{q:-4,r:3,s:1,color:0},{q:-2,r:3,s:-1,color:0},{q:-1,r:3,s:-2,color:0},{q:1,r:3,s:-4,color:0},{q:2,r:3,s:-5,color:0},{q:-6,r:4,s:2,color:0},{q:-5,r:4,s:1,color:0},{q:-4,r:4,s:0,color:1},{q:-3,r:4,s:-1,color:1},{q:-2,r:4,s:-2,color:0},{q:-1,r:4,s:-3,color:0},{q:0,r:4,s:-4,color:0},{q:1,r:4,s:-5,color:1},{q:2,r:4,s:-6,color:0},{q:-6,r:5,s:1,color:0},{q:-5,r:5,s:0,color:0},{q:-4,r:5,s:-1,color:1},{q:-3,r:5,s:-2,color:1},{q:-2,r:5,s:-3,color:0},{q:-1,r:5,s:-4,color:0},{q:0,r:5,s:-5,color:1},{q:1,r:5,s:-6,color:0}]
+
+[{"q":1,"r":-3,"s":2,"color":0},{"q":2,"r":-3,"s":1,"color":0},{"q":0,"r":-2,"s":2,"color":0},{"q":1,"r":-2,"s":1,"color":0},{"q":2,"r":-2,"s":0,"color":0},{"q":-1,"r":-1,"s":2,"color":1},{"q":0,"r":-1,"s":1,"color":0},{"q":1,"r":-1,"s":0,"color":1},{"q":2,"r":-1,"s":-1,"color":0},{"q":-2,"r":0,"s":2,"color":0},{"q":-1,"r":0,"s":1,"color":0},{"q":1,"r":0,"s":-1,"color":1},{"q":2,"r":0,"s":-2,"color":1},{"q":-3,"r":1,"s":2,"color":1},{"q":-2,"r":1,"s":1,"color":1},{"q":-1,"r":1,"s":0,"color":0},{"q":0,"r":1,"s":-1,"color":0},{"q":1,"r":1,"s":-2,"color":0},{"q":2,"r":1,"s":-3,"color":0},{"q":-4,"r":2,"s":2,"color":0},{"q":-3,"r":2,"s":1,"color":1},{"q":-2,"r":2,"s":0,"color":1},{"q":-1,"r":2,"s":-1,"color":1},{"q":0,"r":2,"s":-2,"color":1},{"q":1,"r":2,"s":-3,"color":0},{"q":2,"r":2,"s":-4,"color":0},{"q":-5,"r":3,"s":2,"color":0},{"q":-4,"r":3,"s":1,"color":1},{"q":-2,"r":3,"s":-1,"color":1},{"q":-1,"r":3,"s":-2,"color":0},{"q":1,"r":3,"s":-4,"color":0},{"q":2,"r":3,"s":-5,"color":0},{"q":-6,"r":4,"s":2,"color":0},{"q":-5,"r":4,"s":1,"color":0},{"q":-4,"r":4,"s":0,"color":0},{"q":-3,"r":4,"s":-1,"color":1},{"q":-2,"r":4,"s":-2,"color":0},{"q":-1,"r":4,"s":-3,"color":0},{"q":0,"r":4,"s":-4,"color":0},{"q":1,"r":4,"s":-5,"color":1},{"q":2,"r":4,"s":-6,"color":0},{"q":-6,"r":5,"s":1,"color":1},{"q":-5,"r":5,"s":0,"color":0},{"q":-4,"r":5,"s":-1,"color":0},{"q":-3,"r":5,"s":-2,"color":1},{"q":-2,"r":5,"s":-3,"color":0},{"q":-1,"r":5,"s":-4,"color":0},{"q":0,"r":5,"s":-5,"color":0},{"q":1,"r":5,"s":-6,"color":0}]
+*/
+
+/* 49 7 shape 2 3 holes
+[{q:0,r:-2,s:2,color:0},{q:2,r:-2,s:0,color:0},{q:-2,r:-1,s:3,color:0},{q:-1,r:-1,s:2,color:1},{q:0,r:-1,s:1,color:0},{q:1,r:-1,s:0,color:1},{q:2,r:-1,s:-1,color:1},{q:3,r:-1,s:-2,color:0},{q:-2,r:0,s:2,color:0},{q:-1,r:0,s:1,color:0},{q:1,r:0,s:-1,color:1},{q:2,r:0,s:-2,color:1},{q:-3,r:1,s:2,color:1},{q:-2,r:1,s:1,color:1},{q:1,r:1,s:-2,color:0},{q:2,r:1,s:-3,color:0},{q:-3,r:2,s:1,color:0},{q:-2,r:2,s:0,color:1},{q:-1,r:2,s:-1,color:1},{q:0,r:2,s:-2,color:1},{q:1,r:2,s:-3,color:0},{q:-3,r:3,s:0,color:0},{q:-2,r:3,s:-1,color:0},{q:-1,r:3,s:-2,color:0},{q:0,r:3,s:-3,color:0},{q:-5,r:4,s:1,color:0},{q:-4,r:4,s:0,color:0},{q:-3,r:4,s:-1,color:0},{q:-2,r:4,s:-2,color:0},{q:-1,r:4,s:-3,color:0},{q:0,r:4,s:-4,color:0},{q:1,r:4,s:-5,color:1},{q:-5,r:5,s:0,color:0},{q:-4,r:5,s:-1,color:1},{q:-1,r:5,s:-4,color:0},{q:0,r:5,s:-5,color:0},{q:-5,r:6,s:-1,color:0},{q:-4,r:6,s:-2,color:0},{q:-2,r:6,s:-4,color:1},{q:-1,r:6,s:-5,color:1},{q:-6,r:7,s:-1,color:0},{q:-5,r:7,s:-2,color:0},{q:-4,r:7,s:-3,color:0},{q:-3,r:7,s:-4,color:0},{q:-2,r:7,s:-5,color:0},{q:-1,r:7,s:-6,color:1},{q:-5,r:8,s:-3,color:1},{q:-4,r:8,s:-4,color:0},{q:-3,r:8,s:-5,color:0}]
 */

@@ -54,7 +54,8 @@ const ProfileImage = memo(function ProfileImage({ src, size = 32 }) {
       })
       .catch(err => {
         if (!cancelled) {
-          console.error("Failed to load avatar:", err);
+          console.log("Failed to load avatar:", err);
+        //   console.error("Failed to load avatar:", err);
           setErrored(true);
         }
       });

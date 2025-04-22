@@ -7,6 +7,9 @@ const GoogleSignInButton = () => {
     // Initiate the OAuth flow with Google
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
+      // options: {
+      //   redirectTo: `${window.location.origin}/`
+      // }
     });
     if (error) {
       console.error("Error signing in with Google:", error);

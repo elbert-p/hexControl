@@ -844,7 +844,7 @@ export default function HexGridPuzzle({
                   strokeWidth: hexStrokeWidth,
                   cursor: "pointer",
                 }} > 
-                {/* TEXTHERE */}
+                {/* TEXTHERE COMMENT*/}
                 {/* <text
                   textAnchor="middle"
                   dominantBaseline="central"

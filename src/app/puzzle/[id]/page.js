@@ -28,7 +28,7 @@ function getNeighborKeys(q, r, s) {
 
 export default function PuzzlePage() {
   const params = useParams();
-  const puzzleId = params.id;
+  const puzzleId = decodeURIComponent(params.id);
   const router = useRouter();
   const { puzzles } = usePuzzles();
 
