@@ -551,7 +551,10 @@ export default function PuzzleSelectPage() {
       setIsLoading(false);
     }
   
-    if (didMigrate) notifyLocalDataUpdated();
+    if (didMigrate) {
+      console.log("Migration completed. New version:", CURRENT_VERSION);
+      notifyLocalDataUpdated();
+    }
   }, [localDataVersion]);
     
 
