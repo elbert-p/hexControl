@@ -6,11 +6,6 @@ import { HexGrid, Layout, Hexagon } from "react-hexgrid";
 import ClipperLib from "clipper-lib";
 import solvePuzzle from "/src/app/solvePuzzle.js";
 
-/** 2) Convert color (0 or 1) → hex code. */
-function colorToHex(color) {
-  return color === 0 ? "#ff8888" : "#88f"; //d8ee99 //ffff88 //ff8888
-}
-
 /** 3) (q,r,s) -> "q,r,s". */
 function hexKey(q, r, s) {
   return `${q},${r},${s}`;
@@ -280,30 +275,14 @@ function removeHexAndSplit(selections, regionIndex, hexKey, hexStates) {
   }
 }
 
-/* ADDED: Helper function to determine outline color based on region's validity and majority color */
-function getSelectionOutlineColor(selection, groupSize, wantedColor) {
-  const cellCount = selection.cells.length;
-  if (cellCount !== groupSize) {
-    return "#FF1493"; // Pink for invalid group size
-  }
-
-  const wantedCount = selection[`count${wantedColor}`];
-  const otherColor = wantedColor === 0 ? 1 : 0;
-  const otherCount = selection[`count${otherColor}`];
-
-  if (wantedCount > otherCount) {
-    // Majority for wantedColor
-    return wantedColor === 1 ? "#00008B" : "#700000"; // Blue or Dark Red
-  } else {
-    // Majority for other color
-    return wantedColor === 1 ? "#700000" : "#00008B"; // Dark Red or Blue
-  }
-}
-
 /* CHANGED: Modified component to include undo functionality and dynamic outline coloring */
 export default function HexGridPuzzle({
   mapData: mapData = [{ q: 0, r: 0, s: 0, color: 0 }],
   colorToWin = 1,
+  colorScheme = {
+    fill:    ["#ff8888", "#88f"],
+    outline: ["#8B0000", "#00008B"],
+  },
   regionSize = 3,
   sizeMultiplier = 1.5,
   onPuzzleStateChange,
@@ -459,6 +438,30 @@ export default function HexGridPuzzle({
     }
     return null;
   }
+
+  /* ADDED: Helper function to determine outline color based on region's validity and majority color */
+function getSelectionOutlineColor(selection, groupSize, wantedColor) {
+  const cellCount = selection.cells.length;
+  if (cellCount !== groupSize) {
+    return "#FF1493"; // Pink for invalid group size
+  }
+
+  const wantedCount = selection[`count${wantedColor}`];
+  const otherColor = wantedColor === 0 ? 1 : 0;
+  const otherCount = selection[`count${otherColor}`];
+
+  return (wantedCount > otherCount)
+    ? colorScheme.outline[wantedColor]   // majority = wanted
+    : colorScheme.outline[otherColor];   // majority = other
+
+  // if (wantedCount > otherCount) {
+  //   // Majority for wantedColor
+  //   return wantedColor === 1 ? "#00008B" : "#700000"; // Blue or Dark Red
+  // } else {
+  //   // Majority for other color
+  //   return wantedColor === 1 ? "#700000" : "#00008B"; // Dark Red or Blue
+  // }
+}
 
   /** ADDED: Refs to track initial hex and drag occurrence */
   const initialHexRef = useRef(null);
@@ -651,10 +654,10 @@ export default function HexGridPuzzle({
     const color = getSelectionOutlineColor(sel, regionSize, colorToWin);
     const majorityFill =
     sel.count0 === sel.count1
-      ? colorToHex(colorToWin === 1 ? 0 : 1)  // if tied, always choose the opposite of colorToWin
+      ? colorScheme.fill[colorToWin === 1 ? 0 : 1]  // if tied, always choose the opposite of colorToWin
       : sel.count0 > sel.count1
-      ? colorToHex(0)
-      : colorToHex(1);
+      ? colorScheme.fill[0]
+      : colorScheme.fill[1];
 
     return { paths, color, majorityFill };
   });
@@ -820,7 +823,7 @@ export default function HexGridPuzzle({
         <Layout {...layoutParams}>
           {mapData.map((hex) => {
             const k = hexKey(hex.q, hex.r, hex.s);
-            const baseColor = colorToHex(hexStates[k]);
+            const baseColor = colorScheme.fill[hexStates[k]];
             // const isAnimated = animatedHexes.has(k);
             return (
               <Hexagon

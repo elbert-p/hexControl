@@ -26,6 +26,30 @@ function getNeighborKeys(q, r, s) {
   return directions.map(([dq, dr, ds]) => hexKey(q + dq, r + dr, s + ds));
 }
 
+//Define your color‐scheme lookup
+const colorScheme = {
+  easy: {
+    fill:    ["#b7d65c", "#7fb3ff"],
+    outline: ["#165016", "#1c5aa6"],    
+  },
+  intermediate: {
+    fill:    ["#b7d65c", "#7fb3ff"],
+    outline: ["#165214", "#1c5aa6"],    
+  },
+  medium: {
+    fill:    ["#ffc76e", "#7ea2ff"],
+    outline: ["#b05c00", "#003b8b"],
+  },
+  hard: {
+    fill:    ["#ff8888", "#88f"],
+    outline: ["#700000", "#00008B"],
+  },
+  extreme: {
+    fill:    ["#ff8888", "#d273ff"],
+    outline: ["#8B0000", "#5a0070"],    
+  },
+};
+
 export default function PuzzlePage() {
   const params = useParams();
   const puzzleId = decodeURIComponent(params.id);
@@ -75,7 +99,6 @@ export default function PuzzlePage() {
       setHasChecked(true);
     }
   }, [puzzle, router]);
-  
 
   if (!puzzle || !hasChecked) {
     return null;//<div>No puzzle found with ID: {puzzleId}</div>;
@@ -92,10 +115,10 @@ export default function PuzzlePage() {
       }}
     >
       <PuzzleHeader puzzleId={puzzleId} />
-  
       <HexPuzzleWrapper
         mapData={puzzle.mapData}
         colorToWin={puzzle.colorToWin}
+        colorScheme = {colorScheme[puzzle.difficulty]}
         regionSize={puzzle.regionSize}
         puzzleId={puzzle.id}
         sizeMultiplier={puzzle.sizeMultiplier}

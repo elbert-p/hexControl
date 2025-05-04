@@ -244,6 +244,20 @@ function HexGridSelector({ puzzles, completedPuzzles }) {
       })
       .filter(Boolean);
   }, [completedPuzzles, puzzles]);
+
+  // gate the “?” puzzle until these IDs are in completedPuzzles
+  const prereqs = ["6","7","9","11","13"];
+  const visiblePuzzles = useMemo(
+    () =>
+      puzzles.filter(
+        p =>
+          p.id !== "?" ||
+          completedPuzzles.includes("?") ||
+          prereqs.every(id => completedPuzzles.includes(id))
+      ),
+    [puzzles, completedPuzzles]
+  );
+
   
 
   // 2. Define startKey outside useState since startKey depends on puzzles
@@ -420,7 +434,7 @@ function onHexMouseDown(q, r, s, e) {
         onMouseLeave={onGridMouseLeave}
       >
         <Layout {...layoutParams}>
-          {puzzles.map((hex) => {
+          {visiblePuzzles.map((hex) => {
             const k = hexKey(hex.q, hex.r, hex.s);
             const fill = difficultyColor(hex.difficulty);
             // const stroke = hex.generationSettings ? "#0000ff" : "#fff";

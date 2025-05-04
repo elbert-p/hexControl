@@ -10,6 +10,7 @@ import { useAuth } from "../context/AuthContext";
 export default function HexPuzzleWrapper({
   mapData,
   colorToWin,
+  colorScheme,
   regionSize,
   sizeMultiplier,
   puzzleId,
@@ -60,7 +61,7 @@ export default function HexPuzzleWrapper({
   }, 0);
 
   // Hex code for the color that should win:
-  const colorHexToWin = colorToWin === 0 ? "#ff8888" : "#88f";
+  const colorHexToWin = colorScheme.fill[colorToWin]; //colorToWin === 0 ? "#ff8888" : "#88f";
 
   // Determine if the puzzle is complete
   const isComplete = mapData 
@@ -330,6 +331,7 @@ export default function HexPuzzleWrapper({
             <HexGridPuzzle
               mapData={mapData}
               colorToWin={colorToWin}
+              colorScheme = {colorScheme}
               regionSize={regionSize}
               sizeMultiplier={sizeMultiplier}
               onPuzzleStateChange={handlePuzzleStateChange}
