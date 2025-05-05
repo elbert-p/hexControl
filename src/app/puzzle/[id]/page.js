@@ -30,11 +30,11 @@ function getNeighborKeys(q, r, s) {
 const colorScheme = {
   easy: {
     fill:    ["#b7d65c", "#7fb3ff"],
-    outline: ["#165016", "#1c5aa6"],    
+    outline: ["#165214", "#1c5aa6"],    
   },
   intermediate: {
-    fill:    ["#b7d65c", "#7fb3ff"],
-    outline: ["#165214", "#1c5aa6"],    
+    fill:    ["#ffda54", "#dba86c"],
+    outline: ["#b07000", "#5c3b1a"],
   },
   medium: {
     fill:    ["#ffc76e", "#7ea2ff"],
