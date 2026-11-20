@@ -15,6 +15,10 @@ import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from
  * The content gets a definite-height flex column to size itself in, so components that
  * scale to their container keep working.
  */
+const MAX_PASSES_PER_FRAME = 8;
+const JITTER_PX = 1;
+const INITIAL_PLACEMENT = { dy: 0, belowTop: 0 };
+
 export default function CenteredStage({ top, below, boxSelector, gap = 12, children }) {
   const areaRef = useRef(null);
   const topRef = useRef(null);
@@ -23,12 +27,37 @@ export default function CenteredStage({ top, below, boxSelector, gap = 12, child
   const observedBoxRef = useRef(null);
 
   const [bars, setBars] = useState(null); // reserved px: { top, below }
-  const [placement, setPlacement] = useState({ dy: 0, belowTop: 0 });
+  const [placement, setPlacement] = useState(INITIAL_PLACEMENT);
+  // Latest values (also updated as soon as we set them), so we decide outside the updaters.
+  const barsRef = useRef(bars);
+  barsRef.current = bars;
+  const placementRef = useRef(placement);
+  placementRef.current = placement;
+
+  // Measuring runs in layout effects after every render, and each change re-renders
+  // synchronously. If a layout never settles (e.g. sub-pixel rounding flipping a value back
+  // and forth on some devices), that would loop until React throws "Maximum update depth
+  // exceeded" (#185) and blanks the page. So: allow only a few adjustments per frame, and
+  // ignore 1px placement jitter.
+  const passesRef = useRef(0);
+  const allowAdjust = () => {
+    if (passesRef.current === 0) {
+      requestAnimationFrame(() => {
+        passesRef.current = 0;
+      });
+    }
+    passesRef.current += 1;
+    return passesRef.current <= MAX_PASSES_PER_FRAME;
+  };
 
   const measureBars = useCallback(() => {
     const t = topRef.current ? Math.ceil(topRef.current.offsetHeight) + gap : 0;
     const b = belowRef.current ? Math.ceil(belowRef.current.offsetHeight) + gap : 0;
-    setBars((prev) => (prev && prev.top === t && prev.below === b ? prev : { top: t, below: b }));
+    const prev = barsRef.current;
+    if (prev && prev.top === t && prev.below === b) return;
+    if (!allowAdjust()) return;
+    barsRef.current = { top: t, below: b };
+    setBars(barsRef.current);
   }, [gap]);
 
   const findBox = () => {
@@ -55,7 +84,14 @@ export default function CenteredStage({ top, below, boxSelector, gap = 12, child
     const y = Math.min(Math.max(ideal, minY), maxY);
 
     const next = { dy: Math.round(y - bars.top - rel), belowTop: Math.round(y + M + gap) };
-    setPlacement((prev) => (prev.dy === next.dy && prev.belowTop === next.belowTop ? prev : next));
+    const prev = placementRef.current;
+    const settled =
+      Math.abs(prev.dy - next.dy) <= JITTER_PX && Math.abs(prev.belowTop - next.belowTop) <= JITTER_PX;
+    // The first placement (from the initial zeros) always applies.
+    if (settled && prev !== INITIAL_PLACEMENT) return;
+    if (!allowAdjust()) return;
+    placementRef.current = next;
+    setPlacement(next);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bars, gap, boxSelector]);
 

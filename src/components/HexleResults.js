@@ -160,11 +160,11 @@ export default function HexleResults({ dateKey, times, stats, onClose, onReview,
             </div>
 
             <div className="hexleActions">
-              <button className="overlayButton" onClick={onHome}>
-                Home
-              </button>
               <button className="overlayButton" onClick={() => onReview(null)}>
                 Review
+              </button>
+              <button className="overlayButton" onClick={onHome}>
+                Home
               </button>
             </div>
           </div>

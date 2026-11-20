@@ -192,7 +192,7 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedP
   );
 
   // Content for the how-to-play overlay.
-  const howToPlayOverlayContent =
+  const howToPlayRules =
     isSelectMode ? (
       <ul
         style={{
@@ -278,6 +278,39 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedP
         </ul>
       </>
     );
+
+  const howToPlayOverlayContent = (
+    <>
+      {howToPlayRules}
+      {!session && (
+        <p
+          style={{
+            fontFamily: "sans-serif",
+            fontSize: "16px",
+            margin: "12px 0 0",
+            color: "#555",
+          }}
+        >
+          <button
+            onClick={() => setOverlayType("login")}
+            style={{
+              background: "none",
+              border: "none",
+              padding: 0,
+              font: "inherit",
+              fontWeight: "bold",
+              color: "#06404B",
+              textDecoration: "underline",
+              cursor: "pointer",
+            }}
+          >
+            Sign in
+          </button>{" "}
+          to save your progress.
+        </p>
+      )}
+    </>
+  );
 
   // Determine the overlay heading and content based on the overlayType.
   const overlayHeading =
