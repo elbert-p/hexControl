@@ -5,12 +5,14 @@ import GoogleSignInButton from "./GoogleSignInButton"; // Adjust the path if nee
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../supabaseClient"; // Import supabase for sign out
 import ProfileImage from "./ProfileImage";
+import { formatTime, getHexleStats, getTodayKey } from "../app/hexle/daily";
 
-const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedPuzzles = [] }) => {
+const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedPuzzles = [], title }) => {
   const router = useRouter();
   // overlayType can be "stats", "howToPlay", "login", "profile", or null
   const [overlayType, setOverlayType] = useState(null);
   const [completionCounts, setCompletionCounts] = useState({});
+  const [hexleStats, setHexleStats] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
   const { session, localDataVersion } = useAuth();
 
@@ -39,6 +41,11 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedP
       }
     }
   }, [localDataVersion]);
+
+  // Refresh daily Hexle stats whenever the stats popup opens.
+  useEffect(() => {
+    if (overlayType === "stats") setHexleStats(getHexleStats(getTodayKey()));
+  }, [overlayType, localDataVersion]);
 
   // Toggle overlay: if the current overlay is open, close it; otherwise, open the requested overlay.
   const toggleOverlay = (type) => {
@@ -114,7 +121,7 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedP
     </div>
   );
 
-  const titleText = isSelectMode ? "Level Select" : `Level ${puzzleId}`;
+  const titleText = title ?? (isSelectMode ? "Level Select" : `Level ${puzzleId}`);
 
   const completedDifficultyCounts = puzzles.reduce((acc, puzzle) => {
     if (completedPuzzles.includes(puzzle.id)) {
@@ -166,8 +173,20 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedP
         <strong style={{ color: "orange" }}> Medium:</strong>&nbsp;{completedDifficultyCounts.medium || 0},
         <strong style={{ color: "red" }}> Hard:</strong>&nbsp;{completedDifficultyCounts.hard || 0}
       </li>
-      <li>
+      <li style={{ marginBottom: "15px" }}>
         <strong>Infinite Completions:</strong> {infiniteCompletionsDisplay}
+      </li>
+      <li>
+        <strong>Daily Hexle:</strong>{" "}
+        {hexleStats && hexleStats.played > 0 ? (
+          <>
+            Played&nbsp;{hexleStats.played}, Streak&nbsp;{hexleStats.currentStreak}
+            &nbsp;(Max&nbsp;{hexleStats.maxStreak}), Best&nbsp;{formatTime(hexleStats.bestTotal)},
+            Avg&nbsp;{formatTime(hexleStats.avgTotal)}
+          </>
+        ) : (
+          "None yet - play today's!"
+        )}
       </li>
     </ul>
   );

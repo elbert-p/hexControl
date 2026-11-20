@@ -3,6 +3,7 @@
 
 import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import HexGridPuzzle from "./HexGridPuzzle";
+import HexIcon from "./HexIcon";
 import { useRouter } from "next/navigation";
 import { usePuzzles } from "../context/puzzleContext";
 import { useAuth } from "../context/AuthContext";
@@ -14,8 +15,16 @@ export default function HexPuzzleWrapper({
   regionSize,
   sizeMultiplier,
   puzzleId,
+  // Optional hooks used by the daily Hexle. When `onSolved` is provided the wrapper
+  // skips its own level bookkeeping (completed list, counts, reset, overlay).
+  onSolved,
+  onSolvedAnimationEnd,
+  onPuzzleStateChange,
+  initialSelections,
+  readOnly = false,
 }) {
-  
+  const externallyManaged = typeof onSolved === "function";
+
   const router = useRouter();
   const { resetPuzzle } = usePuzzles();
   const { notifyLocalDataUpdated } = useAuth();
@@ -36,6 +45,7 @@ export default function HexPuzzleWrapper({
   // Handler to receive puzzle updates:
   function handlePuzzleStateChange(newState) {
     setPuzzleState(newState);
+    if (onPuzzleStateChange) onPuzzleStateChange(newState);
   }
 
   // Calculate total possible regions:
@@ -69,47 +79,9 @@ export default function HexPuzzleWrapper({
   : false;
 
   const [showOverlay, setShowOverlay] = useState(false);
-  const [showRegionFill, setShowRegionFill] = useState(true);
+  // Read-only (review) puzzles start in the static "View puzzle" look.
+  const [showRegionFill, setShowRegionFill] = useState(!readOnly);
 
-  // HexIcon Component (unchanged)
-  const HexIcon = ({
-    text,
-    color = "#ffdf88",
-    strokeColor = "#333",
-    size = 40,
-    textColor = "#333",
-    fontSize = "18",
-  }) => (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 100 100"
-      style={{ verticalAlign: "middle" }}
-      overflow="visible"
-    >
-      <polygon
-        points="50,0 93,25 93,75 50,100 7,75 7,25"
-        fill={color}
-        stroke={strokeColor}
-        strokeWidth="8"
-      />
-      {text && (
-        <text
-          x="50"
-          y="50"
-          fontSize={fontSize}
-          fill={textColor}
-          textAnchor="middle"
-          dominantBaseline="central"
-          fontFamily="'Press Start 2P', sans-serif" // Blocky font
-          stroke="none"
-          fontWeight="900"
-        >
-          {text}
-        </text>
-      )}
-    </svg>
-  );
   const incrementPuzzleCompletionCount = () => {
     const storedCounts = localStorage.getItem("puzzleCompletionCounts");
     let completionCounts = {};
@@ -139,8 +111,14 @@ export default function HexPuzzleWrapper({
 
   // Effect to handle puzzle completion
   useEffect(() => {
+    if (readOnly) return; // reviewing a finished puzzle: nothing to record
     if (isComplete && !puzzleCounted) {
-      markPuzzleAsCompleted();
+      if (externallyManaged) {
+        setPuzzleCounted(true);
+        onSolved(puzzleState.selections);
+      } else {
+        markPuzzleAsCompleted();
+      }
     } else {
       setShowRegionFill(true);   // let the fill animation run again
       setShowOverlay(false);     // make sure the overlay isn’t showing
@@ -157,7 +135,7 @@ export default function HexPuzzleWrapper({
   
   useEffect(() => { //reset puzzle when user navigates away
     return () => {
-      if (puzzleSolvedRef.current) {
+      if (puzzleSolvedRef.current && !externallyManaged && !readOnly) {
         resetPuzzle(puzzleId);
       }
     };
@@ -337,7 +315,11 @@ export default function HexPuzzleWrapper({
               onPuzzleStateChange={handlePuzzleStateChange}
               puzzleComplete={isComplete}
               showRegionFill={showRegionFill}
-              onAnimationComplete={() => setShowOverlay(true)}
+              onAnimationComplete={() =>
+                onSolvedAnimationEnd ? onSolvedAnimationEnd() : setShowOverlay(true)
+              }
+              initialSelections={initialSelections}
+              readOnly={readOnly}
             />
           </div>
         </div>
@@ -411,7 +393,7 @@ export default function HexPuzzleWrapper({
       )}
 
       {/* New Continue button (rendered below dynamicWrapper) */}
-      {puzzleCounted && !showOverlay && !showRegionFill && (
+      {puzzleCounted && !externallyManaged && !showOverlay && !showRegionFill && (
         <div style={{ textAlign: "center", marginTop: "0px", marginBottom: "10px" }}>
           <button
             className="overlayButton"
@@ -422,68 +404,6 @@ export default function HexPuzzleWrapper({
         </div>
       )}
 
-      {/* Overlay and button common styles */}
-      <style jsx>{`
-        @keyframes backdropFadeIn {
-          0% {
-            background-color: rgba(255, 255, 255, 0);
-          }
-          100% {
-            background-color: rgba(255, 255, 255, 0.6);
-          }
-        }
-        @keyframes popupFadeIn {
-          0% {
-            opacity: 0;
-            transform: scale(0.8);
-          }
-          100% {
-            opacity: 1;
-            transform: scale(1);
-          }
-        }
-        .overlayContainer {
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background-color: rgba(255, 255, 255, 0);
-          z-index: 9999;
-          animation: backdropFadeIn 0.3s ease forwards;
-        }
-        .overlayBox {
-          background: white;
-          border: 6px solid #228B22;
-          border-radius: 10px;
-          padding: 20px 30px;
-          text-align: center;
-          box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-          animation: popupFadeIn 0.4s ease forwards;
-        }
-        .overlayHeading {
-          margin: 0;
-          margin-bottom: 20px;
-          font-family: 'Press Start 2P', sans-serif;
-        }
-        .overlayButton {
-          padding: 10px 20px;
-          font-size: 18px;
-          cursor: pointer;
-          background-color: #a3bf56;
-          color: white;
-          border: none;
-          border-radius: 10px;
-          font-family: 'Press Start 2P', sans-serif;
-          transition: background-color 0.3s ease;
-        }
-        .overlayButton:hover {
-          background-color: #8fae45;
-        }
-      `}</style>
     </div>
   );
 }

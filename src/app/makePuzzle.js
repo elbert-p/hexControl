@@ -167,6 +167,7 @@ function computeLowestEdgesPerHex(mapData, solutions) {
  * @param {number} maxSolutions  - puzzle must have <= this many solutions
  * @param {number} maxAttempts   - iteration limit
  * @param {number} difficultyThreshold - required minimum edges/hex across solutions
+ * @param {Function} rng         - Random source returning [0,1); defaults to Math.random
  * @returns {Array} - final mapData that meets criteria
  * @throws {Error} if we cannot achieve it within maxAttempts
  */
@@ -176,7 +177,8 @@ export default function makeHardPuzzle(
   regionSize = 5,
   maxSolutions = 5,
   maxAttempts = 1000,
-  difficultyThreshold = 4
+  difficultyThreshold = 4,
+  rng = Math.random
 ) {
   const triedMaps = new Set();
   let currentMap = mapData;
@@ -205,7 +207,7 @@ export default function makeHardPuzzle(
         );
       }
       const randomHex =
-        hexesToFlip[Math.floor(Math.random() * hexesToFlip.length)];
+        hexesToFlip[Math.floor(rng() * hexesToFlip.length)];
       const newMap = flipHexColor(currentMap, randomHex);
       const serialized = serializeMap(newMap);
       if (!triedMaps.has(serialized)) {
@@ -237,7 +239,7 @@ export default function makeHardPuzzle(
         if (hexesToFlip.length === 0) {
           throw new Error(`No hexes left to flip to increase difficulty. Attempts: ${attempts}`);
         }
-        const randomHex = hexesToFlip[Math.floor(Math.random() * hexesToFlip.length)];
+        const randomHex = hexesToFlip[Math.floor(rng() * hexesToFlip.length)];
         const newMap = flipHexColor(currentMap, randomHex);
         const serialized = serializeMap(newMap);
 
@@ -260,7 +262,7 @@ export default function makeHardPuzzle(
 
       // Flip a random one
       const randomHex =
-        hexesToFlip[Math.floor(Math.random() * hexesToFlip.length)];
+        hexesToFlip[Math.floor(rng() * hexesToFlip.length)];
       const newMap = flipHexColor(currentMap, randomHex);
       const serialized = serializeMap(newMap);
 
@@ -281,7 +283,7 @@ export default function makeHardPuzzle(
       }
 
       const randomHex =
-        hexesToFlip[Math.floor(Math.random() * hexesToFlip.length)];
+        hexesToFlip[Math.floor(rng() * hexesToFlip.length)];
 
       const newMap = flipHexColor(currentMap, randomHex);
       const serialized = serializeMap(newMap);

@@ -1,42 +1,91 @@
 // src/workers/puzzleWorker.js
 import makeHardPuzzle from "../app/makePuzzle.js";
 import generateMapData from "../app/generateMapData.js";
+import solvePuzzle from "../app/solvePuzzle.js";
+import { makeRng } from "../app/seededRandom.js";
+
+// With a seed, retry with deterministic derived seeds so every player still lands on
+// the exact same puzzle even if the first attempt can't meet the difficulty criteria.
+const MAX_SEEDED_ATTEMPTS = 20;
+
+const cellKey = (h) => `${h.q},${h.r},${h.s}`;
 
 self.onmessage = async (event) => {
   const {
+    mode = "generate",
     puzzleIndex,
     cellCount,
     spreadFactor,
     directionBias,
     colorRatio,
-    // baseData,
     colorToWin,
     regionSize,
     maxSolutions,
     maxAttempts,
-    difficultyThreshold
+    difficultyThreshold,
+    seed,
+    map,
+    attempt,
   } = event.data;
 
-  try {
-    // const baseData = [{q:1,r:-3,s:2,color:0},{q:2,r:-3,s:1,color:0},{q:0,r:-2,s:2,color:1},{q:1,r:-2,s:1,color:0},{q:2,r:-2,s:0,color:0},{q:-1,r:-1,s:2,color:1},{q:0,r:-1,s:1,color:0},{q:1,r:-1,s:0,color:1},{q:2,r:-1,s:-1,color:1},{q:-2,r:0,s:2,color:0},{q:-1,r:0,s:1,color:0},{q:1,r:0,s:-1,color:1},{q:2,r:0,s:-2,color:1},{q:-3,r:1,s:2,color:1},{q:-2,r:1,s:1,color:1},{q:-1,r:1,s:0,color:0},{q:0,r:1,s:-1,color:0},{q:1,r:1,s:-2,color:0},{q:2,r:1,s:-3,color:0},{q:-4,r:2,s:2,color:0},{q:-3,r:2,s:1,color:0},{q:-2,r:2,s:0,color:1},{q:-1,r:2,s:-1,color:1},{q:0,r:2,s:-2,color:1},{q:1,r:2,s:-3,color:0},{q:2,r:2,s:-4,color:0},{q:-5,r:3,s:2,color:0},{q:-4,r:3,s:1,color:0},{q:-2,r:3,s:-1,color:0},{q:-1,r:3,s:-2,color:0},{q:1,r:3,s:-4,color:0},{q:2,r:3,s:-5,color:0},{q:-6,r:4,s:2,color:0},{q:-5,r:4,s:1,color:0},{q:-4,r:4,s:0,color:1},{q:-3,r:4,s:-1,color:1},{q:-2,r:4,s:-2,color:0},{q:-1,r:4,s:-3,color:0},{q:0,r:4,s:-4,color:0},{q:1,r:4,s:-5,color:1},{q:2,r:4,s:-6,color:0},{q:-6,r:5,s:1,color:0},{q:-5,r:5,s:0,color:0},{q:-4,r:5,s:-1,color:1},{q:-3,r:5,s:-2,color:1},{q:-2,r:5,s:-3,color:0},{q:-1,r:5,s:-4,color:0},{q:0,r:5,s:-5,color:1},{q:1,r:5,s:-6,color:0}]
-    // const baseData = [{q:0,r:-2,s:2,color:0},{q:2,r:-2,s:0,color:0},{q:-2,r:-1,s:3,color:0},{q:-1,r:-1,s:2,color:1},{q:0,r:-1,s:1,color:0},{q:1,r:-1,s:0,color:1},{q:2,r:-1,s:-1,color:1},{q:3,r:-1,s:-2,color:0},{q:-2,r:0,s:2,color:0},{q:-1,r:0,s:1,color:1},{q:1,r:0,s:-1,color:1},{q:2,r:0,s:-2,color:1},{q:-3,r:1,s:2,color:1},{q:-2,r:1,s:1,color:1},{q:1,r:1,s:-2,color:0},{q:2,r:1,s:-3,color:0},{q:-3,r:2,s:1,color:0},{q:-2,r:2,s:0,color:1},{q:-1,r:2,s:-1,color:1},{q:0,r:2,s:-2,color:1},{q:1,r:2,s:-3,color:0},{q:-3,r:3,s:0,color:0},{q:-2,r:3,s:-1,color:0},{q:-1,r:3,s:-2,color:0},{q:0,r:3,s:-3,color:0},{q:-5,r:4,s:1,color:0},{q:-4,r:4,s:0,color:0},{q:-3,r:4,s:-1,color:0},{q:-2,r:4,s:-2,color:0},{q:-1,r:4,s:-3,color:0},{q:0,r:4,s:-4,color:0},{q:1,r:4,s:-5,color:1},{q:-5,r:5,s:0,color:0},{q:-4,r:5,s:-1,color:1},{q:-1,r:5,s:-4,color:0},{q:0,r:5,s:-5,color:0},{q:-5,r:6,s:-1,color:0},{q:-4,r:6,s:-2,color:0},{q:-2,r:6,s:-4,color:1},{q:-1,r:6,s:-5,color:1},{q:-6,r:7,s:-1,color:0},{q:-5,r:7,s:-2,color:0},{q:-4,r:7,s:-3,color:0},{q:-3,r:7,s:-4,color:0},{q:-2,r:7,s:-5,color:0},{q:-1,r:7,s:-6,color:1},{q:-5,r:8,s:-3,color:1},{q:-4,r:8,s:-4,color:0},{q:-3,r:8,s:-5,color:0}]
-    const baseData = generateMapData(cellCount, spreadFactor, directionBias, colorRatio);
-    // Generate the puzzle in the background
-    const puzzleMap = makeHardPuzzle(
+  // ── Verify a map someone else generated (e.g. downloaded from Supabase) ──
+  // Its shape must match the seeded base map for that attempt, and it must be a
+  // valid puzzle (between 1 and maxSolutions solutions).
+  if (mode === "verify") {
+    try {
+      const base = generateMapData(
+        cellCount, spreadFactor, directionBias, colorRatio, makeRng(`${seed}#${attempt}`)
+      );
+      const shapeOk =
+        Array.isArray(map) &&
+        map.length === base.length &&
+        base.every((h, i) => cellKey(h) === cellKey(map[i])) &&
+        map.every((h) => h.color === 0 || h.color === 1);
+      const solutions = shapeOk ? solvePuzzle(map, colorToWin, regionSize, maxSolutions + 1).length : 0;
+      postMessage({ success: true, valid: shapeOk && solutions >= 1 && solutions <= maxSolutions });
+    } catch (err) {
+      postMessage({ success: true, valid: false, error: err?.message || String(err) });
+    }
+    return;
+  }
+
+  const generate = (rng) => {
+    const baseData = generateMapData(cellCount, spreadFactor, directionBias, colorRatio, rng);
+    return makeHardPuzzle(
       baseData,
       colorToWin,
       regionSize,
       maxSolutions,
       maxAttempts,
-      difficultyThreshold
+      difficultyThreshold,
+      rng
     );
+  };
 
-    // Send back the result
+  try {
+    let puzzleMap;
+    let usedAttempt = null;
+    if (seed == null) {
+      puzzleMap = generate(Math.random);
+    } else {
+      let lastError;
+      for (let a = 0; a < MAX_SEEDED_ATTEMPTS && !puzzleMap; a++) {
+        try {
+          puzzleMap = generate(makeRng(`${seed}#${a}`));
+          usedAttempt = a;
+        } catch (err) {
+          lastError = err;
+        }
+      }
+      if (!puzzleMap) throw lastError;
+    }
+
     console.log(JSON.stringify(puzzleMap).replace(/"/g, ''))
     postMessage({
       success: true,
       puzzleIndex,
-      puzzleMap
+      puzzleMap,
+      attempt: usedAttempt,
     });
   } catch (err) {
     postMessage({

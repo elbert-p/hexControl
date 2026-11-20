@@ -27,13 +27,15 @@ function getCubeNeighbors(q, r, s) {
    * @param {number} spreadFactor    - Controls the chance of adding neighbors (larger -> more sprawling).
    * @param {number} directionBias   - A value from 0 to 1 controlling an optional directional preference.
    * @param {number} colorRatio      - A value from 0 to 1 (e.g., 0.4 means 40% color=1, 60% color=0).
+   * @param {Function} rng           - Random source returning [0,1); defaults to Math.random (seed it for daily puzzles).
    * @returns {Array}                - An array of objects { q, r, s, color }, connected cluster.
    */
   export default function generateMapData(
     cellCount = 50,
     spreadFactor = 0.5,
     directionBias = 0.0,
-    colorRatio = 0.5
+    colorRatio = 0.5,
+    rng = Math.random
   ) {
     // We’ll store visited hexes in a Set for quick lookups.
     const visited = new Set();
@@ -65,7 +67,7 @@ function getCubeNeighbors(q, r, s) {
       }
       
       // Pick a random cell from the frontier
-      const randomIndex = Math.floor(Math.random() * frontier.length);
+      const randomIndex = Math.floor(rng() * frontier.length);
       const current = frontier[randomIndex];
       
       // Remove it from the frontier so we don’t add duplicates repeatedly
@@ -100,7 +102,7 @@ function getCubeNeighbors(q, r, s) {
             });
           }
           
-          if (Math.random() < chance) {
+          if (rng() < chance) {
             // Mark visited, add to frontier
             visited.add(key);
             frontier.push(neighbor);
@@ -131,7 +133,7 @@ function getCubeNeighbors(q, r, s) {
     // Assign colors according to colorRatio
     //  color = 1 with probability colorRatio, else 0
     visitedArray.forEach(hex => {
-      hex.color = Math.random() < colorRatio ? 1 : 0;
+      hex.color = rng() < colorRatio ? 1 : 0;
     });
     
     // Return the final array of { q, r, s, color }

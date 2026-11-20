@@ -9,6 +9,9 @@ import ClipperLib from "clipper-lib";
 import puzzles from "./../puzzleData";
 import PuzzleHeader  from "../../components/PuzzleHeader";
 import { useAuth } from "../../context/AuthContext";
+import { difficultyColor } from "../difficultyStyles";
+import DailyButton from "../../components/DailyButton";
+import CenteredStage from "../../components/CenteredStage";
 // import InstallPrompt from '../../components/InstallPrompt';
 
 // console.log(puzzles[5].mapData)
@@ -58,24 +61,6 @@ function applyMigrations({ puzzles, counts }, removed, moved) {
   return { puzzles, counts };
 }
 
-
-/** Difficulty → color mapping */
-function difficultyColor(diff) {
-  switch (diff) {
-    case "easy":
-      return "#c9e773"; //d8ee99
-    case "intermediate":
-      return "#ffe173"; //ffdf88
-    case "medium":
-      return "#ffd188";
-    case "hard":
-      return "#ff8888";
-    case "extreme":
-      return "#d580ff";
-    default:
-      return "#eeeeee";
-  }
-}
 
 /** Generate a unique key for each hex based on its coordinates */
 function hexKey(q, r, s) {
@@ -209,14 +194,23 @@ function HexGridSelector({ puzzles, completedPuzzles }) {
   const router = useRouter();
 
   const containerRef = useRef(null);
+  const wrapperRef = useRef(null);
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
     const updateContainerSize = () => {
       if (containerRef.current) {
+        // Leave room for the wrapper's padding + outline so the map never overflows.
+        let padX = 0, padY = 0;
+        if (wrapperRef.current) {
+          const cs = getComputedStyle(wrapperRef.current);
+          const outline = parseFloat(cs.outlineWidth) || 0;
+          padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight) + 2 * outline;
+          padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) + 2 * outline;
+        }
         setContainerSize({
-          width: containerRef.current.clientWidth,
-          height: containerRef.current.clientHeight,
+          width: Math.max(0, containerRef.current.clientWidth - padX),
+          height: Math.max(0, containerRef.current.clientHeight - padY),
         });
       }
     };
@@ -426,7 +420,7 @@ function onHexMouseDown(q, r, s, e) {
 
   return (
     <div ref={containerRef} style={{ width: "100%", height: "100%", justifyContent: "center", alignItems: "center", display: "flex" }}>
-    <div className = "selectWrapper">
+    <div className = "selectWrapper" ref={wrapperRef}>
       <HexGrid
         width={hexGridWidth}
         height={hexGridHeight}
@@ -614,20 +608,17 @@ export default function PuzzleSelectPage() {
       <div>
         <PuzzleHeader isSelectMode = "true" puzzles = {puzzles} completedPuzzles={completedPuzzles}/>
       </div>
-      <div
-        style={{
-          flex: 1,
-          minHeight: 0,
-          minWidth: 0,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          width: "100%",
-          height: "100%",
-        }}
+      {/* The Hexle banner sits above the map without pushing it off-center. */}
+      <CenteredStage
+        boxSelector=".selectWrapper"
+        top={
+          <div style={{ display: "flex", justifyContent: "center", padding: "14px 10px 0" }}>
+            <DailyButton />
+          </div>
+        }
       >
         <HexGridSelector puzzles={puzzles} completedPuzzles={completedPuzzles} />
-      </div>
+      </CenteredStage>
     </main>
   );
   

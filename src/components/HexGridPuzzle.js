@@ -289,6 +289,8 @@ export default function HexGridPuzzle({
   puzzleComplete,          // True when the puzzle is complete (from the wrapper)
   showRegionFill = true,
   onAnimationComplete,
+  initialSelections,       // Optional saved regions to start with (daily Hexle resume/review)
+  readOnly = false,        // When true, the board can be viewed but not edited
 }) {
   const [hexStates, setHexStates] = useState(() => {
     const st = {};
@@ -299,7 +301,7 @@ export default function HexGridPuzzle({
   });
 
   // Final selections: each is { cells, count0, count1 }
-  const [selections, setSelections] = useState([]);
+  const [selections, setSelections] = useState(() => initialSelections ?? []);
   // Active selection (Set of cell keys)
   const [activeSelection, setActiveSelection] = useState(new Set());
 
@@ -471,6 +473,7 @@ function getSelectionOutlineColor(selection, groupSize, wantedColor) {
   /** Updated onHexMouseDown to handle starting selection from existing region */
   function onHexMouseDown(q, r, s, e) {
     e.stopPropagation();
+    if (readOnly) return;
     const k = hexKey(q, r, s);
     initialHexRef.current = k;
     dragOccurredRef.current = false;
@@ -769,7 +772,7 @@ function getSelectionOutlineColor(selection, groupSize, wantedColor) {
           activeElement.tagName === "TEXTAREA" ||
           activeElement.isContentEditable);
 
-      if (isInputFocused) return;
+      if (isInputFocused || readOnly) return;
 
       if (event.key === "z" || event.key === "Z") {
         event.preventDefault();
@@ -792,7 +795,7 @@ function getSelectionOutlineColor(selection, groupSize, wantedColor) {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [selections]);
+  }, [selections, readOnly]);
 
   // Calculate dynamic width and height based on bounds
   const { minX, maxX, minY, maxY } = bounds;
@@ -845,7 +848,7 @@ function getSelectionOutlineColor(selection, groupSize, wantedColor) {
                   fill: baseColor,
                   stroke: "#fff",
                   strokeWidth: hexStrokeWidth,
-                  cursor: "pointer",
+                  cursor: readOnly ? "default" : "pointer",
                 }} > 
                 {/* TEXTHERE COMMENT*/}
                 {/* <text

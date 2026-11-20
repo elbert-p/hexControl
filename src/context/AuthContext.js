@@ -5,6 +5,8 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../supabaseClient";
+import { syncHexleWithAccount } from "../app/hexle/accountSync";
+import { HEXLE_STORAGE_KEYS } from "../app/hexle/daily";
 
 /**
  * ──────────────────────────────────────────────────────────────────────────────
@@ -83,6 +85,8 @@ export const AuthProvider = ({ children }) => {
         } else {
           console.log("[Auth] Initial load: same user, no backup needed");
         }
+        // Bring in Hexle progress/stats saved from the user's other devices.
+        pullHexle(initialSession.user);
         // Persist current user
         prevUserIdRef.current = newUserId;
         localStorage.setItem("prevUserId", newUserId);
@@ -110,6 +114,7 @@ export const AuthProvider = ({ children }) => {
             } else {
               console.log("[Auth] SIGNED_IN for the same user → no backup");
             }
+            pullHexle(currentSession.user);
             prevUserIdRef.current = newUserId;
             localStorage.setItem("prevUserId", newUserId);
           }
@@ -147,6 +152,12 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  /** Merge the account's Hexle data into this device (and push anything newer up). */
+  const pullHexle = async (user) => {
+    const changed = await syncHexleWithAccount(user, { applyDaily: true });
+    if (changed) setLocalDataVersion((v) => v + 1);
+  };
+
   // ────────────────────────────────────────────────────────────────────────────
   //  3.  Data‑sync helpers  (unchanged except for extra logs)
   // ────────────────────────────────────────────────────────────────────────────
@@ -176,12 +187,12 @@ export const AuthProvider = ({ children }) => {
       }
 
       const mergedCompletedPuzzles = Array.from(
-        new Set([...profileData.completed_puzzles || [], ...localCompletedPuzzles])
+        new Set([...(profileData?.completed_puzzles || []), ...localCompletedPuzzles])
       );
       // For version: choose the higher version number.
-      const mergedLastVersion = Math.max(profileData.last_version || 0, localLastVersion);
+      const mergedLastVersion = Math.max(profileData?.last_version || 0, localLastVersion);
       // For puzzle counts: merge by taking the maximum count for each key.
-      const mergedPuzzleCounts = { ...profileData.puzzle_completion_counts || {} };
+      const mergedPuzzleCounts = { ...(profileData?.puzzle_completion_counts || {}) };
       for (const key in localPuzzleCompletionCounts) {
         mergedPuzzleCounts[key] = Math.max(
           mergedPuzzleCounts[key] || 0,
@@ -205,6 +216,9 @@ export const AuthProvider = ({ children }) => {
       } else {
         console.log("[Auth] Local data synced to Supabase");
       }
+
+      // Hexle stats/progress (separate request so a missing column can't break the above).
+      await syncHexleWithAccount(session.user);
     } catch (err) {
       console.error("[Auth] Error syncing local data:", err);
     }
@@ -216,6 +230,9 @@ export const AuthProvider = ({ children }) => {
       lastVersion: localStorage.getItem("lastVersion"),
       puzzleCompletionCounts: localStorage.getItem("puzzleCompletionCounts"),
     };
+    HEXLE_STORAGE_KEYS.forEach((key) => {
+      localData[key] = localStorage.getItem(key);
+    });
     localStorage.setItem("localProfileBackup", JSON.stringify(localData));
     console.log("[Auth] Local profile backed up");
   }
@@ -226,6 +243,7 @@ export const AuthProvider = ({ children }) => {
       console.log("[Auth] No backup found, clearing local profile keys");
       localStorage.removeItem("completedPuzzles");
       localStorage.removeItem("puzzleCompletionCounts");
+      HEXLE_STORAGE_KEYS.forEach((key) => localStorage.removeItem(key));
       notifyLocalDataUpdated();
       return;
     }
@@ -254,6 +272,14 @@ export const AuthProvider = ({ children }) => {
       } else {
         localStorage.removeItem("puzzleCompletionCounts");
       }
+
+      HEXLE_STORAGE_KEYS.forEach((key) => {
+        if (localData[key] !== null && localData[key] !== undefined) {
+          localStorage.setItem(key, localData[key]);
+        } else {
+          localStorage.removeItem(key);
+        }
+      });
 
       localStorage.removeItem("localProfileBackup");
       notifyLocalDataUpdated();
@@ -335,6 +361,10 @@ export const AuthProvider = ({ children }) => {
         console.log("[Auth] Local storage updated from existing Supabase data");
         notifyLocalDataUpdated();
         router.push('/');
+      }
+      // Hexle data is merged (not replaced) so a first sign-in never loses today's game.
+      if (await syncHexleWithAccount(user, { applyDaily: true })) {
+        setLocalDataVersion((v) => v + 1);
       }
     } catch (err) {
       console.error("[Auth] Error in syncNewAccount:", err);

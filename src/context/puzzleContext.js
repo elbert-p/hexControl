@@ -2,6 +2,8 @@
 "use client"
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import basePuzzles from "../app/puzzleData";
+import runPuzzleWorker from "../app/runPuzzleWorker";
+import { startUpcomingPrefetch } from "../app/hexle/daily";
 import { useAuth } from "./AuthContext";
 
 const PuzzleContext = createContext();
@@ -23,12 +25,8 @@ export function PuzzleProvider({ children }) {
 
     const puzzle = puzzles[puzzleIndex];
     const puzzleId = puzzle.id; // use puzzle id for localStorage key
-    const worker = new Worker(new URL("../../src/workers/puzzleWorker.js", import.meta.url));
-    worker.onmessage = (e) => {
-      const { success, puzzleIndex, puzzleMap, error } = e.data;
-      if (!success) {
-        console.error("Puzzle generation failed:", error);
-      } else {
+    runPuzzleWorker(puzzle.generationSettings)
+      .then(({ puzzleMap }) => {
         // Update state and store generated mapData using the puzzle id.
         setPuzzles(prev => {
           const updated = [...prev];
@@ -36,27 +34,19 @@ export function PuzzleProvider({ children }) {
           return updated;
         });
         localStorage.setItem(`puzzle-map-${puzzleId}`, JSON.stringify(puzzleMap));
-      }
-      activeWorkersRef.current[puzzleIndex] = false;
-      worker.terminate();
-    };
-
-    // Post the generation settings to the worker.
-    worker.postMessage({
-      puzzleIndex,
-    //   baseData: puzzle.generationSettings?.baseData ?? [],
-      cellCount: puzzle.generationSettings?.cellCount ?? 25,
-      spreadFactor: puzzle.generationSettings?.spreadFactor ?? 0.2,
-      directionBias: puzzle.generationSettings?.directionBias ?? 0.5,
-      colorRatio: puzzle.generationSettings?.colorRatio ?? 0.5,
-
-      colorToWin: puzzle.generationSettings?.colorToWin ?? 1,
-      regionSize: puzzle.generationSettings?.regionSize ?? 5,
-      maxSolutions: puzzle.generationSettings?.maxSolutions ?? 5,
-      maxAttempts: puzzle.generationSettings?.maxAttempts ?? 1000,
-      difficultyThreshold: puzzle.generationSettings?.difficultyThreshold ?? 4,
-    });
+      })
+      .catch((error) => {
+        console.error("Puzzle generation failed:", error);
+      })
+      .finally(() => {
+        activeWorkersRef.current[puzzleIndex] = false;
+      });
   };
+
+  // Any open page helps fill the shared cache with the coming week's daily Hexle puzzles.
+  useEffect(() => {
+    startUpcomingPrefetch();
+  }, []);
 
   // On mount, for each puzzle whose mapData is null, check localStorage using the puzzle id.
   // If a stored map is found, hydrate the puzzle. Otherwise, spawn a worker to generate it.

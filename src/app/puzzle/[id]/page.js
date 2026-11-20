@@ -7,6 +7,7 @@ import { useParams, useRouter } from "next/navigation";
 import { usePuzzles } from "../../../context/puzzleContext";
 import HexPuzzleWrapper from "../../../components/HexPuzzleWrapper"; // Adjust path as necessary
 import PuzzleHeader  from "../../../components/PuzzleHeader"; // Added import for PuzzleHeader
+import { colorScheme } from "../../difficultyStyles";
 
 // Helper function to generate a unique key from cube coordinates
 function hexKey(q, r, s) {
@@ -25,30 +26,6 @@ function getNeighborKeys(q, r, s) {
   ];
   return directions.map(([dq, dr, ds]) => hexKey(q + dq, r + dr, s + ds));
 }
-
-//Define your color‐scheme lookup
-const colorScheme = {
-  easy: {
-    fill:    ["#b7d65c", "#7fb3ff"],
-    outline: ["#165214", "#1c5aa6"],    
-  },
-  intermediate: {
-    fill:    ["#ffda54", "#dba86c"],
-    outline: ["#b07000", "#5c3b1a"],
-  },
-  medium: {
-    fill:    ["#ffc76e", "#7ea2ff"],
-    outline: ["#b05c00", "#003b8b"],
-  },
-  hard: {
-    fill:    ["#ff8888", "#88f"],
-    outline: ["#700000", "#00008B"],
-  },
-  extreme: {
-    fill:    ["#ff8888", "#d273ff"],
-    outline: ["#8B0000", "#5a0070"],    
-  },
-};
 
 export default function PuzzlePage() {
   const params = useParams();
