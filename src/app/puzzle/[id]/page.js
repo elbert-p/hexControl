@@ -8,6 +8,10 @@ import { usePuzzles } from "../../../context/puzzleContext";
 import HexPuzzleWrapper from "../../../components/HexPuzzleWrapper"; // Adjust path as necessary
 import PuzzleHeader  from "../../../components/PuzzleHeader"; // Added import for PuzzleHeader
 import { colorScheme } from "../../difficultyStyles";
+import CenteredStage from "../../../components/CenteredStage";
+import DailyButton from "../../../components/DailyButton";
+
+const TUTORIAL_ID = "0";
 
 // Helper function to generate a unique key from cube coordinates
 function hexKey(q, r, s) {
@@ -80,6 +84,17 @@ export default function PuzzlePage() {
   if (!puzzle || !hasChecked) {
     return null;//<div>No puzzle found with ID: {puzzleId}</div>;
   }
+  const board = (
+    <HexPuzzleWrapper
+      mapData={puzzle.mapData}
+      colorToWin={puzzle.colorToWin}
+      colorScheme = {colorScheme[puzzle.difficulty]}
+      regionSize={puzzle.regionSize}
+      puzzleId={puzzle.id}
+      sizeMultiplier={puzzle.sizeMultiplier}
+    />
+  );
+
   return (
     <div
       style={{
@@ -92,14 +107,22 @@ export default function PuzzlePage() {
       }}
     >
       <PuzzleHeader puzzleId={puzzleId} />
-      <HexPuzzleWrapper
-        mapData={puzzle.mapData}
-        colorToWin={puzzle.colorToWin}
-        colorScheme = {colorScheme[puzzle.difficulty]}
-        regionSize={puzzle.regionSize}
-        puzzleId={puzzle.id}
-        sizeMultiplier={puzzle.sizeMultiplier}
-      />
+      {puzzle.id === TUTORIAL_ID ? (
+        // New players start here (Level Select redirects until a level is done), so show
+        // the daily Hexle banner too — above the puzzle, without moving it off-center.
+        <CenteredStage
+          boxSelector=".dynamicWrapper"
+          top={
+            <div style={{ display: "flex", justifyContent: "center", padding: "14px 10px 0" }}>
+              <DailyButton />
+            </div>
+          }
+        >
+          {board}
+        </CenteredStage>
+      ) : (
+        board
+      )}
     </div>
   );
 }

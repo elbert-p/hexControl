@@ -45,7 +45,7 @@ export default function CenteredStage({ top, below, boxSelector, gap = 12, child
 
     const A = area.clientHeight;
     const boxRect = box.getBoundingClientRect();
-    const rel = boxRect.top - content.getBoundingClientRect().top; // unaffected by our translate
+    const rel = boxRect.top - content.getBoundingClientRect().top; // unaffected by our shift
     const M = boxRect.height;
 
     // Box top (within the area): centered, but never closer than `gap` to either bar.
@@ -112,12 +112,13 @@ export default function CenteredStage({ top, below, boxSelector, gap = 12, child
             position: "absolute",
             left: 0,
             right: 0,
-            top: bars.top,
-            bottom: bars.below,
+            // Shift by moving top and bottom together (size unchanged). Not a CSS transform:
+            // that would trap position:fixed popups (e.g. "You solved Level X") inside it.
+            top: bars.top + placement.dy,
+            bottom: bars.below - placement.dy,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            transform: `translateY(${placement.dy}px)`,
           }}
         >
           {children}
