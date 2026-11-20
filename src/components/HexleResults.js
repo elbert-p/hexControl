@@ -244,6 +244,7 @@ export default function HexleResults({ dateKey, times, stats, onClose, onReview,
           color: #333;
         }
         .hexleStatLabel {
+          font-family: sans-serif;
           font-size: 11px;
           color: #555;
           margin-top: 2px;
@@ -294,7 +295,7 @@ export default function HexleResults({ dateKey, times, stats, onClose, onReview,
           font-family: sans-serif;
           font-size: 11px;
           min-width: 40px;
-          margin-left: -4px;
+          margin-left: 3px;
           text-align: left;
         }
         .hexleHint {
