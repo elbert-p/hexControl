@@ -217,7 +217,10 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles: puzzlesProp, co
           <strong style={{ color: "green" }}>green</strong>.
         </li>
         <li style={{ marginBottom: "15px" }}>
-          <strong>Letter</strong> levels [A, B, etc.] are randomly generated and{" "}
+          A level&apos;s <strong>color</strong> shows its <strong>difficulty</strong>.
+        </li>
+        <li style={{ marginBottom: "15px" }}>
+          <strong>Letter</strong> levels (uppercase) [A, B, etc.] are randomly generated and{" "}
           <strong>replayable</strong>.
         </li>
         <li>
