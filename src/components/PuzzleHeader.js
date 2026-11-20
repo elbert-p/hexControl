@@ -6,13 +6,15 @@ import { useAuth } from "../context/AuthContext";
 import { supabase } from "../supabaseClient"; // Import supabase for sign out
 import ProfileImage from "./ProfileImage";
 import { formatTime, getHexleStats, getTodayKey } from "../app/hexle/daily";
+import allPuzzles from "../app/puzzleData";
 
-const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedPuzzles = [], title, isHexle = false }) => {
+const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles: puzzlesProp, completedPuzzles: completedProp, title, isHexle = false }) => {
   const router = useRouter();
   // overlayType can be "stats", "howToPlay", "login", "profile", or null
   const [overlayType, setOverlayType] = useState(null);
   const [completionCounts, setCompletionCounts] = useState({});
   const [hexleStats, setHexleStats] = useState(null);
+  const [storedCompleted, setStoredCompleted] = useState([]);
   const [isMobile, setIsMobile] = useState(false);
   const { session, localDataVersion } = useAuth();
 
@@ -40,7 +42,17 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedP
         console.error("Error parsing puzzleCompletionCounts:", err);
       }
     }
+    // Pages other than Level Select don't pass completed puzzles, so read them here
+    // for the Statistics popup (reachable from the profile popup).
+    try {
+      setStoredCompleted(JSON.parse(localStorage.getItem("completedPuzzles") || "[]"));
+    } catch (err) {
+      console.error("Error parsing completedPuzzles:", err);
+    }
   }, [localDataVersion]);
+
+  const puzzles = puzzlesProp ?? allPuzzles;
+  const completedPuzzles = completedProp ?? storedCompleted;
 
   // Refresh daily Hexle stats whenever the stats popup opens.
   useEffect(() => {
@@ -80,23 +92,17 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedP
       >
       {session?.user?.email}
       </div>
-      <button
-        onClick={handleSignOut}
-        style={{
-          padding: "10px 20px",
-          fontSize: "18px",
-          cursor: "pointer",
-          backgroundColor: "#a3bf56",
-          color: "white",
-          border: "none",
-          borderRadius: "10px",
-          fontFamily: "sans-serif",
-          transition: "background-color 0.3s ease",
-          marginTop: "15px",
-        }}
-      >
-        Sign Out
-      </button>
+      {/* Sign out always sits alone on the bottom line, below any profile buttons. */}
+      <div className="overlayActions" style={{ marginTop: "15px" }}>
+        <div className="overlayButtons">
+          <button className="overlayButton" onClick={() => setOverlayType("stats")}>
+            Statistics
+          </button>
+        </div>
+        <button className="overlayLink" onClick={handleSignOut}>
+          Sign out
+        </button>
+      </div>
     </div>
   );
 

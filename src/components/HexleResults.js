@@ -159,12 +159,14 @@ export default function HexleResults({ dateKey, times, stats, onClose, onReview,
               </button>
             </div>
 
-            <div className="hexleActions">
-              <button className="overlayButton" onClick={() => onReview(null)}>
+            <div className="overlayActions inlineLink hexleActions">
+              <div className="overlayButtons">
+                <button className="overlayButton" onClick={onHome}>
+                  More puzzles
+                </button>
+              </div>
+              <button className="overlayLink" onClick={() => onReview(null)}>
                 Review
-              </button>
-              <button className="overlayButton" onClick={onHome}>
-                Home
               </button>
             </div>
           </div>
@@ -244,10 +246,11 @@ export default function HexleResults({ dateKey, times, stats, onClose, onReview,
           color: #333;
         }
         .hexleStatLabel {
-          font-family: sans-serif;
-          font-size: 11px;
-          color: #555;
-          margin-top: 2px;
+          /* same default serif font as the puzzle info ("Regions Made", "Color to Win") */
+          font-family: serif;
+          font-size: 13px;
+          color: #000;
+          margin-top: 0;
         }
         .hexleRows {
           display: flex;
@@ -343,11 +346,7 @@ export default function HexleResults({ dateKey, times, stats, onClose, onReview,
           background-color: #4688e0;
         }
         .hexleActions {
-          display: flex;
-          justify-content: center;
-          gap: 12px;
-          margin-top: 18px;
-          margin-bottom: 4px;
+          margin: 18px auto 4px;
         }
         .hexleClose {
           position: absolute;

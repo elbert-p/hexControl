@@ -26,7 +26,10 @@ export default function HexPuzzleWrapper({
   const externallyManaged = typeof onSolved === "function";
 
   const router = useRouter();
-  const { resetPuzzle } = usePuzzles();
+  const { puzzles, resetPuzzle } = usePuzzles();
+  // Letter levels (A, B, ...) are generated and replayable, so they offer "Play again".
+  const isReplayable =
+    !externallyManaged && !!puzzles?.find((p) => p.id === puzzleId)?.generationSettings;
   const { notifyLocalDataUpdated } = useAuth();
 
   // The puzzle will send us its internal states via onPuzzleStateChange
@@ -133,6 +136,18 @@ export default function HexPuzzleWrapper({
   }, [isComplete]);
 
   
+  // Generate a fresh map for a replayable level and start over on this page.
+  const awaitingNewMapRef = useRef(false);
+  const handlePlayAgain = () => {
+    puzzleSolvedRef.current = false; // already reset here, so don't reset again on unmount
+    awaitingNewMapRef.current = true;
+    setPuzzleState({ selections: [], hexStates: {} }); // old regions mustn't count on the new map
+    setPuzzleCounted(false);
+    setShowOverlay(false);
+    setShowRegionFill(true);
+    resetPuzzle(puzzleId);
+  };
+
   useEffect(() => { //reset puzzle when user navigates away
     return () => {
       if (puzzleSolvedRef.current && !externallyManaged && !readOnly) {
@@ -190,6 +205,14 @@ export default function HexPuzzleWrapper({
       window.removeEventListener("orientationchange", handleOrientationChange);
     };
   }, []);
+
+  // A regenerated map mounts a new board, so size it once it arrives.
+  useLayoutEffect(() => {
+    if (mapData && awaitingNewMapRef.current) {
+      awaitingNewMapRef.current = false;
+      measureAndSetScale();
+    }
+  }, [mapData]);
 
   // If the puzzle changes significantly (e.g., color changes, region changes)
   // we can measure again:
@@ -366,25 +389,30 @@ export default function HexPuzzleWrapper({
                   <h2 className="overlayHeading">
                     <span style={{ fontWeight: "normal" }}>You solved</span> Level {puzzleId}!
                   </h2>
-                  <button
-                    className="overlayButton"
-                    onClick={() => {
-                      setShowOverlay(false);   // close the popup
-                      setShowRegionFill(false); // strip the fill
-                    }}
-                  >
-                    View puzzle
-                  </button>
-                  <button
-                    className="overlayButton"
-                    style={{ marginLeft: 12 }}
-                    onClick={() => {
-                      router.push("/puzzle-select");
-                      // resetPuzzle(puzzleId)
-                    }}
-                  >
-                    Home
-                  </button>
+                  <div className={`overlayActions${isReplayable ? "" : " inlineLink"}`}>
+                    <div className="overlayButtons">
+                      {isReplayable && (
+                        <button className="overlayButton" onClick={handlePlayAgain}>
+                          Play again
+                        </button>
+                      )}
+                      <button
+                        className="overlayButton"
+                        onClick={() => router.push("/puzzle-select")}
+                      >
+                        Continue
+                      </button>
+                    </div>
+                    <button
+                      className="overlayLink"
+                      onClick={() => {
+                        setShowOverlay(false);   // close the popup
+                        setShowRegionFill(false); // strip the fill
+                      }}
+                    >
+                      View puzzle
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
@@ -394,7 +422,20 @@ export default function HexPuzzleWrapper({
 
       {/* New Continue button (rendered below dynamicWrapper) */}
       {puzzleCounted && !externallyManaged && !showOverlay && !showRegionFill && (
-        <div style={{ textAlign: "center", marginTop: "0px", marginBottom: "10px" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            gap: "12px",
+            marginTop: "0px",
+            marginBottom: "10px",
+          }}
+        >
+          {isReplayable && (
+            <button className="overlayButton" onClick={handlePlayAgain}>
+              Play again
+            </button>
+          )}
           <button
             className="overlayButton"
             onClick={() => router.push("/puzzle-select")}
