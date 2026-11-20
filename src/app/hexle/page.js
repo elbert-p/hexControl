@@ -137,7 +137,7 @@ function ProgressStrip({ solutions, displayIndex, mode, totalMs, onSelect, canPa
           display: flex;
           align-items: center;
           gap: 8px;
-          font-family: 'Press Start 2P', sans-serif;
+          font-family: sans-serif;
           font-size: 20px;
           font-weight: bold;
           color: #333;
@@ -266,13 +266,13 @@ function PuzzleGate({ index, difficulty, status, onPlay, onRetry }) {
         }
         .gateTitle {
           margin: 0;
-          font-family: 'Press Start 2P', sans-serif;
+          font-family: sans-serif;
           font-size: 20px;
           color: #06404b;
         }
         .gateBody {
           margin: 0;
-          font-family: 'Press Start 2P', sans-serif; /* same as the How To Play text */
+          font-family: sans-serif; /* same as the How To Play text */
           font-size: 16px;
           line-height: 1.5;
           color: #555;
@@ -281,7 +281,7 @@ function PuzzleGate({ index, difficulty, status, onPlay, onRetry }) {
           display: flex;
           align-items: center;
           gap: 6px;
-          font-family: 'Press Start 2P', sans-serif;
+          font-family: sans-serif;
           font-size: 13px;
           font-weight: bold;
           color: #b05c00;
@@ -598,7 +598,7 @@ export default function HexlePage() {
         alignItems: "center",
       }}
     >
-      <PuzzleHeader title={`Hexle #${getHexleNumber(state.date)}`} />
+      <PuzzleHeader title={`Hexle #${getHexleNumber(state.date)}`} isHexle />
 
       {/* The puzzle stays centered exactly as on a normal level; the strip above and the
           Results button below only move it if they'd otherwise touch it. */}

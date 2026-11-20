@@ -77,7 +77,7 @@ export default function DailyButton() {
           background-color: #a3bf56;
           color: #fff;
           cursor: pointer;
-          font-family: 'Press Start 2P', sans-serif;
+          font-family: sans-serif;
           box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
           transition: background-color 0.3s ease, transform 0.15s ease;
           user-select: none;

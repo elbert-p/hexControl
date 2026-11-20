@@ -453,7 +453,7 @@ function onHexMouseDown(q, r, s, e) {
                   textAnchor="middle"
                   dominantBaseline="central"
                   fontSize="27"
-                  fontFamily="'Press Start 2P', sans-serif" // Blocky font
+                  fontFamily="sans-serif" // Blocky font
                   stroke="none"
                   fill="#fff"
                   fontWeight="900"

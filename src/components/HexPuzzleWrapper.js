@@ -216,7 +216,7 @@ export default function HexPuzzleWrapper({
       }}
     >
       <h2 style={{                
-        fontFamily: "'Press Start 2P', sans-serif",
+        fontFamily: "sans-serif",
         fontSize: "24px",
         userSelect: "none",
         fontWeight: "normal",}}>Generating Puzzle...</h2>
@@ -345,7 +345,7 @@ export default function HexPuzzleWrapper({
           {/* Regions Made */}
           <div>
             Regions Made: {" "} <wbr/>
-            <strong style={{ fontFamily: "'Press Start 2P', sans-serif", whiteSpace: "nowrap" }}>
+            <strong style={{ fontFamily: "sans-serif", whiteSpace: "nowrap" }}>
               {regionsMade} / {totalRegions}
             </strong>
           </div>
@@ -353,7 +353,7 @@ export default function HexPuzzleWrapper({
           {/* Regions Won */}
           <div>
             Regions Won: {" "} <wbr/>
-            <strong style={{ fontFamily: "'Press Start 2P', sans-serif", whiteSpace: "nowrap" }}>
+            <strong style={{ fontFamily: "sans-serif", whiteSpace: "nowrap" }}>
               {regionsWon} / {neededForMajority}
             </strong>
           </div>
@@ -369,21 +369,21 @@ export default function HexPuzzleWrapper({
                   <button
                     className="overlayButton"
                     onClick={() => {
-                      router.push("/puzzle-select");
-                      // resetPuzzle(puzzleId)
-                    }}
-                  >
-                    Home
-                  </button>
-                  <button
-                    className="overlayButton"
-                    style={{ marginLeft: 12 }}
-                    onClick={() => {
                       setShowOverlay(false);   // close the popup
                       setShowRegionFill(false); // strip the fill
                     }}
                   >
                     View puzzle
+                  </button>
+                  <button
+                    className="overlayButton"
+                    style={{ marginLeft: 12 }}
+                    onClick={() => {
+                      router.push("/puzzle-select");
+                      // resetPuzzle(puzzleId)
+                    }}
+                  >
+                    Home
                   </button>
                 </div>
               </div>

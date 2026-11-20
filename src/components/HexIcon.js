@@ -35,7 +35,7 @@ export default function HexIcon({
           fill={textColor}
           textAnchor="middle"
           dominantBaseline="central"
-          fontFamily="'Press Start 2P', sans-serif" // Blocky font
+          fontFamily="sans-serif" // Blocky font
           stroke="none"
           fontWeight="900"
         >

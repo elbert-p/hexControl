@@ -7,7 +7,7 @@ import { supabase } from "../supabaseClient"; // Import supabase for sign out
 import ProfileImage from "./ProfileImage";
 import { formatTime, getHexleStats, getTodayKey } from "../app/hexle/daily";
 
-const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedPuzzles = [], title }) => {
+const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedPuzzles = [], title, isHexle = false }) => {
   const router = useRouter();
   // overlayType can be "stats", "howToPlay", "login", "profile", or null
   const [overlayType, setOverlayType] = useState(null);
@@ -67,7 +67,7 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedP
   const profileOverlayContent = (
     <div
       style={{
-        fontFamily: "'Press Start 2P', sans-serif",
+        fontFamily: "sans-serif",
         lineHeight: "1.5",
         fontSize: "18px",
         margin: 0,
@@ -90,7 +90,7 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedP
           color: "white",
           border: "none",
           borderRadius: "10px",
-          fontFamily: "'Press Start 2P', sans-serif",
+          fontFamily: "sans-serif",
           transition: "background-color 0.3s ease",
           marginTop: "15px",
         }}
@@ -108,7 +108,7 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedP
       }}>
       <div
         style={{
-          fontFamily: "'Press Start 2P', sans-serif",
+          fontFamily: "sans-serif",
           // lineHeight: "1.5",
           fontSize: "18px",
           paddingTop : "8px",
@@ -154,7 +154,7 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedP
   const statsOverlayContent = (
     <ul
       style={{
-        fontFamily: "'Press Start 2P', sans-serif",
+        fontFamily: "sans-serif",
         lineHeight: "1.5",
         fontSize: "18px",
         margin: 0,
@@ -196,7 +196,7 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedP
     isSelectMode ? (
       <ul
         style={{
-          fontFamily: "'Press Start 2P', sans-serif",
+          fontFamily: "sans-serif",
           lineHeight: "1.5",
           fontSize: "18px",
           margin: 0,
@@ -222,7 +222,7 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedP
       <>
         <ul
           style={{
-            fontFamily: "'Press Start 2P', sans-serif",
+            fontFamily: "sans-serif",
             lineHeight: "1.5",
             fontSize: "18px",
             margin: 0,
@@ -247,7 +247,7 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedP
         </ul>
         <ul
           style={{
-            fontFamily: "'Press Start 2P', sans-serif",
+            fontFamily: "sans-serif",
             lineHeight: "1.5",
             fontSize: "18px",
             margin: 0,
@@ -270,7 +270,9 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedP
           </li>
           {!isMobile && (
             <li>
-              <strong>Z</strong> to undo, <strong>R</strong> to reset.
+              <strong>Z</strong> to undo, <strong>R</strong> to reset{isHexle ? (
+                <>, <strong>P</strong> to pause</>
+              ) : null}.
             </li>
           )}
         </ul>
@@ -364,7 +366,7 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedP
           <h1
             style={{
               margin: 0,
-              fontFamily: "'Press Start 2P', sans-serif",
+              fontFamily: "sans-serif",
               fontSize: "24px",
               userSelect: "none",
               fontWeight: "normal",
@@ -399,7 +401,7 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedP
               <h1
                 style={{
                   margin: 0,
-                  fontFamily: "'Press Start 2P', sans-serif",
+                  fontFamily: "sans-serif",
                   fontSize: "16px",
                   userSelect: "none",
                   fontWeight: "normal",
@@ -467,7 +469,7 @@ const PuzzleHeader = ({ puzzleId, isSelectMode = false, puzzles = [], completedP
               style={{
                 margin: 0,
                 marginBottom: "5px",
-                fontFamily: "'Press Start 2P', sans-serif",
+                fontFamily: "sans-serif",
                 color: "#06404B",
               }}
             >

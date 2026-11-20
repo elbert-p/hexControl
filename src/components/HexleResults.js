@@ -160,11 +160,11 @@ export default function HexleResults({ dateKey, times, stats, onClose, onReview,
             </div>
 
             <div className="hexleActions">
-              <button className="overlayButton" onClick={() => onReview(null)}>
-                Review
-              </button>
               <button className="overlayButton" onClick={onHome}>
                 Home
+              </button>
+              <button className="overlayButton" onClick={() => onReview(null)}>
+                Review
               </button>
             </div>
           </div>
@@ -197,12 +197,12 @@ export default function HexleResults({ dateKey, times, stats, onClose, onReview,
         }
         .hexleTitle {
           margin: 0;
-          font-family: 'Press Start 2P', sans-serif;
+          font-family: sans-serif;
           color: #06404b;
           font-size: 22px;
         }
         .hexleTotal {
-          font-family: 'Press Start 2P', sans-serif;
+          font-family: sans-serif;
           font-size: 40px;
           font-weight: bold;
           margin-top: 10px;
@@ -215,13 +215,13 @@ export default function HexleResults({ dateKey, times, stats, onClose, onReview,
           border-radius: 10px;
           background: #ffe173;
           color: #6b4f00;
-          font-family: 'Press Start 2P', sans-serif;
+          font-family: sans-serif;
           font-size: 12px;
           font-weight: bold;
         }
         .hexleSection {
           margin: 18px 0 8px;
-          font-family: 'Press Start 2P', sans-serif;
+          font-family: sans-serif;
           font-size: 13px;
           letter-spacing: 1px;
           text-transform: uppercase;
@@ -238,7 +238,7 @@ export default function HexleResults({ dateKey, times, stats, onClose, onReview,
           min-width: 0;
         }
         .hexleStatValue {
-          font-family: 'Press Start 2P', sans-serif;
+          font-family: sans-serif;
           font-size: 24px;
           font-weight: bold;
           color: #333;
@@ -283,7 +283,7 @@ export default function HexleResults({ dateKey, times, stats, onClose, onReview,
           transition: width 0.6s ease;
         }
         .hexleRowTime {
-          font-family: 'Press Start 2P', sans-serif;
+          font-family: sans-serif;
           font-size: 14px;
           font-weight: bold;
           color: #333;
@@ -291,13 +291,15 @@ export default function HexleResults({ dateKey, times, stats, onClose, onReview,
           text-align: right;
         }
         .hexleRowDiff {
-          font-family: 'Press Start 2P', sans-serif;
+          font-family: sans-serif;
           font-size: 11px;
-          min-width: 48px;
-          text-align: right;
+          min-width: 40px;
+          margin-left: -4px;
+          text-align: left;
         }
         .hexleHint {
           margin-top: 4px;
+          font-family: sans-serif;
           font-size: 10px;
           color: #777;
           text-align: right;
@@ -314,13 +316,13 @@ export default function HexleResults({ dateKey, times, stats, onClose, onReview,
           text-align: center;
         }
         .hexleNextLabel {
-          font-family: 'Press Start 2P', sans-serif;
+          font-family: sans-serif;
           font-size: 12px;
           text-transform: uppercase;
           color: #06404b;
         }
         .hexleNextTime {
-          font-family: 'Press Start 2P', sans-serif;
+          font-family: sans-serif;
           font-size: 22px;
           font-weight: bold;
           color: #333;
@@ -371,7 +373,7 @@ export default function HexleResults({ dateKey, times, stats, onClose, onReview,
           color: #fff;
           padding: 12px 16px;
           border-radius: 8px;
-          font-family: 'Press Start 2P', sans-serif;
+          font-family: sans-serif;
           font-size: 14px;
           font-weight: bold;
           box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
